@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:foodstorefront/config.dart';
 import 'package:foodstorefront/models/product_model.dart';
-import 'package:foodstorefront/shared_pref/share_pref_helper.dart';
+import 'package:foodstorefront/services/authentication_service.dart';
 import 'package:http/http.dart' as http;
 
 class ProductApiService {
@@ -9,7 +9,7 @@ class ProductApiService {
       'https://dev.api.myignite.online/api/store-front/products';
 
   Future<List<ProductModel>> fetchProducts() async {
-    final token = await SecureStorageHelper.getToken();
+    final token = await AuthenticationService.getToken();
     final response = await http.get(
       Uri.parse(_baseUrl),
       headers: {

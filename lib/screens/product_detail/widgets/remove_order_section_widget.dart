@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/provider/radio_provider.dart';
-import 'package:foodstorefront/widgets/product_detail_widgets/custom_radio_button_widget.dart';
+import 'package:foodstorefront/screens/product_detail/widgets/custom_radio_button_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:foodstorefront/utils/colors.dart';
 

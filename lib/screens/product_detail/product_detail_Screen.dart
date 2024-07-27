@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/provider/product_provider.dart';
-import 'package:foodstorefront/widgets/product_detail_widgets/product_detail_section_widget.dart';
+import 'package:foodstorefront/screens/product_detail/widgets/product_detail_section_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:foodstorefront/utils/colors.dart';
-import 'package:foodstorefront/widgets/product_detail_widgets/cancel_button_widget.dart';
-import 'package:foodstorefront/widgets/product_detail_widgets/remove_order_section_widget.dart';
-import 'package:foodstorefront/widgets/product_detail_widgets/special_instruction.dart';
+import 'package:foodstorefront/screens/product_detail/widgets/cancel_button_widget.dart';
+import 'package:foodstorefront/screens/product_detail/widgets/remove_order_section_widget.dart';
+import 'package:foodstorefront/screens/product_detail/widgets/special_instruction.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final String productName; // Add a field for product name

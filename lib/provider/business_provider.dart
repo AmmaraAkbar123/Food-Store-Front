@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/models/business_model.dart';
-import 'package:foodstorefront/shared_pref/share_pref_helper.dart';
+import 'package:foodstorefront/services/authentication_service.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -32,7 +32,7 @@ class BusinessProvider with ChangeNotifier {
         if (_businessModel?.data.isNotEmpty ?? false) {
           final token = _businessModel!.data.first.token;
           if (token.isNotEmpty) {
-            await SecureStorageHelper.saveToken(token);
+            await AuthenticationService.saveToken(token);
             print('Token saved: $token');
           } else {
             print('Token is null or empty');

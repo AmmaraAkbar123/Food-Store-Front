@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/models/category_model.dart';
-import 'package:foodstorefront/shared_pref/share_pref_helper.dart';
+import 'package:foodstorefront/services/authentication_service.dart';
 import 'package:http/http.dart' as http;
 
 class CategoryProvider with ChangeNotifier {
@@ -16,7 +16,7 @@ class CategoryProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      String? token = await SecureStorageHelper.getToken();
+      String? token = await AuthenticationService.getToken();
      // print('Retrieved token in CategoryProvider: $token');
 
       if (token == null) {
