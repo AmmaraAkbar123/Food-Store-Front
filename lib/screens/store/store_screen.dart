@@ -173,7 +173,50 @@ class _StoreScreenState extends State<StoreScreen>
               ),
             ],
           ),
-          drawer: const Drawer(),
+          drawer: Drawer(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 50),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    'Hi, Guest',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                //  const Divider(),
+                ListTile(
+                  leading: Icon(Icons.description),
+                  title: Text('Terms and Conditions'),
+                  onTap: () {
+                    // Handle tap
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.info),
+                  title: Text('About Us'),
+                  onTap: () {
+                    // Handle tap
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.support),
+                  title: Text('Support Center'),
+                  onTap: () {
+                    // Handle tap
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.description),
+                  title: Text('Login'),
+                  onTap: () {
+                    // Handle tap
+                  },
+                ),
+              ],
+            ),
+          ),
           extendBodyBehindAppBar: true,
           body: RectGetter(
             key: listViewKey,
