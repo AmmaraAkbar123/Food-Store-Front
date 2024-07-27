@@ -7,6 +7,7 @@ import 'package:foodstorefront/provider/category_provider.dart';
 import 'package:foodstorefront/provider/product_provider.dart';
 import 'package:foodstorefront/provider/store_provider.dart';
 import 'package:foodstorefront/screens/store/widgets/category_section.dart';
+import 'package:foodstorefront/screens/drawer/my_drawer.dart';
 import 'package:provider/provider.dart';
 import 'package:foodstorefront/screens/store/widgets/fappbar.dart';
 import 'package:foodstorefront/utils/colors.dart';
@@ -128,7 +129,6 @@ class _StoreScreenState extends State<StoreScreen>
       builder: (context, categoryProvider, productProvider, child) {
         final categories = categoryProvider.categoryModel?.data ?? [];
         final product = productProvider.products;
-        print("build:: $product");
 
         return Scaffold(
           backgroundColor: MyColors.lightGrey,
@@ -173,50 +173,7 @@ class _StoreScreenState extends State<StoreScreen>
               ),
             ],
           ),
-          drawer: Drawer(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 50),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(
-                    'Hi, Guest',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                //  const Divider(),
-                ListTile(
-                  leading: Icon(Icons.description),
-                  title: Text('Terms and Conditions'),
-                  onTap: () {
-                    // Handle tap
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.info),
-                  title: Text('About Us'),
-                  onTap: () {
-                    // Handle tap
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.support),
-                  title: Text('Support Center'),
-                  onTap: () {
-                    // Handle tap
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.description),
-                  title: Text('Login'),
-                  onTap: () {
-                    // Handle tap
-                  },
-                ),
-              ],
-            ),
-          ),
+          drawer: MyDrawer(),
           extendBodyBehindAppBar: true,
           body: RectGetter(
             key: listViewKey,

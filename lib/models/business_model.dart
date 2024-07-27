@@ -21,6 +21,8 @@ class Datum {
   int locationId;
   String? logo;
   String token;
+  String? aboutUs;
+  String? termsAndCondition;
 
   Datum({
     required this.id,
@@ -29,6 +31,8 @@ class Datum {
     required this.locationId,
     this.logo,
     required this.token,
+    this.aboutUs,
+    this.termsAndCondition,
   });
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
@@ -38,6 +42,8 @@ class Datum {
         locationId: json["location_id"],
         logo: json["logo"],
         token: json["token"],
+        aboutUs: json["about_us"],
+        termsAndCondition: json["term_condition"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -47,5 +53,7 @@ class Datum {
         "location_id": locationId,
         "logo": logo,
         "token": token,
+        "term_condition": termsAndCondition,
+        "about_us": aboutUs,
       };
 }
