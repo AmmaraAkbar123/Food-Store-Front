@@ -30,6 +30,7 @@ class _StoreScreenState extends State<StoreScreen>
   final listViewKey = RectGetter.createGlobalKey();
   Map<int, dynamic> itemKeys = {};
   bool pauseRectGetterIndex = false;
+  bool isLoading = true; // Track loading state
 
   @override
   void initState() {
@@ -58,6 +59,10 @@ class _StoreScreenState extends State<StoreScreen>
         vsync: this,
       );
     }
+
+    setState(() {
+      isLoading = false; // Set loading to false when data is fetched
+    });
   }
 
   @override
@@ -125,8 +130,12 @@ class _StoreScreenState extends State<StoreScreen>
   Widget build(BuildContext context) {
     return Consumer2<CategoryProvider, ProductProvider>(
       builder: (context, categoryProvider, productProvider, child) {
+        if (isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
         final categories = categoryProvider.categoryModel?.data ?? [];
-        final product = productProvider.products;
+        final products = productProvider.products;
 
         return Scaffold(
           backgroundColor: MyColors.lightGrey,
@@ -177,7 +186,7 @@ class _StoreScreenState extends State<StoreScreen>
             key: listViewKey,
             child: NotificationListener<ScrollNotification>(
               onNotification: onScrollNotification,
-              child: buildSliverScrollView(categories, product),
+              child: buildSliverScrollView(categories, products),
             ),
           ),
         );
@@ -186,13 +195,13 @@ class _StoreScreenState extends State<StoreScreen>
   }
 
   Widget buildSliverScrollView(
-      List<Category> categories, List<ProductModel> product) {
-    print("buildSliverScrollView:: $product");
+      List<Category> categories, List<ProductModel> products) {
+    print("buildSliverScrollView:: $products");
     return CustomScrollView(
       controller: scrollController,
       slivers: [
         if (tabController != null) buildAppBar(categories),
-        buildBody(categories, product),
+        buildBody(categories, products),
       ],
     );
   }
@@ -218,10 +227,10 @@ class _StoreScreenState extends State<StoreScreen>
       delegate: SliverChildBuilderDelegate(
         (context, index) {
           final category = categories[index];
-          final product = products;
-          print("buildBody:$product");
+          final categoryProducts = filterProductsByCategory(products, category.id);
+          print("buildBody:$categoryProducts");
 
-          return buildCategoryItem(index, category, product);
+          return buildCategoryItem(index, category, categoryProducts);
         },
         childCount: categories.length,
       ),
@@ -229,7 +238,7 @@ class _StoreScreenState extends State<StoreScreen>
   }
 
   Widget buildCategoryItem(
-      int index, Category category, final List<ProductModel> allProducts) {
+      int index, Category category, List<ProductModel> products) {
     itemKeys[index] = RectGetter.createGlobalKey();
 
     return RectGetter(
@@ -238,19 +247,11 @@ class _StoreScreenState extends State<StoreScreen>
         key: ValueKey(index),
         index: index,
         controller: scrollController,
-        child: Consumer<ProductProvider>(
-          builder: (context, productProvider, child) {
-            // Get all products from the productProvider
-            final filteredProducts =
-                filterProductsByCategory(allProducts, category.id);
-            //  print("buildCategoryItem:$allProducts");
-            return BodySection(
-              categoryIndex: index,
-              showGrid: index == 0,
-              category: category,
-              products: filteredProducts,
-            );
-          },
+        child: BodySection(
+          categoryIndex: index,
+          showGrid: index == 0,
+          category: category,
+          products: products,
         ),
       ),
     );
