@@ -11,7 +11,7 @@ import 'package:foodstorefront/screens/product_detail/widgets/special_instructio
 import 'widgets/select_menu_section_widget.dart';
 
 class ProductDetailScreen extends StatefulWidget {
-  final String productName; // Add a field for product name
+  final String productName;
 
   const ProductDetailScreen({super.key, required this.productName});
 
@@ -20,8 +20,6 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
-  int _quantity = 1;
-  bool _isOptionSelected = false;
   late FocusScopeNode _focusScopeNode;
 
   @override
@@ -36,25 +34,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   void dispose() {
     _focusScopeNode.dispose();
     super.dispose();
-  }
-
-  void _incrementQuantity() {
-    setState(() {
-      _quantity++;
-    });
-  }
-
-  void _decrementQuantity() {
-    setState(() {
-      if (_quantity > 1) _quantity--;
-    });
-  }
-
-  void _onSelectionChanged(bool isSelected) {
-    setState(() {
-      _isOptionSelected = isSelected;
-    });
-    _focusScopeNode.unfocus();
   }
 
   @override
@@ -108,6 +87,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          //header
                           ProductTitleSection(product: product),
                           const SizedBox(height: 15),
                           ...product.variations.map((variation) {
@@ -115,7 +95,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               padding: const EdgeInsets.only(bottom: 15),
                               child: SelectMenuSection(
                                 product: product,
-                                onSelectionChanged: _onSelectionChanged,
+                                onSelectionChanged: (isSelected) {
+                                  productProvider.setOptionSelected(isSelected);
+                                  _focusScopeNode.unfocus();
+                                },
                               ),
                             );
                           }).toList(),
@@ -161,71 +144,77 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               color: Colors.transparent,
               child: Container(
                 height: 85,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      height: 32,
-                      width: 32,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        color: _quantity > 1 ? MyColors.primary : MyColors.grey,
-                      ),
-                      child: IconButton(
-                        padding: EdgeInsets.all(0),
-                        onPressed: _decrementQuantity,
-                        icon: Icon(
-                          Icons.remove,
-                          color: MyColors.white,
-                          size: 22,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      '$_quantity',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    Container(
-                      height: 32,
-                      width: 32,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        color: MyColors.primary,
-                      ),
-                      child: IconButton(
-                        padding: EdgeInsets.all(0),
-                        onPressed: _incrementQuantity,
-                        icon: Icon(
-                          Icons.add,
-                          size: 22,
-                          color: MyColors.white,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 170,
-                      height: 48,
-                      padding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                      decoration: BoxDecoration(
-                        color: _isOptionSelected
-                            ? MyColors.primary
-                            : MyColors.grey,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Add to cart',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
+                child: Consumer<ProductProvider>(
+                  builder: (context, productProvider, child) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          height: 32,
+                          width: 32,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100),
+                            color: productProvider.quantity > 1
+                                ? MyColors.primary
+                                : MyColors.grey,
+                          ),
+                          child: IconButton(
+                            padding: EdgeInsets.all(0),
+                            onPressed: productProvider.decrementQuantity,
+                            icon: Icon(
+                              Icons.remove,
+                              color: MyColors.white,
+                              size: 22,
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  ],
+                        Text(
+                          '${productProvider.quantity}',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        Container(
+                          height: 32,
+                          width: 32,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100),
+                            color: MyColors.primary,
+                          ),
+                          child: IconButton(
+                            padding: EdgeInsets.all(0),
+                            onPressed: productProvider.incrementQuantity,
+                            icon: Icon(
+                              Icons.add,
+                              size: 22,
+                              color: MyColors.white,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 170,
+                          height: 48,
+                          padding: EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 20),
+                          decoration: BoxDecoration(
+                            color: productProvider.isOptionSelected
+                                ? MyColors.primary
+                                : MyColors.grey,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Add to cart',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),

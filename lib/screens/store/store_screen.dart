@@ -49,16 +49,14 @@ class _StoreScreenState extends State<StoreScreen>
     ]);
 
     final categories = Provider.of<CategoryProvider>(context, listen: false)
-            .categoryModel
+            .categories
             ?.data ??
         [];
     if (categories.isNotEmpty) {
-      setState(() {
-        tabController = TabController(
-          length: categories.length,
-          vsync: this,
-        );
-      });
+      tabController = TabController(
+        length: categories.length,
+        vsync: this,
+      );
     }
   }
 

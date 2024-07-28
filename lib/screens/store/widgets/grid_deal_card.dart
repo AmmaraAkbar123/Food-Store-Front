@@ -4,9 +4,9 @@ import 'package:foodstorefront/utils/colors.dart';
 
 class GridDealCard extends StatelessWidget {
   const GridDealCard({
-    super.key,
+    Key? key,
     required this.product,
-  });
+  }) : super(key: key);
 
   final ProductModel product;
 
@@ -26,26 +26,55 @@ class GridDealCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  product.image.thumbnail,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: 160,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      decoration: BoxDecoration(
+                child: product.image.thumbnail != null
+                    ? Image.network(
+                        product.image.thumbnail!,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: 160,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            width: double.infinity,
+                            height: 160,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: MyColors.lightGrey),
+                            ),
+                            child: const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: MyColors.lightGrey),
+                            ),
+                            height: 160,
+                            width: double.infinity,
+                            child: const Icon(
+                              Icons.error,
+                              size: 50,
+                              color: Colors.grey,
+                            ),
+                          );
+                        },
+                      )
+                    : Container(
+                        decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: MyColors.lightGrey)),
-                      height: 160,
-                      width: double.infinity,
-                      child: const Icon(
-                        Icons.error,
-                        size: 50,
-                        color: Colors.grey,
+                          border: Border.all(color: MyColors.lightGrey),
+                        ),
+                        height: 160,
+                        width: double.infinity,
+                        child: const Icon(
+                          Icons.image_not_supported,
+                          size: 50,
+                          color: Colors.grey,
+                        ),
                       ),
-                    );
-                  },
-                ),
               ),
               Positioned(
                 bottom: 8,

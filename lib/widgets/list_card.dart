@@ -4,9 +4,9 @@ import 'package:foodstorefront/utils/colors.dart';
 
 class ListCard extends StatelessWidget {
   const ListCard({
-    super.key,
+    Key? key,
     required this.product,
-  });
+  }) : super(key: key);
 
   final ProductModel product;
 
@@ -46,10 +46,9 @@ class ListCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  //  "My Description",
                   product.description?.isNotEmpty == true
                       ? product.description!
-                      : "no description available ",
+                      : "No description available",
                   style: const TextStyle(
                       fontSize: 12,
                       overflow: TextOverflow.clip,
@@ -78,35 +77,62 @@ class ListCard extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(
-            width: 4,
-          ),
+          const SizedBox(width: 4),
           Expanded(
             flex: 1,
             child: Stack(
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    product.image.thumbnail,
-                    fit: BoxFit.cover,
-                    //width: double.infinity,
-                    //  height: 160,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        decoration: BoxDecoration(
+                  child: product.image.thumbnail != null
+                      ? Image.network(
+                          product.image.thumbnail!,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: 110,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Container(
+                              width: double.infinity,
+                              height: 110,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: MyColors.lightGrey),
+                              ),
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: MyColors.lightGrey),
+                              ),
+                              height: 110,
+                              width: double.infinity,
+                              child: const Icon(
+                                Icons.error,
+                                size: 50,
+                                color: Colors.grey,
+                              ),
+                            );
+                          },
+                        )
+                      : Container(
+                          decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: MyColors.lightGrey)),
-                        height: 110,
-                        width: double.infinity,
-                        child: const Icon(
-                          Icons.error,
-                          size: 50,
-                          color: Colors.grey,
+                            border: Border.all(color: MyColors.lightGrey),
+                          ),
+                          height: 110,
+                          width: double.infinity,
+                          child: const Icon(
+                            Icons.image_not_supported,
+                            size: 50,
+                            color: Colors.grey,
+                          ),
                         ),
-                      );
-                    },
-                  ),
                 ),
                 Positioned(
                   bottom: 4,

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/models/product_model.dart';
+import 'package:foodstorefront/provider/product_provider.dart';
 import 'package:foodstorefront/utils/colors.dart';
+import 'package:provider/provider.dart';
 
-class SelectMenuSection extends StatefulWidget {
+class SelectMenuSection extends StatelessWidget {
   final ProductModel product;
   final Function(bool) onSelectionChanged;
 
@@ -12,18 +14,10 @@ class SelectMenuSection extends StatefulWidget {
     required this.onSelectionChanged,
   });
 
-  @override
-  State<SelectMenuSection> createState() => _SelectMenuSectionState();
-}
-
-class _SelectMenuSectionState extends State<SelectMenuSection> {
-  String _selectedOption = '';
-
-  void _onOptionSelected(String option) {
-    setState(() {
-      _selectedOption = option;
-    });
-    widget.onSelectionChanged(true);
+  void _onOptionSelected(BuildContext context, String option) {
+    Provider.of<ProductProvider>(context, listen: false)
+        .selectOption(product.name, option);
+    onSelectionChanged(true);
   }
 
   @override
@@ -51,7 +45,7 @@ class _SelectMenuSectionState extends State<SelectMenuSection> {
                     child: Container(
                       width: 250,
                       child: Text(
-                        widget.product.name,
+                        product.name,
                         style: TextStyle(
                             overflow: TextOverflow.clip,
                             fontWeight: FontWeight.w700,
@@ -82,7 +76,7 @@ class _SelectMenuSectionState extends State<SelectMenuSection> {
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: widget.product.variations.map((variation) {
+                children: product.variations.map((variation) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0),
                     child: _buildSelectionCircle(
@@ -101,46 +95,51 @@ class _SelectMenuSectionState extends State<SelectMenuSection> {
   }
 
   Widget _buildSelectionCircle(BuildContext context, String text, String txt2) {
-    return InkWell(
-      onTap: () {
-        _onOptionSelected(text);
-      },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            width: 22,
-            height: 22,
-            decoration: BoxDecoration(
-              color:
-                  _selectedOption == text ? MyColors.primary : MyColors.white,
-              shape: BoxShape.circle,
-              border: Border.all(color: MyColors.primary, width: 2),
-            ),
-            child: _selectedOption == text
-                ? Icon(Icons.circle, size: 10, color: MyColors.white)
-                : null,
-          ),
-          SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              text,
-              style: TextStyle(
-                color: MyColors.greyText,
-                fontWeight: FontWeight.w500,
+    return Consumer<ProductProvider>(
+      builder: (context, productProvider, child) {
+        final isSelected =
+            productProvider.selectedOptions[product.name] == text;
+        return InkWell(
+          onTap: () {
+            _onOptionSelected(context, text);
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                  color: isSelected ? MyColors.primary : MyColors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: MyColors.primary, width: 2),
+                ),
+                child: isSelected
+                    ? Icon(Icons.circle, size: 10, color: MyColors.white)
+                    : null,
               ),
-            ),
+              SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  text,
+                  style: TextStyle(
+                    color: MyColors.greyText,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              SizedBox(width: 10),
+              Text(
+                txt2,
+                style: TextStyle(
+                  color: MyColors.black,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
-          SizedBox(width: 10),
-          Text(
-            txt2,
-            style: TextStyle(
-              color: MyColors.black,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
