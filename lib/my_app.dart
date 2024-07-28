@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:foodstorefront/screens/splash_screen.dart';
+import 'package:foodstorefront/screens/splash/splash_screen.dart';
 import 'package:foodstorefront/utils/text_theme.dart';
 
 class MyApp extends StatelessWidget {

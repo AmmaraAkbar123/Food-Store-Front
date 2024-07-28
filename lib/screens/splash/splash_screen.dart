@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:foodstorefront/screens/location_access_screen.dart';
+import 'package:foodstorefront/screens/location/location_access_screen.dart';
 import 'package:foodstorefront/utils/images_strings.dart';
 
 class SplashScreen extends StatefulWidget {

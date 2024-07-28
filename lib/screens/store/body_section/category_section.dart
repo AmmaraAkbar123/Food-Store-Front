@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:foodstorefront/models/category_model.dart';
 import 'package:foodstorefront/models/product_model.dart';
 import 'package:foodstorefront/screens/product_detail/product_detail_Screen.dart';
-import 'package:foodstorefront/screens/store/widgets/grid_deal_card.dart';
+import 'package:foodstorefront/screens/store/body_section/widgets/grid_card.dart';
 import 'package:foodstorefront/utils/colors.dart';
-import 'package:foodstorefront/widgets/list_card.dart';
+import 'package:foodstorefront/screens/store/body_section/widgets/list_card.dart';
 
-class CategorySection extends StatelessWidget {
+class BodySection extends StatelessWidget {
   final int categoryIndex;
   final bool showGrid;
   final Category category;
   final List<ProductModel> products;
 
-  const CategorySection({
+  const BodySection({
     super.key,
     required this.categoryIndex,
     required this.showGrid,
@@ -75,7 +75,7 @@ class CategorySection extends StatelessWidget {
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: 0.7,
+          childAspectRatio: 0.68,
           mainAxisSpacing: 5.0,
           crossAxisSpacing: 3.0,
         ),
@@ -87,7 +87,7 @@ class CategorySection extends StatelessWidget {
                   builder: (context) => ProductDetailScreen(
                         productName: product.name,
                       ))),
-              child: GridDealCard(product: product));
+              child: GridCard(product: product));
         },
       ),
     );

@@ -1,12 +1,14 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+
 import 'package:foodstorefront/models/product_model.dart';
 import 'package:foodstorefront/utils/colors.dart';
 
-class GridDealCard extends StatelessWidget {
-  const GridDealCard({
-    Key? key,
+class GridCard extends StatelessWidget {
+  const GridCard({
+    super.key,
     required this.product,
-  }) : super(key: key);
+  });
 
   final ProductModel product;
 

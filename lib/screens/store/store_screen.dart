@@ -6,10 +6,10 @@ import 'package:foodstorefront/provider/business_provider.dart';
 import 'package:foodstorefront/provider/category_provider.dart';
 import 'package:foodstorefront/provider/product_provider.dart';
 import 'package:foodstorefront/provider/store_provider.dart';
-import 'package:foodstorefront/screens/store/widgets/category_section.dart';
+import 'package:foodstorefront/screens/store/body_section/category_section.dart';
 import 'package:foodstorefront/screens/drawer/my_drawer.dart';
 import 'package:provider/provider.dart';
-import 'package:foodstorefront/screens/store/widgets/fappbar.dart';
+import 'package:foodstorefront/screens/store/app_bar/custom_appbar.dart';
 import 'package:foodstorefront/utils/colors.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:rect_getter/rect_getter.dart';
@@ -198,7 +198,7 @@ class _StoreScreenState extends State<StoreScreen>
   }
 
   SliverAppBar buildAppBar(List<Category> categories) {
-    return FAppBar(
+    return CustomAppBar(
       categories: categories,
       context: context,
       scrollController: scrollController,
@@ -244,7 +244,7 @@ class _StoreScreenState extends State<StoreScreen>
             final filteredProducts =
                 filterProductsByCategory(allProducts, category.id);
             //  print("buildCategoryItem:$allProducts");
-            return CategorySection(
+            return BodySection(
               categoryIndex: index,
               showGrid: index == 0,
               category: category,

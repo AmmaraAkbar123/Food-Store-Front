@@ -3,13 +3,13 @@ import 'package:custom_rating_bar/custom_rating_bar.dart';
 import 'package:foodstorefront/models/review_model.dart';
 import 'package:foodstorefront/utils/colors.dart';
 
-class rating_ReviewCard extends StatelessWidget {
+class ReviewWidget extends StatelessWidget {
   final ReviewModel review;
 
-  const rating_ReviewCard({
-    Key? key,
+  const ReviewWidget({
+    super.key,
     required this.review,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

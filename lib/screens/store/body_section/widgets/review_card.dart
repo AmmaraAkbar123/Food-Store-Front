@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/models/review_model.dart';
 import 'package:foodstorefront/utils/colors.dart';
-import 'package:foodstorefront/widgets/rating+reviews_widget.dart';
+import 'package:foodstorefront/screens/store/body_section/widgets/reviews_widget.dart';
 
 class ReviewCard extends StatelessWidget {
   final List<ReviewModel> reviews; // List of reviews
@@ -43,7 +43,7 @@ class ReviewCard extends StatelessWidget {
             itemBuilder: (context, index) {
               return Padding(
                 padding: const EdgeInsets.only(top: 10, left: 10),
-                child: rating_ReviewCard(
+                child: ReviewWidget(
                   review: reviews[index], // Pass review object
                 ),
               );

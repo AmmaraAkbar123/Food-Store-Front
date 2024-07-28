@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/models/category_model.dart';
-import 'package:foodstorefront/screens/store/widgets/delivery_info_widget.dart';
-import 'package:foodstorefront/screens/store/widgets/discount_offtag_widgets.dart';
-import 'package:foodstorefront/screens/store/widgets/more_info_text_widget.dart';
-import 'package:foodstorefront/screens/store/widgets/see_reviews_widget.dart';
-import 'package:foodstorefront/screens/store/widgets/store_namel_ogo_widget.dart';
+import 'package:foodstorefront/screens/store/app_bar/widgets/available_deal.dart';
+import 'package:foodstorefront/screens/store/app_bar/widgets/delivery_info_widget.dart';
+import 'package:foodstorefront/screens/store/app_bar/widgets/more_info_text_widget.dart';
+import 'package:foodstorefront/screens/store/app_bar/widgets/see_reviews_widget.dart';
+import 'package:foodstorefront/screens/store/app_bar/widgets/store_name_logo.dart';
 import 'package:foodstorefront/utils/colors.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
-class FAppBar extends SliverAppBar {
+class CustomAppBar extends SliverAppBar {
   final List<Category> categories; // Change to List<Category>
   final BuildContext context;
   final bool isCollapsed;
@@ -19,7 +19,7 @@ class FAppBar extends SliverAppBar {
   final void Function(bool isCollapsed) onCollapsed;
   final void Function(int index) onTap;
 
-  FAppBar({
+  CustomAppBar({
     required this.categories,
     required this.context,
     required this.isCollapsed,
@@ -75,22 +75,22 @@ class FAppBar extends SliverAppBar {
             collapseMode: CollapseMode.pin,
             background: Container(
               color: MyColors.white,
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
+              child: const Padding(
+                padding: EdgeInsets.all(10.0),
                 child: Column(
                   children: [
-                    const SizedBox(height: 100),
+                    SizedBox(height: 100),
                     //store screen logo and name
                     StoreNameLogo(),
-                    const SizedBox(height: 20),
-                    const MoreInfo(),
-                    const SizedBox(height: 15),
-                    const SeeReviews(),
-                    const SizedBox(height: 10),
-                    const DeliveryInfo(),
-                    const SizedBox(height: 15),
-                    const AvailableDeals(),
-                    const SizedBox(height: 15),
+                    SizedBox(height: 20),
+                    MoreInfo(),
+                    SizedBox(height: 15),
+                    SeeReviews(),
+                    SizedBox(height: 10),
+                    DeliveryInfo(),
+                    SizedBox(height: 15),
+                    AvailableDeals(),
+                    SizedBox(height: 15),
                   ],
                 ),
               ),
