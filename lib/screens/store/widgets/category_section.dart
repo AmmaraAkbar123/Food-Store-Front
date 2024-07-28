@@ -32,6 +32,7 @@ class CategorySection extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           buildSectionTileHeader(context),
+          if (categoryIndex == 0) buildSubtitle(context),
           categoryIndex == 0 ? buildGridView() : buildListView(),
         ],
       ),
@@ -43,13 +44,27 @@ class CategorySection extends StatelessWidget {
       margin: const EdgeInsets.only(
         top: 15,
       ),
-      child: Text(
-        category.name,
-        style: Theme.of(context)
-            .textTheme
-            .titleLarge
-            ?.copyWith(fontWeight: FontWeight.bold),
+      child: Row(
+        children: [
+          if (categoryIndex == 0) Icon(Icons.whatshot, color: MyColors.red),
+          const SizedBox(width: 8), // Add some space between the icon and text
+          Text(
+            category.name,
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge
+                ?.copyWith(fontWeight: FontWeight.bold),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget buildSubtitle(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 5.0),
+      child: Text('This is the subtitle for the first category',
+          style: TextStyle(color: MyColors.grey)),
     );
   }
 
@@ -61,7 +76,7 @@ class CategorySection extends StatelessWidget {
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           childAspectRatio: 0.7,
-          mainAxisSpacing: 10.0,
+          mainAxisSpacing: 5.0,
           crossAxisSpacing: 3.0,
         ),
         itemCount: products.length,

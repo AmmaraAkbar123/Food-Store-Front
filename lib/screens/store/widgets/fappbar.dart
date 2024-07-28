@@ -79,7 +79,7 @@ class FAppBar extends SliverAppBar {
                 padding: const EdgeInsets.all(10.0),
                 child: Column(
                   children: [
-                    const SizedBox(height: 80),
+                    const SizedBox(height: 100),
                     //store screen logo and name
                     StoreNameLogo(),
                     const SizedBox(height: 20),

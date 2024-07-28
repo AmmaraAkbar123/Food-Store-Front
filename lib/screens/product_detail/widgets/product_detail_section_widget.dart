@@ -21,6 +21,7 @@ class ProductTitleSection extends StatelessWidget {
                   product.name,
                   style: const TextStyle(
                     overflow: TextOverflow.clip,
+                    height: 1,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
@@ -52,7 +53,9 @@ class ProductTitleSection extends StatelessWidget {
         const SizedBox(height: 6),
         Text(
           // "My Description",
-          product.description?.isNotEmpty == true ? product.description! : "",
+          product.description?.isNotEmpty == true
+              ? product.description!
+              : "no description",
           style: const TextStyle(
               height: 1.1,
               fontSize: 13,

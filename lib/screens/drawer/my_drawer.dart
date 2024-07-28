@@ -11,7 +11,7 @@ class MyDrawer extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 15),
+          const SizedBox(height: 55),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(

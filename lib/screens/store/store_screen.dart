@@ -78,7 +78,7 @@ class _StoreScreenState extends State<StoreScreen>
         var rect = RectGetter.getRectFromKey(key);
         if (rect != null) {
           var screenHeight = MediaQuery.of(context).size.height;
-          if (rect.top < screenHeight && rect.bottom > 400) {
+          if (rect.top < screenHeight && rect.bottom > 500) {
             visibleItems.add(i);
           }
         }

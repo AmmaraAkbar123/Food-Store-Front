@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/provider/product_provider.dart';
+import 'package:foodstorefront/screens/product_detail/widgets/frequent_bought_widget.dart';
 import 'package:foodstorefront/screens/product_detail/widgets/product_detail_section_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:foodstorefront/utils/colors.dart';
 import 'package:foodstorefront/screens/product_detail/widgets/cancel_button_widget.dart';
 import 'package:foodstorefront/screens/product_detail/widgets/remove_order_section_widget.dart';
 import 'package:foodstorefront/screens/product_detail/widgets/special_instruction.dart';
+
+import 'widgets/select_menu_section_widget.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final String productName; // Add a field for product name
@@ -110,14 +113,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           ...product.variations.map((variation) {
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 15),
-                              // child: SelectMenuSection(
-                              //   product: product,
-                              //   variation: variation,
-                              //   onSelectionChanged: _onSelectionChanged,
-                              // ),
+                              child: SelectMenuSection(
+                                product: product,
+                                onSelectionChanged: _onSelectionChanged,
+                              ),
                             );
                           }).toList(),
-                          // FrequentlyBoughtTogetherSection(product: product),
+                          FrequentlyBoughtTogetherSection(product: product),
                           const SizedBox(height: 10),
                           Divider(color: MyColors.lightGrey),
                           const SizedBox(height: 10),
