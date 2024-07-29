@@ -21,7 +21,7 @@ class StoreScreen extends StatefulWidget {
 }
 
 class _StoreScreenState extends State<StoreScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AutoScrollController scrollController;
   TabController? tabController;
   final double expandedHeight = 400.0;
@@ -227,7 +227,8 @@ class _StoreScreenState extends State<StoreScreen>
       delegate: SliverChildBuilderDelegate(
         (context, index) {
           final category = categories[index];
-          final categoryProducts = filterProductsByCategory(products, category.id);
+          final categoryProducts =
+              filterProductsByCategory(products, category.id);
           print("buildBody:$categoryProducts");
 
           return buildCategoryItem(index, category, categoryProducts);
