@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:foodstorefront/models/category_model.dart';
 import 'package:foodstorefront/models/product_model.dart';
-import 'package:foodstorefront/provider/business_provider.dart';
 import 'package:foodstorefront/provider/category_provider.dart';
 import 'package:foodstorefront/provider/product_provider.dart';
 import 'package:foodstorefront/provider/store_provider.dart';
-import 'package:foodstorefront/screens/store/body_section/category_section.dart';
+import 'package:foodstorefront/screens/store/body_section/body_section.dart';
 import 'package:foodstorefront/screens/drawer/my_drawer.dart';
 import 'package:provider/provider.dart';
 import 'package:foodstorefront/screens/store/app_bar/custom_appbar.dart';
@@ -16,11 +15,13 @@ import 'package:rect_getter/rect_getter.dart';
 import 'package:foodstorefront/utils/text_theme.dart';
 
 class StoreScreen extends StatefulWidget {
+  const StoreScreen({super.key});
+
   @override
-  _StoreScreenState createState() => _StoreScreenState();
+  StoreScreenState createState() => StoreScreenState();
 }
 
-class _StoreScreenState extends State<StoreScreen>
+class StoreScreenState extends State<StoreScreen>
     with TickerProviderStateMixin {
   late AutoScrollController scrollController;
   TabController? tabController;
@@ -30,7 +31,6 @@ class _StoreScreenState extends State<StoreScreen>
   final listViewKey = RectGetter.createGlobalKey();
   Map<int, dynamic> itemKeys = {};
   bool pauseRectGetterIndex = false;
-  bool isLoading = true; // Track loading state
 
   @override
   void initState() {
@@ -43,26 +43,28 @@ class _StoreScreenState extends State<StoreScreen>
   }
 
   Future<void> fetchData() async {
+    // final businessProvider =
+    //     Provider.of<BusinessProvider>(context, listen: false);
+    final categoryProvider =
+        Provider.of<CategoryProvider>(context, listen: false);
+    final productProvider =
+        Provider.of<ProductProvider>(context, listen: false);
+
     await Future.wait([
-      Provider.of<BusinessProvider>(context, listen: false).fetchBusinessData(),
-      Provider.of<CategoryProvider>(context, listen: false).fetchCategories(),
-      Provider.of<ProductProvider>(context, listen: false).fetchProducts(),
+    //  businessProvider.fetchBusinessData(),
+      categoryProvider.fetchCategories(),
+      productProvider.fetchProducts(),
     ]);
 
-    final categories = Provider.of<CategoryProvider>(context, listen: false)
-            .categories
-            ?.data ??
-        [];
+    if (!mounted) return; // Ensure the widget is still mounted
+
+    final categories = categoryProvider.categories?.data ?? [];
     if (categories.isNotEmpty) {
       tabController = TabController(
         length: categories.length,
         vsync: this,
       );
     }
-
-    setState(() {
-      isLoading = false; // Set loading to false when data is fetched
-    });
   }
 
   @override
@@ -130,10 +132,9 @@ class _StoreScreenState extends State<StoreScreen>
   Widget build(BuildContext context) {
     return Consumer2<CategoryProvider, ProductProvider>(
       builder: (context, categoryProvider, productProvider, child) {
-        if (isLoading) {
+        if (categoryProvider.isLoading || productProvider.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
-
         final categories = categoryProvider.categoryModel?.data ?? [];
         final products = productProvider.products;
 
@@ -180,7 +181,7 @@ class _StoreScreenState extends State<StoreScreen>
               ),
             ],
           ),
-          drawer: MyDrawer(),
+          drawer: const MyDrawer(),
           extendBodyBehindAppBar: true,
           body: RectGetter(
             key: listViewKey,
@@ -196,7 +197,6 @@ class _StoreScreenState extends State<StoreScreen>
 
   Widget buildSliverScrollView(
       List<Category> categories, List<ProductModel> products) {
-    print("buildSliverScrollView:: $products");
     return CustomScrollView(
       controller: scrollController,
       slivers: [
@@ -229,7 +229,7 @@ class _StoreScreenState extends State<StoreScreen>
           final category = categories[index];
           final categoryProducts =
               filterProductsByCategory(products, category.id);
-          print("buildBody:$categoryProducts");
+         // print("buildBody:$categoryProducts");
 
           return buildCategoryItem(index, category, categoryProducts);
         },
@@ -248,11 +248,14 @@ class _StoreScreenState extends State<StoreScreen>
         key: ValueKey(index),
         index: index,
         controller: scrollController,
-        child: BodySection(
-          categoryIndex: index,
-          showGrid: index == 0,
-          category: category,
-          products: products,
+        child: Container(
+          margin: EdgeInsets.only(bottom: 16),
+          child: BodySection(
+            categoryIndex: index,
+            showGrid: index == 0,
+            category: category,
+            products: products,
+          ),
         ),
       ),
     );

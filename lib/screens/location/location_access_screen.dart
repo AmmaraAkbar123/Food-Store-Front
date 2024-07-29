@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:foodstorefront/provider/business_provider.dart';
 import 'package:foodstorefront/screens/store/store_screen.dart';
 import 'package:foodstorefront/utils/colors.dart';
 import 'package:foodstorefront/utils/images_strings.dart';
+import 'package:provider/provider.dart';
 
 class LocationAccessScreen extends StatefulWidget {
   const LocationAccessScreen({super.key});
@@ -11,6 +13,22 @@ class LocationAccessScreen extends StatefulWidget {
 }
 
 class LocationAccessScreenState extends State<LocationAccessScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {});
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    final businessProvider =
+        Provider.of<BusinessProvider>(context, listen: false);
+
+    await Future.wait([
+      businessProvider.fetchBusinessData(),
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

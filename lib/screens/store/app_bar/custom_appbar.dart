@@ -45,6 +45,7 @@ class CustomAppBar extends SliverAppBar {
         child: Container(
           color: MyColors.white,
           child: TabBar(
+            
             tabAlignment: TabAlignment.start,
             isScrollable: true,
             controller: tabController,
@@ -79,7 +80,7 @@ class CustomAppBar extends SliverAppBar {
                 padding: EdgeInsets.all(10.0),
                 child: Column(
                   children: [
-                    SizedBox(height: 100),
+                    SizedBox(height: 80),
                     //store screen logo and name
                     StoreNameLogo(),
                     SizedBox(height: 20),

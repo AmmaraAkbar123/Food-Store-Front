@@ -10,7 +10,8 @@ class ProductProvider with ChangeNotifier {
   int _quantity = 1;
   bool _isOptionSelected = false;
   Set<int> selectedIndices = {}; // New field for selected indices
-  Map<String, String> _selectedOptions = {}; // New field for selected options
+  final Map<String, String> _selectedOptions =
+      {}; // New field for selected options
   String _specialInstructions = ''; // New field for special instructions
 
   List<ProductModel> get products => _products;

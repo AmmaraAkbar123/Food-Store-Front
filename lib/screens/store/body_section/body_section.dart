@@ -24,7 +24,6 @@ class BodySection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
-      margin: const EdgeInsets.only(bottom: 12),
       color: MyColors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,7 +32,7 @@ class BodySection extends StatelessWidget {
         children: [
           buildSectionTileHeader(context),
           if (categoryIndex == 0) buildSubtitle(context),
-          categoryIndex == 0 ? buildGridView() : buildListView(),
+          categoryIndex == 0 ? buildGridView(context) : buildListView(context),
         ],
       ),
     );
@@ -41,13 +40,12 @@ class BodySection extends StatelessWidget {
 
   Widget buildSectionTileHeader(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(
-        top: 15,
-      ),
+      margin: const EdgeInsets.only(top: 20, bottom: 10 // Reduced top margin
+          ),
       child: Row(
         children: [
           if (categoryIndex == 0) Icon(Icons.whatshot, color: MyColors.red),
-          const SizedBox(width: 8), // Add some space between the icon and text
+          const SizedBox(width: 4), // Reduced space between the icon and text
           Text(
             category.name,
             style: Theme.of(context)
@@ -61,54 +59,52 @@ class BodySection extends StatelessWidget {
   }
 
   Widget buildSubtitle(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 5.0),
+    return const Padding(
+      padding: EdgeInsets.only(bottom: 20), // Reduced top padding
       child: Text('This is the subtitle for the first category',
-          style: TextStyle(color: MyColors.grey)),
+          style: TextStyle(color: MyColors.greyText)),
     );
   }
 
-  Widget buildGridView() {
-    return SizedBox(
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.68,
-          mainAxisSpacing: 5.0,
-          crossAxisSpacing: 3.0,
-        ),
-        itemCount: products.length,
-        itemBuilder: (context, index) {
-          final product = products[index];
-          return GestureDetector(
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ProductDetailScreen(
-                        productName: product.name,
-                      ))),
-              child: GridCard(product: product));
-        },
+  Widget buildGridView(BuildContext context) {
+    return GridView.builder(
+      shrinkWrap: true,
+      padding: EdgeInsets.zero, // Removed padding
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.68,
+        mainAxisSpacing: 5.0,
+        crossAxisSpacing: 3.0,
       ),
+      itemCount: products.length,
+      itemBuilder: (context, index) {
+        final product = products[index];
+        return GestureDetector(
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => ProductDetailScreen(
+                      productName: product.name,
+                    ))),
+            child: GridCard(product: product));
+      },
     );
   }
 
-  Widget buildListView() {
-    return SizedBox(
-      child: ListView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: products.length,
-        itemBuilder: (context, index) {
-          final product = products[index];
-          return GestureDetector(
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ProductDetailScreen(
-                        productName: product.name,
-                      ))),
-              child: ListCard(product: product));
-        },
-      ),
+  Widget buildListView(BuildContext context) {
+    return ListView.builder(
+      shrinkWrap: true,
+      padding: EdgeInsets.zero, // Removed padding
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: products.length,
+      itemBuilder: (context, index) {
+        final product = products[index];
+        return GestureDetector(
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => ProductDetailScreen(
+                      productName: product.name,
+                    ))),
+            child: ListCard(product: product));
+      },
     );
   }
 }

@@ -17,38 +17,32 @@ class CategoryProvider with ChangeNotifier {
 
     try {
       String? token = await AuthenticationService.getToken();
-     // print('Retrieved token in CategoryProvider: $token');
-
       if (token == null) {
-       // print('Token not found in CategoryProvider');
         throw Exception('Token not found in CategoryProvider');
       }
-
-   //   print('Fetching categories with token: $token');
 
       final response = await http.get(
         Uri.parse('https://dev.api.myignite.online/api/store-front/categories'),
         headers: {'Authorization': 'Bearer $token'},
       );
 
-      // print('Response status: ${response.statusCode}');
-      // print('Response headers: ${response.headers}');
-      // print('Response body: ${response.body}');
-
       if (response.statusCode == 200) {
-        final decodedResponse = json.decode(response.body);
-        //  print('Decoded response: $decodedResponse');
-
-        if (decodedResponse is Map<String, dynamic>) {
-          categoryModel = CategoryModel.fromJson(decodedResponse);
-          errorMessage = null;
-        } else {
-          errorMessage = 'Unexpected response format';
+        try {
+          final decodedResponse = json.decode(response.body);
+          if (decodedResponse is Map<String, dynamic>) {
+            categoryModel = CategoryModel.fromJson(decodedResponse);
+            errorMessage = null;
+          } else {
+            errorMessage = 'Unexpected response format';
+            print('Error: $errorMessage');
+          }
+        } catch (e) {
+          errorMessage = 'Failed to parse response: ${e.toString()}';
           print('Error: $errorMessage');
         }
       } else {
         errorMessage = 'Failed to load categories: ${response.statusCode}';
-        print('Error: $errorMessage');
+        print('Error: $errorMessage\nResponse body: ${response.body}');
       }
     } catch (e) {
       errorMessage = 'Error: ${e.toString()}';

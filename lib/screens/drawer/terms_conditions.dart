@@ -4,13 +4,16 @@ import 'package:foodstorefront/utils/images_strings.dart';
 import 'package:provider/provider.dart';
 
 class TermsAndConditionsPage extends StatelessWidget {
+  const TermsAndConditionsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<BusinessProvider>(context);
 
     return Scaffold(
+      appBar: AppBar(title: const Text('Terms and Conditions')),
       body: provider.isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : provider.errorMessage != null
               ? Center(child: Text(provider.errorMessage!))
               : Padding(
@@ -39,12 +42,6 @@ class TermsAndConditionsPage extends StatelessWidget {
                             ),
                           ),
                         ),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        'Welcome to Our Terms and Conditions',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 10),
                       Text(
