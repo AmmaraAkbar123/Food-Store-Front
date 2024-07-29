@@ -83,7 +83,7 @@ class StoreScreenState extends State<StoreScreen>
         var rect = RectGetter.getRectFromKey(key);
         if (rect != null) {
           var screenHeight = MediaQuery.of(context).size.height;
-          if (rect.top < screenHeight && rect.bottom > 500) {
+          if (rect.top < screenHeight && rect.bottom > 400) {
             visibleItems.add(i);
           }
         }
@@ -133,8 +133,17 @@ class StoreScreenState extends State<StoreScreen>
     return Consumer2<CategoryProvider, ProductProvider>(
       builder: (context, categoryProvider, productProvider, child) {
         if (categoryProvider.isLoading || productProvider.isLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return Container(
+            color: Colors.white, // Set the background color to white
+            child: const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                    MyColors.primary), // Set the loader color to pink
+              ),
+            ),
+          );
         }
+
         final categories = categoryProvider.categoryModel?.data ?? [];
         final products = productProvider.products;
 
