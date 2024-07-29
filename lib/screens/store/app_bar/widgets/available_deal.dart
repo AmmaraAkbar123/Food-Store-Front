@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/screens/store/app_bar/widgets/discount_offtag_widgets.dart';
 import 'package:foodstorefront/utils/colors.dart';
@@ -33,7 +32,7 @@ class AvailableDeals extends StatelessWidget {
           ],
         ),
         SizedBox(
-          height: 10,
+          height: 20,
         ),
         DiscountOffTagWidget()
       ],

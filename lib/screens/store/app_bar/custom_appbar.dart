@@ -37,7 +37,7 @@ class CustomAppBar extends SliverAppBar {
         );
 
   @override
-  Widget? get leading => Container();
+  Widget? get leading => const SizedBox.shrink();
 
   @override
   PreferredSizeWidget? get bottom => PreferredSize(
@@ -45,7 +45,9 @@ class CustomAppBar extends SliverAppBar {
         child: Container(
           color: MyColors.white,
           child: TabBar(
-            
+            padding: EdgeInsets.only(
+              top: 7,
+            ),
             tabAlignment: TabAlignment.start,
             isScrollable: true,
             controller: tabController,
@@ -65,33 +67,32 @@ class CustomAppBar extends SliverAppBar {
   @override
   Widget? get flexibleSpace => LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-          final top = constraints.constrainHeight();
-          final collapsedHeight =
-              MediaQuery.of(context).viewPadding.top + kToolbarHeight + 48;
-          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-            onCollapsed(collapsedHeight != top);
-          });
+          // final top = constraints.constrainHeight();
+          // final collapsedHeight =
+          //     MediaQuery.of(context).viewPadding.top + kToolbarHeight + 48;
+          // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          //   onCollapsed(collapsedHeight != top);
+          // });
 
           return FlexibleSpaceBar(
             collapseMode: CollapseMode.pin,
             background: Container(
               color: MyColors.white,
               child: const Padding(
-                padding: EdgeInsets.all(10.0),
+                padding: EdgeInsets.only(top: 80, left: 10, right: 10),
                 child: Column(
                   children: [
-                    SizedBox(height: 80),
+                    // SizedBox(height: 80),
                     //store screen logo and name
                     StoreNameLogo(),
-                    SizedBox(height: 20),
+                    SizedBox(height: 18),
                     MoreInfo(),
-                    SizedBox(height: 15),
+                    SizedBox(height: 20),
                     SeeReviews(),
-                    SizedBox(height: 10),
+                    SizedBox(height: 16),
                     DeliveryInfo(),
-                    SizedBox(height: 15),
+                    SizedBox(height: 16),
                     AvailableDeals(),
-                    SizedBox(height: 15),
                   ],
                 ),
               ),

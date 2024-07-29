@@ -51,7 +51,7 @@ class StoreScreenState extends State<StoreScreen>
         Provider.of<ProductProvider>(context, listen: false);
 
     await Future.wait([
-    //  businessProvider.fetchBusinessData(),
+      //  businessProvider.fetchBusinessData(),
       categoryProvider.fetchCategories(),
       productProvider.fetchProducts(),
     ]);
@@ -141,7 +141,9 @@ class StoreScreenState extends State<StoreScreen>
         return Scaffold(
           backgroundColor: MyColors.lightGrey,
           appBar: AppBar(
+            toolbarHeight: 45,
             elevation: 0,
+            surfaceTintColor: MyColors.white,
             iconTheme: const IconThemeData(color: MyColors.primary),
             backgroundColor: MyColors.white,
             systemOverlayStyle: const SystemUiOverlayStyle(
@@ -229,7 +231,7 @@ class StoreScreenState extends State<StoreScreen>
           final category = categories[index];
           final categoryProducts =
               filterProductsByCategory(products, category.id);
-         // print("buildBody:$categoryProducts");
+          // print("buildBody:$categoryProducts");
 
           return buildCategoryItem(index, category, categoryProducts);
         },

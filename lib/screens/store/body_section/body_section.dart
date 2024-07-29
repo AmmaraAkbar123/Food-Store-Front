@@ -46,13 +46,8 @@ class BodySection extends StatelessWidget {
         children: [
           if (categoryIndex == 0) Icon(Icons.whatshot, color: MyColors.red),
           const SizedBox(width: 4), // Reduced space between the icon and text
-          Text(
-            category.name,
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(fontWeight: FontWeight.bold),
-          ),
+          Text(category.name,
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -98,12 +93,27 @@ class BodySection extends StatelessWidget {
       itemCount: products.length,
       itemBuilder: (context, index) {
         final product = products[index];
-        return GestureDetector(
-            onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => ProductDetailScreen(
-                      productName: product.name,
-                    ))),
-            child: ListCard(product: product));
+        return Column(
+          children: [
+            GestureDetector(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => ProductDetailScreen(
+                    productName: product.name,
+                  ),
+                ),
+              ),
+              child: ListCard(product: product),
+            ),
+            // Add divider if this is not the last item
+            if (index < products.length - 1)
+              const Divider(
+                height: 1,
+                thickness: 1,
+                color: MyColors.grey2,
+              ),
+          ],
+        );
       },
     );
   }
