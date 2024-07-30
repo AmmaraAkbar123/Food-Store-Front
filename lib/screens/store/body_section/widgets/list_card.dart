@@ -46,9 +46,7 @@ class ListCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  product.description?.isNotEmpty == true
-                      ? product.description!
-                      : "No description available",
+                  product.description.toString(),
                   style: const TextStyle(
                       fontSize: 12,
                       overflow: TextOverflow.clip,

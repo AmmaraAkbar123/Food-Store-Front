@@ -1,10 +1,11 @@
 import 'dart:convert';
+import 'package:foodstorefront/api_service.dart';
 import 'package:foodstorefront/models/product_model.dart';
 import 'package:foodstorefront/services/authentication_service.dart';
 import 'package:http/http.dart' as http;
 
 class ProductApiService {
-  final String _baseUrl = 'https://dev.api.myignite.online/api/store-front/products';
+  final String _baseUrl = '${ApiService.proBaseUrl}/products';
 
   Future<List<ProductModel>> fetchProducts() async {
     try {
@@ -15,11 +16,11 @@ class ProductApiService {
           'Authorization': 'Bearer $token',
         },
       );
-
+      print(response.body);
       if (response.statusCode == 200) {
         try {
-          final List<dynamic> data = json.decode(response.body);
-          return data.map((json) => ProductModel.fromJson(json)).toList();
+          final List<dynamic> data = json.decode(response.body) as List<dynamic>;
+          return data.map((json) => ProductModel.fromJson(json as Map<String, dynamic>)).toList();
         } catch (e) {
           throw Exception('Failed to parse response: ${e.toString()}');
         }
@@ -38,12 +39,11 @@ class ProductApiService {
 
       if (response.statusCode == 200) {
         try {
-          final List<dynamic> data = json.decode(response.body);
-          if (data.isNotEmpty) {
-            return ProductModel.fromJson(data[0]);
-          } else {
+          final List<dynamic> data = json.decode(response.body) as List<dynamic>;
+          if (data.isEmpty) {
             return null; // No product found with the given name
           }
+          return ProductModel.fromJson(data[0] as Map<String, dynamic>);
         } catch (e) {
           throw Exception('Failed to parse response: ${e.toString()}');
         }

@@ -86,7 +86,7 @@ class FrequentlyBoughtTogetherSection extends StatelessWidget {
                         SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            variation.value,
+                            variation.compareAtPrice,
                             style: const TextStyle(
                               color: MyColors.black87,
                               fontSize: 14,
@@ -96,7 +96,7 @@ class FrequentlyBoughtTogetherSection extends StatelessWidget {
                         ),
                         SizedBox(width: 10),
                         Text(
-                          '\$${variation.defaultSellPrice.toStringAsFixed(2)}',
+                          '\$${variation.defaultSellPrice}',
                           style: const TextStyle(
                             fontSize: 14,
                             color: MyColors.black87,

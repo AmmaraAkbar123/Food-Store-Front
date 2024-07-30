@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foodstorefront/api_service.dart';
 import 'package:foodstorefront/models/business_model.dart';
 import 'package:foodstorefront/services/authentication_service.dart';
 import 'dart:convert';
@@ -15,18 +16,18 @@ class BusinessProvider with ChangeNotifier {
 
   Future<void> fetchBusinessData() async {
     try {
-      final response = await http.get(Uri.parse(
-          "https://dev.api.myignite.online/connector/api/business/grocery"));
+      final response =
+          await http.get(Uri.parse("${ApiService.proBusinessUrl}/grocery"));
 
       // print('Response status: ${response.statusCode}');
       // print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
-      //  print('Decoded JSON: $jsonResponse');
+        //  print('Decoded JSON: $jsonResponse');
 
         _businessModel = BusinessModel.fromJson(jsonResponse);
-      //  print('Parsed business model: ${_businessModel?.toJson()}');
+        //  print('Parsed business model: ${_businessModel?.toJson()}');
 
         // Check if we have data and a token
         if (_businessModel?.data.isNotEmpty ?? false) {

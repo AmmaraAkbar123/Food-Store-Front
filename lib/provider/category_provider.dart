@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:foodstorefront/api_service.dart';
 import 'package:foodstorefront/models/category_model.dart';
 import 'package:foodstorefront/services/authentication_service.dart';
 import 'package:http/http.dart' as http;
@@ -10,7 +11,6 @@ class CategoryProvider with ChangeNotifier {
   String? errorMessage;
 
   CategoryModel? get categories => categoryModel;
-
   Future<void> fetchCategories() async {
     isLoading = true;
     notifyListeners();
@@ -22,14 +22,25 @@ class CategoryProvider with ChangeNotifier {
       }
 
       final response = await http.get(
-        Uri.parse('https://dev.api.myignite.online/api/store-front/categories'),
+        Uri.parse('${ApiService.proBaseUrl}/categories'),
         headers: {'Authorization': 'Bearer $token'},
       );
 
       if (response.statusCode == 200) {
         try {
           final decodedResponse = json.decode(response.body);
-          if (decodedResponse is Map<String, dynamic>) {
+          if (decodedResponse is List) {
+            // Handle a list of categories
+            List<CategoryModel> categories = decodedResponse
+                .map((json) => CategoryModel.fromJson(json))
+                .toList();
+            // Update your categoryModel property to a list
+            categoryModel = categories.isNotEmpty
+                ? categories[0]
+                : null; // Adjust as needed
+            errorMessage = null;
+          } else if (decodedResponse is Map<String, dynamic>) {
+            // Handle a single category
             categoryModel = CategoryModel.fromJson(decodedResponse);
             errorMessage = null;
           } else {
@@ -37,7 +48,8 @@ class CategoryProvider with ChangeNotifier {
             print('Error: $errorMessage');
           }
         } catch (e) {
-          errorMessage = 'Failed to parse response: ${e.toString()}';
+          errorMessage =
+              'Failed to parse response in category: ${e.toString()}';
           print('Error: $errorMessage');
         }
       } else {

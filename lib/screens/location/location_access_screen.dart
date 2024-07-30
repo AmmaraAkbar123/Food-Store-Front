@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:foodstorefront/provider/business_provider.dart';
 import 'package:foodstorefront/screens/store/store_screen.dart';
 import 'package:foodstorefront/utils/colors.dart';
-import 'package:foodstorefront/utils/images_strings.dart';
 import 'package:provider/provider.dart';
 
 class LocationAccessScreen extends StatefulWidget {
@@ -40,11 +39,11 @@ class LocationAccessScreenState extends State<LocationAccessScreen> {
               child: Column(
                 children: [
                   const SizedBox(height: 100),
-                  Image.asset(
-                    ImagesStrings.location,
-                    height: 250,
-                    fit: BoxFit.cover,
-                  ),
+                  // Image.asset(
+                  //   " ImagesStrings.location",
+                  //   height: 250,
+                  //   fit: BoxFit.cover,
+                  // ),
                   const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.only(left: 20, right: 20),

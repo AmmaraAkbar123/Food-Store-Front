@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/provider/business_provider.dart';
-import 'package:foodstorefront/utils/images_strings.dart';
 import 'package:provider/provider.dart';
 
 class TermsAndConditionsPage extends StatelessWidget {
@@ -18,38 +17,41 @@ class TermsAndConditionsPage extends StatelessWidget {
               ? Center(child: Text(provider.errorMessage!))
               : Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        height: 150,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(ImagesStrings
-                                .burgerimage), // Path to your banner image
-                            fit: BoxFit.cover,
-                          ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Container(
+                        //   width: double.infinity,
+                        //   height: 150,
+                        //   decoration: BoxDecoration(
+                        //     image: DecorationImage(
+                        //       image: AssetImage(ImagesStrings
+                        //           .burgerimage), // Path to your banner image
+                        //       fit: BoxFit.cover,
+                        //     ),
+                        //   ),
+                        //   child: Center(
+                        //     child: Text(
+                        //       'Terms and Conditions',
+                        //       style: TextStyle(
+                        //         color: Colors.white,
+                        //         fontSize: 24,
+                        //         fontWeight: FontWeight.bold,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                        // SizedBox(height: 10),
+                        Text(
+                          provider.businessModel?.data.first
+                                  .termsAndCondition ??
+                              'No terms and conditions available.',
+                          style: const TextStyle(fontSize: 16),
                         ),
-                        child: Center(
-                          child: Text(
-                            'Terms and Conditions',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        provider.businessModel?.data.first.termsAndCondition ??
-                            'No terms and conditions available.',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
     );

@@ -7,7 +7,6 @@ import 'package:foodstorefront/utils/colors.dart';
 import 'package:foodstorefront/screens/product_detail/widgets/cancel_button_widget.dart';
 import 'package:foodstorefront/screens/product_detail/widgets/remove_order_section_widget.dart';
 import 'package:foodstorefront/screens/product_detail/widgets/special_instruction.dart';
-
 import 'widgets/select_menu_section_widget.dart';
 
 class ProductDetailScreen extends StatefulWidget {
@@ -51,8 +50,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             );
             if (productProvider.isLoading) {
               return const Center(child: CircularProgressIndicator());
-            } else if (product == null) {
-              return const Center(child: Text('No product data available'));
             } else {
               return CustomScrollView(
                 slivers: [
@@ -63,7 +60,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         product.image.thumbnail,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
-                          return Center(
+                          return const Center(
                             child: Icon(
                               Icons.error,
                               color: Colors.red,

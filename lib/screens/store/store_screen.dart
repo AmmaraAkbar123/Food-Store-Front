@@ -43,8 +43,6 @@ class StoreScreenState extends State<StoreScreen>
   }
 
   Future<void> fetchData() async {
-    // final businessProvider =
-    //     Provider.of<BusinessProvider>(context, listen: false);
     final categoryProvider =
         Provider.of<CategoryProvider>(context, listen: false);
     final productProvider =

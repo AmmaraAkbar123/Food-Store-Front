@@ -53,9 +53,7 @@ class ProductTitleSection extends StatelessWidget {
         const SizedBox(height: 6),
         Text(
           // "My Description",
-          product.description?.isNotEmpty == true
-              ? product.description!
-              : "no description",
+          product.description as String,
           style: const TextStyle(
               height: 1.1,
               fontSize: 13,
