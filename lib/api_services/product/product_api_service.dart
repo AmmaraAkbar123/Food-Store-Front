@@ -1,3 +1,4 @@
+// ProductApiService class
 import 'dart:convert';
 import 'package:foodstorefront/api_service.dart';
 import 'package:foodstorefront/models/product_model.dart';
@@ -19,13 +20,18 @@ class ProductApiService {
       print(response.body);
       if (response.statusCode == 200) {
         try {
-          final List<dynamic> data = json.decode(response.body) as List<dynamic>;
-          return data.map((json) => ProductModel.fromJson(json as Map<String, dynamic>)).toList();
+          final List<dynamic> data = json.decode(response.body);
+          if (data == null) {
+            throw Exception('Response body is null');
+          }
+          return data.map((json) => ProductModel.fromJson(json)).toList();
         } catch (e) {
-          throw Exception('Failed to parse response: ${e.toString()}');
+          throw Exception(
+              'Failed to parse response in product: ${e.toString()}');
         }
       } else {
-        print('Error fetching products. Status code: ${response.statusCode}\nResponse body: ${response.body}');
+        print(
+            'Error fetching products. Status code: ${response.statusCode}\nResponse body: ${response.body}');
         throw Exception('Failed to load products: ${response.statusCode}');
       }
     } catch (e) {
@@ -39,16 +45,17 @@ class ProductApiService {
 
       if (response.statusCode == 200) {
         try {
-          final List<dynamic> data = json.decode(response.body) as List<dynamic>;
-          if (data.isEmpty) {
+          final List<dynamic> data = json.decode(response.body);
+          if (data == null || data.isEmpty) {
             return null; // No product found with the given name
           }
-          return ProductModel.fromJson(data[0] as Map<String, dynamic>);
+          return ProductModel.fromJson(data[0]);
         } catch (e) {
           throw Exception('Failed to parse response: ${e.toString()}');
         }
       } else {
-        print('Error fetching product by name. Status code: ${response.statusCode}\nResponse body: ${response.body}');
+        print(
+            'Error fetching product by name. Status code: ${response.statusCode}\nResponse body: ${response.body}');
         throw Exception('Failed to load product: ${response.statusCode}');
       }
     } catch (e) {

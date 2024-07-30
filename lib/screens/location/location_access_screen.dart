@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:foodstorefront/provider/business_provider.dart';
 import 'package:foodstorefront/screens/store/store_screen.dart';
 import 'package:foodstorefront/utils/colors.dart';
+import 'package:foodstorefront/utils/images_strings.dart';
 import 'package:provider/provider.dart';
 
 class LocationAccessScreen extends StatefulWidget {
@@ -39,15 +40,15 @@ class LocationAccessScreenState extends State<LocationAccessScreen> {
               child: Column(
                 children: [
                   const SizedBox(height: 100),
-                  // Image.asset(
-                  //   " ImagesStrings.location",
-                  //   height: 250,
-                  //   fit: BoxFit.cover,
-                  // ),
+                  Image.asset(
+                    ImagesStrings.location,
+                    height: 250,
+                    fit: BoxFit.cover,
+                  ),
                   const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20, right: 20),
-                    child: const Text(
+                  const Padding(
+                    padding: EdgeInsets.only(left: 20, right: 20),
+                    child: Text(
                       'Allow location access on the next screen for:',
                       style: TextStyle(
                         height: 1.1,
@@ -136,7 +137,7 @@ class LocationAccessScreenState extends State<LocationAccessScreen> {
             child: GestureDetector(
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => StoreScreen()),
+                MaterialPageRoute(builder: (context) => const StoreScreen()),
               ),
               child: Container(
                 width: double.infinity,

@@ -34,7 +34,7 @@ class ProductProvider with ChangeNotifier {
     try {
       _products = await _productApiService.fetchProducts();
     } catch (e) {
-      print('Error fetching products: $e');
+      print(e);
     } finally {
       _isLoading = false;
       notifyListeners();

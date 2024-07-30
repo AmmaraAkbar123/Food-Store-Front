@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:foodstorefront/provider/business_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -15,10 +16,12 @@ class AboutUsPage extends StatelessWidget {
               ? Center(child: Text(provider.errorMessage!))
               : Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    provider.businessModel?.data.first.aboutUs ??
-                        'No information available.',
-                    style: TextStyle(fontSize: 16),
+                  child: SingleChildScrollView(
+                    child: HtmlWidget(
+                      provider.businessModel?.data.first.aboutUs ??
+                          '<p>No information available.</p>',
+                      textStyle: TextStyle(fontSize: 16),
+                    ),
                   ),
                 ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:foodstorefront/provider/business_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -7,53 +8,38 @@ class TermsAndConditionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Fetch business data when the widget is built
     final provider = Provider.of<BusinessProvider>(context);
+
+    // Use a FutureBuilder to handle the async operation
+    if (provider.isLoading) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Terms and Conditions')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (provider.errorMessage != null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Terms and Conditions')),
+        body: Center(child: Text(provider.errorMessage!)),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('Terms and Conditions')),
-      body: provider.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : provider.errorMessage != null
-              ? Center(child: Text(provider.errorMessage!))
-              : Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Container(
-                        //   width: double.infinity,
-                        //   height: 150,
-                        //   decoration: BoxDecoration(
-                        //     image: DecorationImage(
-                        //       image: AssetImage(ImagesStrings
-                        //           .burgerimage), // Path to your banner image
-                        //       fit: BoxFit.cover,
-                        //     ),
-                        //   ),
-                        //   child: Center(
-                        //     child: Text(
-                        //       'Terms and Conditions',
-                        //       style: TextStyle(
-                        //         color: Colors.white,
-                        //         fontSize: 24,
-                        //         fontWeight: FontWeight.bold,
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-                        // SizedBox(height: 10),
-                        Text(
-                          provider.businessModel?.data.first
-                                  .termsAndCondition ??
-                              'No terms and conditions available.',
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: HtmlWidget(
+            provider.businessModel?.data.first.termsAndCondition ??
+                '<p>No terms and conditions available.</p>',
+            textStyle: const TextStyle(
+              fontSize: 16,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
