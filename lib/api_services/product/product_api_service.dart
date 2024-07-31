@@ -21,9 +21,6 @@ class ProductApiService {
       if (response.statusCode == 200) {
         try {
           final List<dynamic> data = json.decode(response.body);
-          if (data == null) {
-            throw Exception('Response body is null');
-          }
           return data.map((json) => ProductModel.fromJson(json)).toList();
         } catch (e) {
           throw Exception(
@@ -46,7 +43,7 @@ class ProductApiService {
       if (response.statusCode == 200) {
         try {
           final List<dynamic> data = json.decode(response.body);
-          if (data == null || data.isEmpty) {
+          if (data.isEmpty) {
             return null; // No product found with the given name
           }
           return ProductModel.fromJson(data[0]);

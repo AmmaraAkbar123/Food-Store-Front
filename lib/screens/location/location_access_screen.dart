@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/provider/business_provider.dart';
-import 'package:foodstorefront/screens/login%20and%20signup/login_screen.dart';
+import 'package:foodstorefront/screens/login%20and%20signup/login/login_screen.dart';
 import 'package:foodstorefront/utils/colors.dart';
 import 'package:foodstorefront/utils/images_strings.dart';
 import 'package:provider/provider.dart';

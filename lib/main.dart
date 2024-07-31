@@ -4,6 +4,7 @@ import 'package:foodstorefront/provider/business_provider.dart';
 import 'package:foodstorefront/provider/category_provider.dart';
 import 'package:foodstorefront/provider/product_provider.dart';
 import 'package:foodstorefront/provider/radio_provider.dart';
+import 'package:foodstorefront/services/sign_in_auth.dart';
 import 'package:provider/provider.dart';
 import 'provider/store_provider.dart';
 
@@ -14,6 +15,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => BusinessProvider()),
+        ChangeNotifierProvider(create: (_) => SignInViewProvider()),
         ChangeNotifierProvider(
           create: (_) => CategoryProvider(),
         ),

@@ -8,7 +8,8 @@ class CustomTextField extends StatelessWidget {
   final VoidCallback? onSuffixIconPressed;
   final double? width;
   final double? height;
-  final IconData? prefixIcon; // New property for the prefix icon
+  final IconData? prefixIcon; // Property for the prefix icon
+  final FocusNode focusNode; // FocusNode property
 
   const CustomTextField({
     super.key,
@@ -18,7 +19,10 @@ class CustomTextField extends StatelessWidget {
     this.onSuffixIconPressed,
     this.width,
     this.height,
-    this.prefixIcon, // Initialize the new property
+    this.prefixIcon,
+    required this.focusNode,
+    required TextEditingController
+        controller, // Initialize the FocusNode property
   });
 
   @override
@@ -28,17 +32,18 @@ class CustomTextField extends StatelessWidget {
       height: height ?? 46,
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(
-          Radius.circular(10),
+          Radius.circular(12),
         ),
         border: Border.all(width: 1.5, color: MyColors.grey),
       ),
       child: TextField(
+        focusNode: focusNode, // Apply the FocusNode
         obscureText: obscureText,
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-          filled: true,
-          fillColor: Colors.transparent,
+          //  filled: true,
+          //  fillColor: MyColors.lightGrey,
           border: InputBorder.none,
           prefixIcon: prefixIcon != null
               ? Icon(prefixIcon, color: MyColors.grey)
@@ -47,13 +52,13 @@ class CustomTextField extends StatelessWidget {
               ? IconButton(
                   icon: Icon(
                     obscureText ? Icons.visibility_off : Icons.visibility,
-                    color: Colors.white,
+                    color: Colors.grey, // Use grey color for the suffix icon
                   ),
                   onPressed: onSuffixIconPressed,
                 )
               : null,
         ),
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(color: MyColors.black),
       ),
     );
   }

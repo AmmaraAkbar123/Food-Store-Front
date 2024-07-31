@@ -16,8 +16,8 @@ class BusinessProvider with ChangeNotifier {
 
   Future<void> fetchBusinessData() async {
     try {
-      final response =
-          await http.get(Uri.parse("${ApiService.proBusinessUrl}/grocery"));
+      final response = await http
+          .get(Uri.parse("${ApiService.proBusinessUrl}/business/grocery"));
 
       // print('Response status: ${response.statusCode}');
       // print('Response body: ${response.body}');
