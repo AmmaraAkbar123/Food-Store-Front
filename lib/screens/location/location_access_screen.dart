@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/provider/business_provider.dart';
-import 'package:foodstorefront/screens/store/store_screen.dart';
+import 'package:foodstorefront/screens/login%20and%20signup/login_screen.dart';
 import 'package:foodstorefront/utils/colors.dart';
 import 'package:foodstorefront/utils/images_strings.dart';
 import 'package:provider/provider.dart';
@@ -137,7 +137,7 @@ class LocationAccessScreenState extends State<LocationAccessScreen> {
             child: GestureDetector(
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const StoreScreen()),
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
               ),
               child: Container(
                 width: double.infinity,
