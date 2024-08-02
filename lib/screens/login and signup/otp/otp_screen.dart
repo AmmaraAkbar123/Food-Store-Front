@@ -2,13 +2,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/services/sign_in_auth.dart';
 import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom_button.dart';
-
 import 'package:provider/provider.dart';
 
 class OTPScreen extends StatefulWidget {
-  final VoidCallback onBack;
+  // final VoidCallback onBack;
+  final String phoneNumber;
 
-  const OTPScreen({required this.onBack, Key? key}) : super(key: key);
+  const OTPScreen({required this.phoneNumber, Key? key}) : super(key: key);
 
   @override
   _OTPScreenState createState() => _OTPScreenState();
@@ -17,7 +17,7 @@ class OTPScreen extends StatefulWidget {
 class _OTPScreenState extends State<OTPScreen> {
   late Timer _timer;
   int _start = 60;
-  final List<TextEditingController> _controllers =
+  final List<TextEditingController> otpController =
       List.generate(4, (index) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(4, (index) => FocusNode());
 
@@ -25,7 +25,7 @@ class _OTPScreenState extends State<OTPScreen> {
   void initState() {
     super.initState();
     startTimer();
-    _controllers.forEach((controller) {
+    otpController.forEach((controller) {
       controller.addListener(_onTextChanged);
     });
   }
@@ -44,9 +44,9 @@ class _OTPScreenState extends State<OTPScreen> {
   }
 
   void _onTextChanged() {
-    for (int i = 0; i < _controllers.length; i++) {
-      if (_controllers[i].text.length == 1) {
-        if (i < _controllers.length - 1) {
+    for (int i = 0; i < otpController.length; i++) {
+      if (otpController[i].text.length == 1) {
+        if (i < otpController.length - 1) {
           FocusScope.of(context).requestFocus(_focusNodes[i + 1]);
         }
       }
@@ -55,7 +55,7 @@ class _OTPScreenState extends State<OTPScreen> {
 
   @override
   void dispose() {
-    _controllers.forEach((controller) => controller.dispose());
+    otpController.forEach((controller) => controller.dispose());
     _focusNodes.forEach((focusNode) => focusNode.dispose());
     _timer.cancel();
     super.dispose();
@@ -64,16 +64,15 @@ class _OTPScreenState extends State<OTPScreen> {
   Future<void> _verifyOTP(BuildContext context) async {
     final signInViewProvider =
         Provider.of<SignInViewProvider>(context, listen: false);
-    signInViewProvider.otpController.text =
-        _controllers.map((controller) => controller.text).join();
-    signInViewProvider.verifyOTP(context);
+    String otp = otpController.map((controller) => controller.text).join();
+    signInViewProvider.verifyOTP(context, widget.phoneNumber, otp);
   }
 
   Widget _buildOtpBox(int index) {
     return SizedBox(
       width: 60,
       child: TextField(
-        controller: _controllers[index],
+        controller: otpController[index],
         focusNode: _focusNodes[index],
         maxLength: 1,
         keyboardType: TextInputType.number,
@@ -86,7 +85,7 @@ class _OTPScreenState extends State<OTPScreen> {
           ),
         ),
         onChanged: (value) {
-          if (value.length == 1 && index < _controllers.length - 1) {
+          if (value.length == 1 && index < otpController.length - 1) {
             FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
           }
           if (value.isEmpty && index > 0) {
@@ -102,7 +101,7 @@ class _OTPScreenState extends State<OTPScreen> {
     return WillPopScope(
       onWillPop: () async {
         FocusScope.of(context).unfocus(); // Hide the keyboard
-        widget.onBack(); // Call the callback to go back
+        //  widget.onBack(); // Call the callback to go back
         return false; // Prevent default back navigation behavior
       },
       child: Scaffold(
@@ -117,7 +116,7 @@ class _OTPScreenState extends State<OTPScreen> {
                     GestureDetector(
                       onTap: () {
                         FocusScope.of(context).unfocus(); // Hide the keyboard
-                        widget.onBack();
+                        // widget.onBack();
                       },
                       child: Container(
                         padding: EdgeInsets.all(7),

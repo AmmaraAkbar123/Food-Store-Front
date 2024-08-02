@@ -10,7 +10,7 @@ class CustomTextField extends StatelessWidget {
   final double? height;
   final IconData? prefixIcon; // Property for the prefix icon
   final FocusNode focusNode; // FocusNode property
-
+  final TextEditingController controller;
   const CustomTextField({
     super.key,
     required this.hintText,
@@ -21,8 +21,7 @@ class CustomTextField extends StatelessWidget {
     this.height,
     this.prefixIcon,
     required this.focusNode,
-    required TextEditingController
-        controller, // Initialize the FocusNode property
+    required this.controller, // Initialize the FocusNode property
   });
 
   @override
@@ -37,6 +36,7 @@ class CustomTextField extends StatelessWidget {
         border: Border.all(width: 1.5, color: MyColors.grey),
       ),
       child: TextField(
+        controller: controller,
         focusNode: focusNode, // Apply the FocusNode
         obscureText: obscureText,
         decoration: InputDecoration(

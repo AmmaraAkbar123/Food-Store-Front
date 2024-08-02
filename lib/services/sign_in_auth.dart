@@ -9,45 +9,67 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 class SignInViewProvider extends ChangeNotifier {
-  final TextEditingController phoneController = TextEditingController();
-  final TextEditingController otpController = TextEditingController();
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController locationController = TextEditingController();
   bool isOTPVerified = false; // Controls OTP field visibility in UI
   bool? isUserRegistered; // Tracks if user is registered
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+/////////////
 
-  Future<void> verifyPhoneNumber(BuildContext context) async {
+  Future<void> verifyPhoneNumber(
+      BuildContext context, String phoneNumber) async {
     String? token = await _secureStorage.read(key: 'token');
-    if (phoneController.text.isEmpty || phoneController.text.length < 11) {
+
+    if (phoneNumber.isEmpty || phoneNumber.length < 10) {
       _showSnackBar(context, 'Please enter a valid phone number.');
       return;
     }
 
-    var response = await http.post(
-      Uri.parse("${ApiService.baseUrlforAuth}/send-otp-consumer"),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode({
-        "mobile_no": "+92${phoneController.text.trim()}",
-      }),
-    );
-    print("  response: ${response}");
-    if (response.statusCode == 200) {
-      var responseData = jsonDecode(response.body);
-      print("  verifyPhoneNumber: ${responseData}");
-      _showSnackBar(context, responseData['message'], Colors.green);
-      isUserRegistered = responseData['data']['user'];
-      isOTPVerified = true;
-      notifyListeners();
-    } else {
-      _showServerError(context, response.body);
+    try {
+      var response = await http.post(
+        Uri.parse(
+            "https://dev.api.myignite.online/connector/api/send-otp-consumer"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          "mobile_no": "${phoneNumber}",
+        }),
+      );
+
+      print("response statusCode: ${response.statusCode}");
+      print("response headers: ${response.headers}");
+      print("response body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        // Ensure response body is JSON
+        try {
+          var responseData = jsonDecode(response.body);
+          print("responseData: ${responseData}");
+
+          _showSnackBar(context, responseData['message'], Colors.green);
+
+          isUserRegistered = responseData['data']['user'];
+          print("isUserRegistered: ${isUserRegistered}");
+          isOTPVerified = true;
+          notifyListeners();
+        } catch (e) {
+          print("JSON parsing error: $e");
+          _showSnackBar(context, 'Invalid response format.');
+        }
+      } else {
+        print("Unexpected status code: ${response.statusCode}");
+        _showSnackBar(context, 'Unexpected response from server.');
+      }
+    } catch (e) {
+      print("Error: $e");
+      if (context.mounted) {
+        _showSnackBar(context, 'An error occurred. Please try again.');
+      }
     }
   }
 
-  void verifyOTP(BuildContext context) async {
+  //////////
+  void verifyOTP(BuildContext context, String phoneNumber, String otp) async {
     String? token = await _secureStorage.read(key: 'token');
     var response = await http.post(
       Uri.parse("${ApiService.baseUrlforAuth}/login-consumer"),
@@ -56,8 +78,8 @@ class SignInViewProvider extends ChangeNotifier {
         'Authorization': 'Bearer $token',
       },
       body: jsonEncode({
-        "mobile_no": "+92" + phoneController.text.trim(),
-        "otp": otpController.text,
+        "mobile_no": "+92+${phoneNumber.trim()}",
+        "otp": otp,
       }),
     );
 
@@ -67,7 +89,6 @@ class SignInViewProvider extends ChangeNotifier {
       if (responseData['status']) {
         if (responseData['user'] != null) {
           int userId = responseData['user']['id'];
-          //  String userName = responseData['user']['name'];
           String firstName = responseData['user']['first_name'];
           String lastName = responseData['user']['last_name'];
           String token = responseData['user']['api_token'] ?? '';
@@ -88,58 +109,35 @@ class SignInViewProvider extends ChangeNotifier {
           }
         } else {
           // Handle unregistered user scenario
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => LocationAccessScreen()));
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const LocationAccessScreen()));
         }
       } else {
-        // OTP verification failed
         _showSnackBar(
-            context,
-            responseData['message'] ?? 'Invalid OTP, please try again.',
-            Colors.red);
+            context, 'OTP verification failed. Please try again.', Colors.red);
       }
     } else {
-      // Handle HTTP errors
       _showServerError(context, response.body);
     }
   }
 
-  // Show Message
   void _showSnackBar(BuildContext context, String message,
-      [Color color = Colors.red]) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const Icon(Icons.error_outline, color: Colors.white),
-            const SizedBox(width: 8), // Space between the icon and text
-            Expanded(
-              child: Text(
-                message,
-                textAlign: TextAlign.left,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16.0,
-                ),
-              ),
-            ),
-          ],
+      [Color backgroundColor = Colors.red]) {
+    if (context.mounted) {
+      // Check if context is still valid
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: backgroundColor,
         ),
-        backgroundColor: color,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        margin: const EdgeInsets.all(12),
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
-        duration: const Duration(seconds: 1),
-      ),
-    );
+      );
+    }
   }
 
-  // Show Error Message
-  void _showServerError(BuildContext context, String message) {
-    _showSnackBar(context, 'Server error: $message');
+  void _showServerError(BuildContext context, String responseBody) {
+    var responseData = jsonDecode(responseBody);
+    _showSnackBar(context, responseData['message'] ?? 'Server error.');
   }
 }

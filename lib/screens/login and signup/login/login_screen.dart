@@ -17,15 +17,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool _showOtpScreen = false;
-
+  final TextEditingController phoneController = TextEditingController();
   final FocusNode _emailFocusNode = FocusNode();
-
-  void _toggleOtpScreen() {
-    setState(() {
-      _showOtpScreen = !_showOtpScreen;
-    });
-  }
 
   @override
   void initState() {
@@ -42,9 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
         onTap: () {
           FocusScope.of(context).unfocus();
         },
-        child: _showOtpScreen
-            ? OTPScreen(onBack: _toggleOtpScreen)
-            : _buildLoginScreen(context),
+        child: _buildLoginScreen(context),
       ),
     );
   }
@@ -61,7 +52,6 @@ class _LoginScreenState extends State<LoginScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const customArrowBackButton(),
-            // Center top image
             Consumer<BusinessProvider>(
               builder: (context, businessProvider, child) {
                 if (businessProvider.errorMessage != null) {
@@ -104,15 +94,24 @@ class _LoginScreenState extends State<LoginScreen> {
               focusNode: _emailFocusNode,
               hintText: 'Enter your Phone number',
               prefixIcon: Icons.phone,
-              controller: signInViewProvider.phoneController,
+              controller: phoneController,
             ),
             const SizedBox(height: 40),
             CustomButton(
               text: 'Continue',
               onPressed: () async {
-                await signInViewProvider.verifyPhoneNumber(context);
+                await signInViewProvider.verifyPhoneNumber(
+                    context, phoneController.text);
                 if (signInViewProvider.isOTPVerified) {
-                  _toggleOtpScreen();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => OTPScreen(
+                        // onBack: () => Navigator.pop(context),
+                        phoneNumber: phoneController.text,
+                      ),
+                    ),
+                  );
                 }
               },
             ),

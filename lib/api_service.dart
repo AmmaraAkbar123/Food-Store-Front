@@ -13,6 +13,8 @@ class ApiService {
       "https://api.myignite.online/api/store-front";
   static const String proBusinessUrl =
       "https://api.myignite.online/connector/api";
+
+      // for otp login
   static const String baseUrlforAuth =
       "https://dev.api.myignite.online/connector/api/";
 }
