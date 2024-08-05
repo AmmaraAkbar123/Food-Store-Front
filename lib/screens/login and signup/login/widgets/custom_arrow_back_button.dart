@@ -10,25 +10,20 @@ class customArrowBackButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Padding(
-          padding: const EdgeInsets.only(
-            left: 12.0,
-          ),
-          child: GestureDetector(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: Container(
-              padding: EdgeInsets.all(7),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: MyColors.primary,
-              ),
-              child: Icon(
-                Icons.arrow_back_ios,
-                color: Colors.white,
-                size: 12.0,
-              ),
+        GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Container(
+            padding: const EdgeInsets.all(7),
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: MyColors.primary,
+            ),
+            child: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+              size: 12.0,
             ),
           ),
         ),

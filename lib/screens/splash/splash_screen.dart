@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/screens/location/location_access_screen.dart';
-import 'package:foodstorefront/screens/login%20and%20signup/login/login_screen.dart';
 import 'package:foodstorefront/utils/images_strings.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -28,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffFF2B85),
+      backgroundColor: const Color(0xffFF2B85),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -39,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
               height: 90,
               width: 90,
             ),
-            Text(
+            const Text(
               "FoodStoreFront",
               style: TextStyle(
                   color: Colors.white,

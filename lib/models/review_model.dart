@@ -18,14 +18,14 @@ final List<ReviewModel> reviews = [
     reviewText: 'Delicious food, loved it!',
     rating: 4,
     reviewerName: 'John Doe',
-    reviewTime: DateTime.now().subtract(Duration(days: 5)),
+    reviewTime: DateTime.now().subtract(const Duration(days: 5)),
   ),
   ReviewModel(
     reviewText:
         'Fast delivery Delicious food, loved it! ghdddddavgvcajhscbgkhafsg hdbjahwjhjahwjhbdjhbv and great taste!',
     rating: 5.0,
     reviewerName: 'Jane Smith',
-    reviewTime: DateTime.now().subtract(Duration(hours: 3)),
+    reviewTime: DateTime.now().subtract(const Duration(hours: 3)),
   ),
   // ReviewModel(
   //   reviewText: 'Delicious food, loved it!',

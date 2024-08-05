@@ -28,9 +28,10 @@ class GridCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
+                // ignore: unnecessary_null_comparison
                 child: product.image.thumbnail != null
                     ? Image.network(
-                        product.image.thumbnail!,
+                        product.image.thumbnail,
                         fit: BoxFit.cover,
                         width: double.infinity,
                         height: 160,

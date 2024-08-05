@@ -9,9 +9,9 @@ class AboutUsPage extends StatelessWidget {
     final provider = Provider.of<BusinessProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text('About Us')),
+      appBar: AppBar(title: const Text('About Us')),
       body: provider.isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : provider.errorMessage != null
               ? Center(child: Text(provider.errorMessage!))
               : Padding(
@@ -20,7 +20,7 @@ class AboutUsPage extends StatelessWidget {
                     child: HtmlWidget(
                       provider.businessModel?.data.first.aboutUs ??
                           '<p>No information available.</p>',
-                      textStyle: TextStyle(fontSize: 16),
+                      textStyle: const TextStyle(fontSize: 16),
                     ),
                   ),
                 ),

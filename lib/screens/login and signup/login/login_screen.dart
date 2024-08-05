@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/models/business_model.dart';
+import 'package:foodstorefront/utils/colors.dart';
+import 'package:provider/provider.dart';
 import 'package:foodstorefront/provider/business_provider.dart';
 import 'package:foodstorefront/services/sign_in_auth.dart';
 import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom_arrow_back_button.dart';
 import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom_button.dart';
 import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom_social_button.dart';
 import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom_textfield.dart';
-import 'package:foodstorefront/screens/login%20and%20signup/otp/otp_screen.dart';
-import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -41,12 +41,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildLoginScreen(BuildContext context) {
-    final signInViewProvider =
-        Provider.of<SignInViewProvider>(context, listen: false);
+    Provider.of<SignInProvider>(context);
 
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 50),
+        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 50),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -95,22 +94,33 @@ class _LoginScreenState extends State<LoginScreen> {
               hintText: 'Enter your Phone number',
               prefixIcon: Icons.phone,
               controller: phoneController,
+              border: OutlineInputBorder(
+                borderSide: BorderSide(
+                    color: MyColors.greyText,
+                    width: 1.0), // Border color when focused
+                borderRadius:
+                    BorderRadius.circular(10.0), // Consistent border radius
+              ),
             ),
             const SizedBox(height: 40),
             CustomButton(
               text: 'Continue',
-              onPressed: () async {
-                await signInViewProvider.verifyPhoneNumber(
-                    context, phoneController.text);
-                if (signInViewProvider.isOTPVerified) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => OTPScreen(
-                        // onBack: () => Navigator.pop(context),
-                        phoneNumber: phoneController.text,
-                      ),
-                    ),
+              onPressed: () {
+                // Ensure the phone number is not empty
+                final phoneNumber = phoneController.text.trim();
+                print('Phone number entered: $phoneNumber');
+
+                if (phoneNumber.isNotEmpty) {
+                  // Ensure signInProvider is properly instantiated
+                  final signInProvider =
+                      Provider.of<SignInProvider>(context, listen: false);
+                  print('Sending OTP...');
+                  signInProvider.sendOtp(phoneNumber, context);
+                } else {
+                  // Optionally show an error message if phone number is empty
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Please enter a phone number')),
                   );
                 }
               },

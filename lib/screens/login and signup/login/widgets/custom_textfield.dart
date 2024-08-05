@@ -2,26 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:foodstorefront/utils/colors.dart';
 
 class CustomTextField extends StatelessWidget {
-  final String hintText;
+  final String? hintText;
   final bool obscureText;
   final bool isPasswordField;
   final VoidCallback? onSuffixIconPressed;
   final double? width;
   final double? height;
   final IconData? prefixIcon; // Property for the prefix icon
-  final FocusNode focusNode; // FocusNode property
+  final FocusNode? focusNode; // FocusNode property
   final TextEditingController controller;
+final OutlineInputBorder border;
   const CustomTextField({
     super.key,
-    required this.hintText,
+    this.hintText,
     this.obscureText = false,
     this.isPasswordField = false,
     this.onSuffixIconPressed,
     this.width,
     this.height,
     this.prefixIcon,
-    required this.focusNode,
-    required this.controller, // Initialize the FocusNode property
+    this.focusNode,
+    required this.controller, required this.border,  // Initialize the FocusNode property
   });
 
   @override
@@ -30,21 +31,21 @@ class CustomTextField extends StatelessWidget {
       width: width ?? double.infinity,
       height: height ?? 46,
       decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(
-          Radius.circular(12),
+        borderRadius: BorderRadius.all(
+          Radius.circular(10),
         ),
-        border: Border.all(width: 1.5, color: MyColors.grey),
       ),
       child: TextField(
         controller: controller,
         focusNode: focusNode, // Apply the FocusNode
         obscureText: obscureText,
+        
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-          //  filled: true,
-          //  fillColor: MyColors.lightGrey,
-          border: InputBorder.none,
+          hintStyle: TextStyle(fontSize: 14, color: MyColors.grey),
+          filled: true,
+          fillColor: MyColors.lightGrey, // Grey fill color
+          border: border, // No border initially
           prefixIcon: prefixIcon != null
               ? Icon(prefixIcon, color: MyColors.grey)
               : null, // Conditionally add the prefix icon
@@ -57,8 +58,14 @@ class CustomTextField extends StatelessWidget {
                   onPressed: onSuffixIconPressed,
                 )
               : null,
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide.none, // No border when not focused
+            borderRadius:
+                BorderRadius.circular(10.0), // Consistent border radius
+          ),
+          focusedBorder: border
         ),
-        style: const TextStyle(color: MyColors.black),
+        style: TextStyle(color: MyColors.black),
       ),
     );
   }

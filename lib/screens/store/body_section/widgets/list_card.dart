@@ -4,9 +4,9 @@ import 'package:foodstorefront/utils/colors.dart';
 
 class ListCard extends StatelessWidget {
   const ListCard({
-    Key? key,
+    super.key,
     required this.product,
-  }) : super(key: key);
+  });
 
   final ProductModel product;
 
@@ -54,16 +54,16 @@ class ListCard extends StatelessWidget {
                       fontWeight: FontWeight.w500),
                   maxLines: 2,
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 6),
+                const Padding(
+                  padding: EdgeInsets.only(top: 6),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.whatshot,
                         color: MyColors.red,
                         size: 12,
                       ),
-                      const SizedBox(width: 4),
+                      SizedBox(width: 4),
                       Text(
                         'Popular',
                         style:

@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/services/sign_in_auth.dart';
-import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom_button.dart';
+import 'package:foodstorefront/utils/colors.dart';
 import 'package:provider/provider.dart';
 
 class OTPScreen extends StatefulWidget {
-  // final VoidCallback onBack;
   final String phoneNumber;
 
   const OTPScreen({required this.phoneNumber, Key? key}) : super(key: key);
@@ -15,94 +14,123 @@ class OTPScreen extends StatefulWidget {
 }
 
 class _OTPScreenState extends State<OTPScreen> {
-  late Timer _timer;
-  int _start = 60;
-  final List<TextEditingController> otpController =
+  final List<TextEditingController> otpControllers =
       List.generate(4, (index) => TextEditingController());
-  final List<FocusNode> _focusNodes = List.generate(4, (index) => FocusNode());
+  final List<FocusNode> focusNodes = List.generate(4, (index) => FocusNode());
 
   @override
   void initState() {
     super.initState();
-    startTimer();
-    otpController.forEach((controller) {
-      controller.addListener(_onTextChanged);
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      Provider.of<SignInProvider>(context, listen: false).startTimer();
     });
-  }
-
-  void startTimer() {
-    _start = 60;
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        if (_start > 0) {
-          _start--;
-        } else {
-          timer.cancel();
-        }
-      });
-    });
-  }
-
-  void _onTextChanged() {
-    for (int i = 0; i < otpController.length; i++) {
-      if (otpController[i].text.length == 1) {
-        if (i < otpController.length - 1) {
-          FocusScope.of(context).requestFocus(_focusNodes[i + 1]);
-        }
-      }
-    }
   }
 
   @override
   void dispose() {
-    otpController.forEach((controller) => controller.dispose());
-    _focusNodes.forEach((focusNode) => focusNode.dispose());
-    _timer.cancel();
+    for (final controller in otpControllers) {
+      controller.dispose();
+    }
+    for (final focusNode in focusNodes) {
+      focusNode.dispose();
+    }
     super.dispose();
   }
 
-  Future<void> _verifyOTP(BuildContext context) async {
-    final signInViewProvider =
-        Provider.of<SignInViewProvider>(context, listen: false);
-    String otp = otpController.map((controller) => controller.text).join();
-    signInViewProvider.verifyOTP(context, widget.phoneNumber, otp);
+  String _getOtp() {
+    return otpControllers.map((controller) => controller.text).join();
+  }
+
+  Future<void> _verifyOtp() async {
+    final otp = _getOtp();
+    if (otp.length < 4) {
+      showCustomSnackbar(context, "Please enter the full OTP");
+      return;
+    }
+
+    final signInProvider = Provider.of<SignInProvider>(context, listen: false);
+
+    try {
+      await signInProvider.verifyOtp(widget.phoneNumber, otp, context);
+    } catch (e) {
+      showCustomSnackbar(context, 'Verification failed. Please try again.');
+    }
   }
 
   Widget _buildOtpBox(int index) {
     return SizedBox(
-      width: 60,
+      //  height: 150,
+      width: 76,
       child: TextField(
-        controller: otpController[index],
-        focusNode: _focusNodes[index],
+        controller: otpControllers[index],
+        focusNode: focusNodes[index],
         maxLength: 1,
         keyboardType: TextInputType.number,
         textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 20, // Increase the text size
+        ),
         decoration: InputDecoration(
           counterText: '',
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-            borderSide: BorderSide(color: Colors.grey.shade300),
+            borderSide: BorderSide.none,
           ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+                color: MyColors.lightGrey,
+                width: 3.0), // Border color when enabled
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+                color: Colors.black, width: 2.0), // Border color when focused
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 35.0,
+          ), // Add vertical padding for height
         ),
-        onChanged: (value) {
-          if (value.length == 1 && index < otpController.length - 1) {
-            FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
+        onChanged: (value) async {
+          if (value.isNotEmpty && index < otpControllers.length - 1) {
+            FocusScope.of(context).requestFocus(focusNodes[index + 1]);
+          } else if (value.isEmpty && index > 0) {
+            FocusScope.of(context).requestFocus(focusNodes[index - 1]);
           }
-          if (value.isEmpty && index > 0) {
-            FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
+
+          if (_getOtp().length == otpControllers.length) {
+            await _verifyOtp();
           }
         },
       ),
     );
   }
 
+  void showCustomSnackbar(BuildContext context, String message,
+      {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: TextStyle(fontWeight: FontWeight.w700, color: Colors.white),
+        ),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        margin: EdgeInsets.all(10),
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final signInProvider = Provider.of<SignInProvider>(context);
     return WillPopScope(
       onWillPop: () async {
-        FocusScope.of(context).unfocus(); // Hide the keyboard
-        //  widget.onBack(); // Call the callback to go back
-        return false; // Prevent default back navigation behavior
+        FocusScope.of(context).unfocus();
+        return false;
       },
       child: Scaffold(
         body: SingleChildScrollView(
@@ -111,67 +139,78 @@ class _OTPScreenState extends State<OTPScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                GestureDetector(
+                  onTap: () {
+                    FocusScope.of(context).unfocus();
+                    Navigator.of(context).pop();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(7),
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: MyColors.primary,
+                    ),
+                    child: const Icon(
+                      Icons.arrow_back_ios,
+                      color: Colors.white,
+                      size: 12.0,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 50),
+                Column(
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        FocusScope.of(context).unfocus(); // Hide the keyboard
-                        // widget.onBack();
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(7),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.blue, // Customize the color
-                        ),
-                        child: Icon(
-                          Icons.arrow_back_ios,
-                          color: Colors.white, // Customize icon color
-                          size: 12.0, // Customize icon size
-                        ),
+                    const Text(
+                      'Enter The \nCode',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 10),
                 const Text(
-                  'Enter the \nCode',
-                  style: TextStyle(
-                    fontSize: 30,
+                  'OTP has been sent to your mobile number',
+                  style: TextStyle(fontSize: 15),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  widget.phoneNumber,
+                  style: const TextStyle(
+                    color: MyColors.greyText,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 10),
-                const Text(
-                  'We have sent a verification code to your phone. Please enter it below.',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 28),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: List.generate(4, (index) => _buildOtpBox(index)),
+                  children: List.generate(4, _buildOtpBox),
                 ),
-                const SizedBox(height: 35),
+                const SizedBox(height: 30),
                 Center(
-                  child: Text(
-                    _start > 0
-                        ? 'Resend code in $_start seconds'
-                        : 'Resend Code',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.blue,
+                  child: GestureDetector(
+                    onTap: signInProvider.start == 0
+                        ? () {
+                            FocusScope.of(context).unfocus();
+                            signInProvider.resetTimer();
+                          }
+                        : null,
+                    child: Text(
+                      signInProvider.start == 0
+                          ? 'Resend code'
+                          : 'Resend code in ${signInProvider.start} s',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: signInProvider.start == 0
+                            ? MyColors.grey2
+                            : MyColors.black87,
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 35),
-                CustomButton(
-                  text: 'Verify OTP',
-                  onPressed: () => _verifyOTP(context),
-                ),
+                const SizedBox(height: 40),
               ],
             ),
           ),

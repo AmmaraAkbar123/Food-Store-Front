@@ -18,7 +18,7 @@ class MyColors {
   MyColors._();
 
 // App theme colors
-  static const Color primary = Color(0xffD3236E);
+  static const Color primary = Colors.black;
   static const Color lightPink = Color.fromARGB(255, 247, 231, 238);
 
   static const Color lightPrimary = Color(0xffFDF2F8);
