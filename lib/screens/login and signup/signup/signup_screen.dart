@@ -3,8 +3,9 @@ import 'package:foodstorefront/services/sign_in_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom_arrow_back_button.dart';
 import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom_button.dart';
-import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom_textfield.dart';
 import 'package:foodstorefront/utils/colors.dart';
+
+import 'widgets/textfield_for_signup.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -24,9 +25,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   FocusNode emailFocusNode = FocusNode();
   FocusNode phoneNumberFocusNode = FocusNode();
 
-  bool showAdditionalFields = false;
-  bool isFocused = false;
-  bool isPhoneNumberFocused = false;
   bool allFieldsFilled = false;
 
   @override
@@ -44,16 +42,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void handleFocusChange() {
-    setState(() {
-      isFocused = firstNameFocusNode.hasFocus ||
-          lastNameFocusNode.hasFocus ||
-          emailFocusNode.hasFocus ||
-          phoneNumberFocusNode.hasFocus;
-      isPhoneNumberFocused = phoneNumberFocusNode.hasFocus;
-      if (firstNameFocusNode.hasFocus) {
-        showAdditionalFields = true;
-      }
-    });
+    setState(() {});
   }
 
   void handleTextChange() {
@@ -81,12 +70,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     OutlineInputBorder focusedBorder = OutlineInputBorder(
-      borderSide: BorderSide(color: Colors.black),
+      borderSide: BorderSide(color: MyColors.GreyWithDarkOpacity),
       borderRadius: BorderRadius.circular(10),
     );
 
     OutlineInputBorder defaultBorder = OutlineInputBorder(
-      borderSide: BorderSide(color: Colors.grey),
+      borderSide: BorderSide(color: Colors.transparent),
       borderRadius: BorderRadius.circular(10),
     );
 
@@ -95,63 +84,88 @@ class _SignUpScreenState extends State<SignUpScreen> {
         onTap: () {
           FocusScope.of(context).unfocus();
         },
-        child: Stack(
+        child: Column(
           children: [
-            SingleChildScrollView(
-              padding: const EdgeInsets.only(top: 50, left: 15, right: 15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const customArrowBackButton(),
-                  const SizedBox(height: 40),
-                  const Text(
-                    "Tell us about \nyourself",
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      height: 1,
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.only(
+                  top: 50,
+                  left: 18,
+                  right: 18,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const customArrowBackButton(),
+                    const SizedBox(height: 50),
+                    const Text(
+                      "Tell us about \nyourself",
+                      style: TextStyle(
+                        fontSize: 35,
+                        fontWeight: FontWeight.bold,
+                        height: 1,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 15),
-                  const Text(
-                    "We need some basic info to proceed",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      height: 1,
+                    const SizedBox(height: 15),
+                    const Text(
+                      "We need some basic info to proceed",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        height: 1,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 25),
-                  CustomTextField(
-                    controller: firstNameController,
-                    focusNode: firstNameFocusNode,
-                    prefixIcon: Icons.person,
-                    hintText: "Your First Name",
-                    border: isFocused ? focusedBorder : defaultBorder,
-                  ),
-                  const SizedBox(height: 20),
-                  CustomTextField(
-                    controller: lastNameController,
-                    focusNode: lastNameFocusNode,
-                    prefixIcon: Icons.person,
-                    hintText: "Your Last Name",
-                    border: isFocused ? focusedBorder : defaultBorder,
-                  ),
-                  if (showAdditionalFields) ...[
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 40),
+                    SignUpTextfield(
+                      maxLength: 12,
+                      controller: firstNameController,
+                      focusNode: firstNameFocusNode,
+                      prefixIcon: Icons.person,
+                      hintText: "Your First Name",
+                      border: (firstNameController.text.isNotEmpty ||
+                              firstNameFocusNode.hasFocus)
+                          ? focusedBorder
+                          : defaultBorder,
+                      fillColor: firstNameController.text.isEmpty
+                          ? MyColors.GreyWithOp
+                          : Colors.transparent,
+                      iconColor: firstNameController.text.isEmpty
+                          ? Colors.grey
+                          : Colors.black,
+                    ),
+                    const SizedBox(height: 18),
+                    SignUpTextfield(
+                      maxLength: 12,
+                      controller: lastNameController,
+                      focusNode: lastNameFocusNode,
+                      prefixIcon: Icons.person,
+                      hintText: "Your Last Name",
+                      border: (lastNameController.text.isNotEmpty ||
+                              lastNameFocusNode.hasFocus)
+                          ? focusedBorder
+                          : defaultBorder,
+                      fillColor: lastNameController.text.isEmpty
+                          ? MyColors.GreyWithOp
+                          : Colors.transparent,
+                      iconColor: lastNameController.text.isEmpty
+                          ? Colors.grey
+                          : Colors.black,
+                    ),
+                    const SizedBox(height: 18),
                     Row(
                       children: [
                         Container(
                           padding: EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: MyColors.lightGrey,
-                            borderRadius: BorderRadius.circular(10),
-                            border: isPhoneNumberFocused
-                                ? Border.all(color: Colors.black)
-                                : null,
+                            color: MyColors.GreyWithOp,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: (phoneNumberController.text.isNotEmpty ||
+                                      phoneNumberFocusNode.hasFocus)
+                                  ? MyColors.GreyWithDarkOpacity
+                                  : Colors.transparent,
+                            ),
                           ),
-                          height: 46,
-                          width: 65,
                           child: Center(
                             child: Row(
                               children: [
@@ -165,7 +179,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 Icon(
                                   Icons.arrow_drop_down_circle_rounded,
                                   size: 14,
-                                )
+                                ),
                               ],
                             ),
                           ),
@@ -174,47 +188,55 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           width: 7,
                         ),
                         Expanded(
-                          child: CustomTextField(
+                          child: SignUpTextfield(
+                            maxLength: 10,
+                            keyboardType: TextInputType.number,
                             controller: phoneNumberController,
                             focusNode: phoneNumberFocusNode,
                             prefixIcon: Icons.phone,
                             hintText: "Your Phone Number",
-                            border: isPhoneNumberFocused
+                            border: (phoneNumberController.text.isNotEmpty ||
+                                    phoneNumberFocusNode.hasFocus)
                                 ? focusedBorder
                                 : defaultBorder,
+                            iconColor: phoneNumberController.text.isEmpty
+                                ? Colors.grey
+                                : Colors.black,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
-                    CustomTextField(
+                    const SizedBox(height: 18),
+                    SignUpTextfield(
                       controller: emailController,
                       focusNode: emailFocusNode,
                       prefixIcon: Icons.email,
                       hintText: "Your Email Address",
-                      border: isFocused ? focusedBorder : defaultBorder,
+                      border: (emailController.text.isNotEmpty ||
+                              emailFocusNode.hasFocus)
+                          ? focusedBorder
+                          : defaultBorder,
+                      fillColor: emailController.text.isEmpty
+                          ? MyColors.GreyWithOp
+                          : Colors.transparent,
+                      iconColor: emailController.text.isEmpty
+                          ? Colors.grey
+                          : Colors.black,
                     ),
                   ],
-                  showAdditionalFields
-                      ? SizedBox(
-                          height: MediaQuery.of(context).size.height / 4.5,
-                        )
-                      : SizedBox(
-                          height: MediaQuery.of(context).size.height / 2.5,
-                        ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: CustomButton(
-                      onPressed: allFieldsFilled
-                          ? () => _proceedToNext(context)
-                          : () {},
-                      text: "Proceed to next",
-                      color: allFieldsFilled
-                          ? MyColors.primary
-                          : MyColors.lightGrey,
-                    ),
-                  ),
-                ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(18.0),
+              child: CustomButton(
+                onPressed:
+                    allFieldsFilled ? () => _proceedToNext(context) : () {},
+                text: "Proceed to next",
+                color: allFieldsFilled ? MyColors.primary : MyColors.GreyWithOp,
+                clrtext: allFieldsFilled
+                    ? MyColors.white
+                    : MyColors.GreyWithDarkOpacity,
               ),
             ),
           ],
@@ -229,7 +251,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       firstNameController.text,
       lastNameController.text,
       emailController.text,
-      "customer", // replace with actual user type if applicable
+      "customer",
       phoneNumberController.text,
       context,
     );

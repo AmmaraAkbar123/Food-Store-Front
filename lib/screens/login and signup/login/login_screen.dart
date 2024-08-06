@@ -41,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildLoginScreen(BuildContext context) {
-    Provider.of<SignInProvider>(context);
+    final signInProvider = Provider.of<SignInProvider>(context);
 
     return SingleChildScrollView(
       child: Padding(
@@ -82,30 +82,33 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 5),
             const Text(
-              'Unlock Your App!',
+              'Unlock Your OneApp experience',
               style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 40),
             CustomTextField(
+              keyboardType: TextInputType.number,
               focusNode: _emailFocusNode,
               hintText: 'Enter your Phone number',
               prefixIcon: Icons.phone,
               controller: phoneController,
               border: OutlineInputBorder(
                 borderSide: BorderSide(
-                    color: MyColors.greyText,
+                    color: MyColors.GreyWithDarkOpacity,
                     width: 1.0), // Border color when focused
                 borderRadius:
                     BorderRadius.circular(10.0), // Consistent border radius
               ),
+              maxLength: 10,
             ),
             const SizedBox(height: 40),
             CustomButton(
               text: 'Continue',
               onPressed: () {
+              
                 // Ensure the phone number is not empty
                 final phoneNumber = phoneController.text.trim();
                 print('Phone number entered: $phoneNumber');
@@ -124,22 +127,23 @@ class _LoginScreenState extends State<LoginScreen> {
                   );
                 }
               },
+              clrtext: MyColors.white,
             ),
             const SizedBox(height: 40),
             const Text(
               'Or',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 40),
             CustomSocialButton(
               text: "Continue with Google",
-              imagePath: "assets/icons/google-icon.png",
+              imagePath: "assets/icons/icons8-google-24.png",
               onPressed: () {},
             ),
             const SizedBox(height: 20),
             CustomSocialButton(
               text: "Continue with Facebook",
-              imagePath: "assets/icons/fb-icon.png",
+              imagePath: "assets/icons/icons8-facebook-24.png",
               onPressed: () {},
             ),
             const SizedBox(height: 20),

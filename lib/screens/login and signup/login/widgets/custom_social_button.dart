@@ -19,23 +19,30 @@ class CustomSocialButton extends StatelessWidget {
       width: double.infinity,
       height: 50,
       decoration: BoxDecoration(
-        // color: Colors.white.withOpacity(0.53),
         borderRadius: const BorderRadius.all(
           Radius.circular(10),
         ),
-        border: Border.all(width: 1, color: MyColors.lightGrey),
+        border: Border.all(width: 1, color: MyColors.GreyWithOp),
       ),
       child: InkWell(
         onTap: onPressed,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(imagePath, width: 24, height: 24),
+            ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                Colors.black,
+                BlendMode.srcIn,
+              ),
+              child: Image.asset(imagePath, width: 24, height: 24),
+            ),
             const SizedBox(width: 10),
             Text(
               text,
               style: const TextStyle(
-                  color: Colors.black, fontWeight: FontWeight.w600),
+                color: Colors.black,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ],
         ),

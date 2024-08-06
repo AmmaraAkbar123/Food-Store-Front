@@ -190,7 +190,7 @@ class StoreScreenState extends State<StoreScreen>
               ),
             ],
           ),
-          drawer: const MyDrawer(),
+          drawer: MyDrawer(),
           extendBodyBehindAppBar: true,
           body: RectGetter(
             key: listViewKey,

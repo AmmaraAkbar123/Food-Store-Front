@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:foodstorefront/utils/colors.dart';
 
 class CustomButton extends StatelessWidget {
   final double? width;
@@ -7,6 +6,7 @@ class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String text;
   final Color color;
+  final Color clrtext;
 
   const CustomButton({
     super.key,
@@ -14,29 +14,31 @@ class CustomButton extends StatelessWidget {
     this.height,
     required this.onPressed,
     required this.text,
-    this.color = MyColors.primary,
+    this.color = const Color.fromRGBO(0, 0, 0, 1),
+    required this.clrtext,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: width ?? double.infinity, // Default width is 328 if not provided
-      height: height ?? 50, // Default height is 56 if not provided
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(10),
+      width: width ?? double.infinity,
+      height: height ?? 50,
+      child: GestureDetector(
+        onTap: onPressed,
+        child: Container(
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            text,
+            style: TextStyle(
+              color: clrtext,
+              fontWeight: FontWeight.w500,
+              fontSize: 16,
             ),
           ),
-          //side: const BorderSide(color: Colors.white),
-        ),
-        onPressed: onPressed,
-        child: Text(
-          text,
-          style: const TextStyle(
-              color: MyColors.grey, fontWeight: FontWeight.w700, fontSize: 15),
         ),
       ),
     );

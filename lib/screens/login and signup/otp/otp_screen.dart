@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:foodstorefront/services/share_pref_service.dart';
 import 'package:foodstorefront/services/sign_in_auth.dart';
 import 'package:foodstorefront/utils/colors.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +22,8 @@ class _OTPScreenState extends State<OTPScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusScope.of(context).unfocus();
       Provider.of<SignInProvider>(context, listen: false).startTimer();
     });
   }
@@ -35,6 +37,10 @@ class _OTPScreenState extends State<OTPScreen> {
       focusNode.dispose();
     }
     super.dispose();
+  }
+
+  void clearPhoneNumberController() {
+    ;
   }
 
   String _getOtp() {
@@ -51,24 +57,24 @@ class _OTPScreenState extends State<OTPScreen> {
     final signInProvider = Provider.of<SignInProvider>(context, listen: false);
 
     try {
-      await signInProvider.verifyOtp(widget.phoneNumber, otp, context);
+      await signInProvider.verifyOtp(widget.phoneNumber, otp, context,);
     } catch (e) {
       showCustomSnackbar(context, 'Verification failed. Please try again.');
     }
   }
 
-  Widget _buildOtpBox(int index) {
+  Widget _buildOtpBox(int index, double boxWidth) {
     return SizedBox(
-      //  height: 150,
-      width: 76,
+      width: boxWidth,
       child: TextField(
+        cursorColor: MyColors.black,
         controller: otpControllers[index],
         focusNode: focusNodes[index],
         maxLength: 1,
         keyboardType: TextInputType.number,
         textAlign: TextAlign.center,
         style: TextStyle(
-          fontSize: 20, // Increase the text size
+          fontSize: 40, // Increase the text size
         ),
         decoration: InputDecoration(
           counterText: '',
@@ -77,20 +83,27 @@ class _OTPScreenState extends State<OTPScreen> {
           ),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
-                color: MyColors.lightGrey,
-                width: 3.0), // Border color when enabled
-            borderRadius: BorderRadius.circular(10.0),
+              color: otpControllers[index].text.isNotEmpty
+                  ? MyColors.black // Border color when text is entered
+                  : MyColors.lightGrey, // Border color when empty
+              width: 1.5,
+            ),
+            borderRadius: BorderRadius.circular(8.0),
           ),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
-                color: Colors.black, width: 2.0), // Border color when focused
+              color: MyColors.black,
+              width: 1.5, // Border color when focused
+            ),
             borderRadius: BorderRadius.circular(10.0),
           ),
           contentPadding: EdgeInsets.symmetric(
-            vertical: 35.0,
+            vertical: 25.0,
           ), // Add vertical padding for height
         ),
         onChanged: (value) async {
+          setState(() {}); // Update the UI as text changes
+
           if (value.isNotEmpty && index < otpControllers.length - 1) {
             FocusScope.of(context).requestFocus(focusNodes[index + 1]);
           } else if (value.isEmpty && index > 0) {
@@ -133,85 +146,107 @@ class _OTPScreenState extends State<OTPScreen> {
         return false;
       },
       child: Scaffold(
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 50),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    FocusScope.of(context).unfocus();
-                    Navigator.of(context).pop();
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(7),
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: MyColors.primary,
-                    ),
-                    child: const Icon(
-                      Icons.arrow_back_ios,
-                      color: Colors.white,
-                      size: 12.0,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 50),
-                Column(
-                  children: [
-                    const Text(
-                      'Enter The \nCode',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 30,
+        body: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: SingleChildScrollView(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 18.0, vertical: 50),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      FocusScope.of(context).unfocus();
+                      Navigator.of(context).pop();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(7),
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: MyColors.primary,
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  'OTP has been sent to your mobile number',
-                  style: TextStyle(fontSize: 15),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  widget.phoneNumber,
-                  style: const TextStyle(
-                    color: MyColors.greyText,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 28),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: List.generate(4, _buildOtpBox),
-                ),
-                const SizedBox(height: 30),
-                Center(
-                  child: GestureDetector(
-                    onTap: signInProvider.start == 0
-                        ? () {
-                            FocusScope.of(context).unfocus();
-                            signInProvider.resetTimer();
-                          }
-                        : null,
-                    child: Text(
-                      signInProvider.start == 0
-                          ? 'Resend code'
-                          : 'Resend code in ${signInProvider.start} s',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: signInProvider.start == 0
-                            ? MyColors.grey2
-                            : MyColors.black87,
+                      child: const Icon(
+                        Icons.arrow_back_ios,
+                        color: Colors.white,
+                        size: 12.0,
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 40),
-              ],
+                  const SizedBox(height: 50),
+                  Column(
+                    children: [
+                      const Text(
+                        'Enter The \nCode',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 35,
+                            height: 1),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "We've sent a verification code to your email \nabc@abc.com. Please enter it below",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(height: 35),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      // Calculate the width for each OTP box
+                      double boxWidth = (constraints.maxWidth - 30) /
+                          4; // Adjust 30 as per your margin
+
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: List.generate(
+                            4, (index) => _buildOtpBox(index, boxWidth)),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 35),
+                  Center(
+                    child: GestureDetector(
+                      onTap: signInProvider.start == 0
+                          ? () {
+                              FocusScope.of(context).unfocus();
+                              signInProvider.resetTimer();
+                            }
+                          : null,
+                      child: Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: signInProvider.start == 0
+                                  ? 'Resend code'
+                                  : 'Resend code in ',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: signInProvider.start == 0
+                                    ? MyColors.GreyWithDarkOpacity
+                                    : MyColors.black87,
+                              ),
+                            ),
+                            if (signInProvider.start != 0)
+                              TextSpan(
+                                text: '${signInProvider.start} s',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: MyColors.black87,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                ],
+              ),
             ),
           ),
         ),

@@ -3,17 +3,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/screens/login%20and%20signup/otp/otp_screen.dart';
 import 'package:foodstorefront/screens/store/store_screen.dart';
+import 'package:foodstorefront/services/share_pref_service.dart';
+import 'package:foodstorefront/utils/colors.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 import '../screens/login and signup/signup/signup_screen.dart';
-import 'authentication_service.dart'; // Import the AuthenticationService
+import 'authentication_service.dart';
 
 class SignInProvider extends ChangeNotifier {
-  final SharedPreferences _sharedPreferences;
-
-  SignInProvider(this._sharedPreferences);
-
-  // API URLs
   final String _otpUrl =
       'https://api.myignite.online/connector/api/send-otp-consumer';
   final String _loginUrl =
@@ -33,16 +30,20 @@ class SignInProvider extends ChangeNotifier {
     notifyListeners();
     print('Sending OTP for phone number: $phoneNumber');
 
+    // Ensure phone number starts with +92
+    if (!phoneNumber.startsWith('+92')) {
+      phoneNumber = '+92$phoneNumber';
+    }
+
     try {
-      final token = await AuthenticationService.getToken(); // Retrieve token
+      final token = await AuthenticationService.getToken();
       print('Retrieved token: $token');
 
       final response = await http.post(
         Uri.parse(_otpUrl),
         headers: {
           'Content-Type': 'application/json',
-          if (token != null)
-            'Authorization': 'Bearer $token', // Add token to headers
+          if (token != null) 'Authorization': 'Bearer $token',
         },
         body: json.encode({'mobile_no': phoneNumber}),
       );
@@ -55,14 +56,12 @@ class SignInProvider extends ChangeNotifier {
       print('JSON response: $jsonResponse');
 
       if (response.statusCode == 200) {
-        // Check if user is already registered
         if (jsonResponse["data"]["user"] == true) {
           isRegistered = true;
         }
         showCustomSnackbar(context, 'OTP sent successfully');
 
-        if (jsonResponse["status"] = true) {
-          // User is already registered, navigate to OTP screen
+        if (jsonResponse["status"] == true) {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -76,24 +75,23 @@ class SignInProvider extends ChangeNotifier {
         showCustomSnackbar(context, 'Failed to send OTP', isError: true);
       }
     } catch (e) {
-      _errorMessage = 'An error occurred: $e';
-      print(_errorMessage);
-      showCustomSnackbar(context, 'An error occurred: $e', isError: true);
+      _errorMessage = 'Failed to send OTP. Please try again later.';
+      print('An error occurred: $e');
+      showCustomSnackbar(context, _errorMessage!, isError: true);
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  // Second function
   Timer? _timer;
   int _start = 60;
 
   int get start => _start;
 
   void startTimer() {
-    _start = 60; // Reset timer each time
-    _timer?.cancel(); // Cancel any previous timer
+    _start = 60;
+    _timer?.cancel();
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (_start == 0) {
         timer.cancel();
@@ -108,7 +106,7 @@ class SignInProvider extends ChangeNotifier {
     _timer?.cancel();
     _start = 60;
     notifyListeners();
-    startTimer(); // Start timer immediately after reset
+    startTimer();
   }
 
   @override
@@ -124,14 +122,14 @@ class SignInProvider extends ChangeNotifier {
     print('Verifying OTP for phone number: $phoneNumber and OTP: $otp');
 
     try {
-      final token = await AuthenticationService.getToken(); // Retrieve token
+      final token = await AuthenticationService.getToken();
       print('Retrieved token: $token');
 
       final response = await http.post(
         Uri.parse(_loginUrl),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token', // Add token to headers
+          'Authorization': 'Bearer $token',
         },
         body: json.encode({'mobile_no': phoneNumber, 'otp': otp}),
       );
@@ -150,15 +148,27 @@ class SignInProvider extends ChangeNotifier {
           print(successMsg);
           showCustomSnackbar(context, successMsg);
 
-          if (isRegistered == true) {
-            Navigator.pushReplacement(
+          if (jsonResponse['user'] != null) {
+            // Extract user data from the response
+            final userJson = jsonResponse['user'] as Map<String, dynamic>;
+            final user = User.fromJson(userJson);
+
+            // Save user data in SharedPreferences using Cruds provider
+            final crudsProvider = Provider.of<Cruds>(context, listen: false);
+            await crudsProvider.saveUser(user);
+
+            // User is not null, navigate to StoreScreen
+            Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => StoreScreen()),
+              (route) => false,
             );
-          } else if (isRegistered == false) {
-            Navigator.pushReplacement(
+          } else {
+            // Navigate to SignUpScreen
+            Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => SignUpScreen()),
+              (route) => false,
             );
           }
         } else {
@@ -166,36 +176,22 @@ class SignInProvider extends ChangeNotifier {
               jsonResponse['message']?.toString() ?? 'OTP verification failed';
           print(errorMsg);
           showCustomSnackbar(context, errorMsg, isError: true);
-
-          // Navigate to signup screen if OTP is invalid
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => SignUpScreen()),
-          );
         }
       } else {
         _errorMessage =
             'OTP verification failed with status code ${response.statusCode}';
         print(_errorMessage);
         showCustomSnackbar(context, _errorMessage!, isError: true);
-
-        // Navigate to signup screen if OTP verification fails with non-200 status
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => SignUpScreen()),
-        );
       }
     } catch (e) {
-      _errorMessage = 'An error occurred: $e';
-      print(_errorMessage);
+      _errorMessage = 'Failed to verify OTP. Please try again later.';
+      print('An error occurred: $e');
       showCustomSnackbar(context, _errorMessage!, isError: true);
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
-
-  /////////////////create account
 
   Future<void> signUp(
     String firstName,
@@ -210,7 +206,7 @@ class SignInProvider extends ChangeNotifier {
     print('Signing up user: $firstName $lastName');
 
     try {
-      final token = await AuthenticationService.getToken(); // Retrieve token
+      final token = await AuthenticationService.getToken();
       print('Retrieved token: $token');
 
       final response = await http.post(
@@ -238,18 +234,11 @@ class SignInProvider extends ChangeNotifier {
 
         if (jsonResponse['data'] != null) {
           showCustomSnackbar(context, 'Sign up successful');
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => StoreScreen()),
-          );
+          await showSuccessScreen(context);
         } else {
           _errorMessage = 'Already registered!';
           print(_errorMessage);
           showCustomSnackbar(context, _errorMessage!, isError: true);
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => LoginScreen()),
-          // );
         }
       } else {
         _errorMessage = 'Already registered!';
@@ -257,16 +246,74 @@ class SignInProvider extends ChangeNotifier {
         showCustomSnackbar(context, _errorMessage!, isError: true);
       }
     } catch (e) {
-      _errorMessage = 'An error occurred: $e';
-      print(_errorMessage);
-      showCustomSnackbar(context, 'An error occurred: $e', isError: true);
+      _errorMessage = 'Failed to sign up. Please try again later.';
+      print('An error occurred: $e');
+      showCustomSnackbar(context, _errorMessage!, isError: true);
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  /////
+  Future<void> showSuccessScreen(BuildContext context) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Row(
+            children: <Widget>[
+              CircularProgressIndicator(),
+              Container(
+                  margin: EdgeInsets.only(left: 10),
+                  child: Text("Account created successfully!")),
+            ],
+          ),
+        );
+      },
+    );
+
+    await Future.delayed(Duration(seconds: 3));
+
+    Navigator.of(context).pop(); // Close the dialog
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => StoreScreen()),
+    );
+  }
+
+  Future<void> showLoginSuccess(BuildContext context) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.transparent,
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              CircularProgressIndicator(
+                color: MyColors.black,
+              ),
+              // Container(
+              //     margin: EdgeInsets.only(left: 10), child: Text("login!")),
+            ],
+          ),
+        );
+      },
+    );
+
+    await Future.delayed(Duration(seconds: 3));
+
+    Navigator.of(context).pop(); // Close the dialog
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => StoreScreen()),
+    );
+  }
+
   void showCustomSnackbar(BuildContext context, String message,
       {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -274,8 +321,9 @@ class SignInProvider extends ChangeNotifier {
         content: Text(
           message,
           style: TextStyle(
-              fontWeight: FontWeight.w700,
-              color: isError ? Colors.white : Colors.black),
+            fontWeight: FontWeight.w700,
+            color: isError ? Colors.white : Colors.black,
+          ),
         ),
         backgroundColor: isError ? Colors.red : Colors.green,
         behavior: SnackBarBehavior.floating,

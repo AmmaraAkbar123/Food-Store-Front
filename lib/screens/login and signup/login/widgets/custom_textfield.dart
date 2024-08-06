@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Import for input formatters
 import 'package:foodstorefront/utils/colors.dart';
 
 class CustomTextField extends StatelessWidget {
@@ -11,7 +12,10 @@ class CustomTextField extends StatelessWidget {
   final IconData? prefixIcon; // Property for the prefix icon
   final FocusNode? focusNode; // FocusNode property
   final TextEditingController controller;
-final OutlineInputBorder border;
+  final OutlineInputBorder border;
+  final int maxLength; // Property for max input length
+  final TextInputType keyboardType; // Property for keyboard type
+
   const CustomTextField({
     super.key,
     this.hintText,
@@ -22,7 +26,10 @@ final OutlineInputBorder border;
     this.height,
     this.prefixIcon,
     this.focusNode,
-    required this.controller, required this.border,  // Initialize the FocusNode property
+    required this.controller,
+    required this.border,
+    required this.maxLength, // Initialize maxLength
+    this.keyboardType = TextInputType.text, // Initialize keyboardType
   });
 
   @override
@@ -37,33 +44,36 @@ final OutlineInputBorder border;
       ),
       child: TextField(
         controller: controller,
-        focusNode: focusNode, // Apply the FocusNode
+        focusNode: focusNode,
         obscureText: obscureText,
-        
+        keyboardType: keyboardType,
+        inputFormatters: maxLength != null
+            ? [
+                FilteringTextInputFormatter.digitsOnly, // Allow only digits
+                LengthLimitingTextInputFormatter(maxLength), // Limit to maxLength
+              ]
+            : null,
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(fontSize: 14, color: MyColors.grey),
-          filled: true,
-          fillColor: MyColors.lightGrey, // Grey fill color
-          border: border, // No border initially
+          hintStyle: TextStyle(fontSize: 14, color: MyColors.black87),
+          border: border,
           prefixIcon: prefixIcon != null
-              ? Icon(prefixIcon, color: MyColors.grey)
-              : null, // Conditionally add the prefix icon
+              ? Icon(prefixIcon, color: MyColors.GreyWithDarkOpacity)
+              : null,
           suffixIcon: isPasswordField
               ? IconButton(
                   icon: Icon(
                     obscureText ? Icons.visibility_off : Icons.visibility,
-                    color: Colors.grey, // Use grey color for the suffix icon
+                    color: Colors.grey,
                   ),
                   onPressed: onSuffixIconPressed,
                 )
               : null,
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide.none, // No border when not focused
-            borderRadius:
-                BorderRadius.circular(10.0), // Consistent border radius
+            borderSide: BorderSide(color: MyColors.GreyWithDarkOpacity),
+            borderRadius: BorderRadius.circular(10.0),
           ),
-          focusedBorder: border
+          focusedBorder: border,
         ),
         style: TextStyle(color: MyColors.black),
       ),

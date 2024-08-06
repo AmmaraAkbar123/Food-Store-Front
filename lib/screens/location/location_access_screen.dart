@@ -13,21 +13,21 @@ class LocationAccessScreen extends StatefulWidget {
 }
 
 class LocationAccessScreenState extends State<LocationAccessScreen> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {});
-    fetchData();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {});
+  //   fetchData();
+  // }
 
-  Future<void> fetchData() async {
-    final businessProvider =
-        Provider.of<BusinessProvider>(context, listen: false);
+  // Future<void> fetchData() async {
+  //   final businessProvider =
+  //       Provider.of<BusinessProvider>(context, listen: false);
 
-    await Future.wait([
-      businessProvider.fetchBusinessData(),
-    ]);
-  }
+  //   await Future.wait([
+  //     businessProvider.fetchBusinessData(),
+  //   ]);
+  // }
 
   @override
   Widget build(BuildContext context) {
