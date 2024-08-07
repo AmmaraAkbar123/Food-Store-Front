@@ -7,7 +7,7 @@ import 'package:foodstorefront/services/sign_in_auth.dart';
 import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom_arrow_back_button.dart';
 import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom_button.dart';
 import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom_social_button.dart';
-import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom_textfield.dart';
+import 'widgets/custom_phone_textfield.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -89,26 +89,14 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             const SizedBox(height: 40),
-            CustomTextField(
-              keyboardType: TextInputType.number,
-              focusNode: _emailFocusNode,
-              hintText: 'Enter your Phone number',
-              prefixIcon: Icons.phone,
-              controller: phoneController,
-              border: OutlineInputBorder(
-                borderSide: BorderSide(
-                    color: MyColors.GreyWithDarkOpacity,
-                    width: 1.0), // Border color when focused
-                borderRadius:
-                    BorderRadius.circular(10.0), // Consistent border radius
-              ),
-              maxLength: 10,
+            CustomPhoneTextField(
+              phoneController: phoneController,
+              phoneFocusNode: _emailFocusNode,
             ),
             const SizedBox(height: 40),
             CustomButton(
               text: 'Continue',
               onPressed: () {
-              
                 // Ensure the phone number is not empty
                 final phoneNumber = phoneController.text.trim();
                 print('Phone number entered: $phoneNumber');

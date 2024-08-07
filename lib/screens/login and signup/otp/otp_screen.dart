@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:foodstorefront/services/share_pref_service.dart';
 import 'package:foodstorefront/services/sign_in_auth.dart';
 import 'package:foodstorefront/utils/colors.dart';
 import 'package:provider/provider.dart';
@@ -57,7 +56,11 @@ class _OTPScreenState extends State<OTPScreen> {
     final signInProvider = Provider.of<SignInProvider>(context, listen: false);
 
     try {
-      await signInProvider.verifyOtp(widget.phoneNumber, otp, context,);
+      await signInProvider.verifyOtp(
+        widget.phoneNumber,
+        otp,
+        context,
+      );
     } catch (e) {
       showCustomSnackbar(context, 'Verification failed. Please try again.');
     }
@@ -189,7 +192,7 @@ class _OTPScreenState extends State<OTPScreen> {
                   ),
                   const SizedBox(height: 10),
                   const Text(
-                    "We've sent a verification code to your email \nabc@abc.com. Please enter it below",
+                    "We've sent a verification code to your number. \nPlease enter it below",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
                   const SizedBox(height: 35),

@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:foodstorefront/screens/location/location_access_screen.dart';
 import 'package:foodstorefront/utils/colors.dart';
 import 'package:foodstorefront/utils/images_strings.dart';
-import 'package:foodstorefront/services/share_pref_service.dart';
 import 'package:provider/provider.dart';
 
 import '../../provider/business_provider.dart';
-import '../login and signup/login/login_screen.dart';
+import '../../services/share_pref_service.dart';
 import '../store/store_screen.dart';
 
 class SplashScreen extends StatefulWidget {

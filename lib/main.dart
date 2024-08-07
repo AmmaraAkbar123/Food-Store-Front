@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:foodstorefront/my_app.dart';
 import 'package:foodstorefront/provider/business_provider.dart';
 import 'package:foodstorefront/provider/category_provider.dart';
+import 'package:foodstorefront/provider/country_provider.dart';
 import 'package:foodstorefront/provider/product_provider.dart';
 import 'package:foodstorefront/provider/radio_provider.dart';
 import 'package:foodstorefront/services/share_pref_service.dart';
@@ -11,6 +12,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'provider/store_provider.dart';
 
 Future<void> main() async {
+  FlutterError.onError = (FlutterErrorDetails details) {
+    bool isKeyEventError =
+        details.exceptionAsString().contains('_pressedKeys.containsKey');
+    if (!isKeyEventError) {
+      FlutterError.presentError(details);
+    }
+  };
+
   WidgetsFlutterBinding.ensureInitialized();
   final sharedPreferences = await SharedPreferences.getInstance();
   final cruds = Cruds(sharedPreferences);
@@ -20,6 +29,7 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => BusinessProvider()),
         ChangeNotifierProvider(create: (_) => cruds),
+        ChangeNotifierProvider(create: (_) => CountryCodeProvider()),
         ChangeNotifierProvider(create: (context) => SignInProvider()),
         ChangeNotifierProvider(
           create: (_) => CategoryProvider(),

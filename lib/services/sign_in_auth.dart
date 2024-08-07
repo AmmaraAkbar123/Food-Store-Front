@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:foodstorefront/provider/country_provider.dart';
 import 'package:foodstorefront/screens/login%20and%20signup/otp/otp_screen.dart';
 import 'package:foodstorefront/screens/store/store_screen.dart';
 import 'package:foodstorefront/services/share_pref_service.dart';
-import 'package:foodstorefront/utils/colors.dart';
+
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import '../screens/login and signup/signup/signup_screen.dart';
@@ -28,11 +29,15 @@ class SignInProvider extends ChangeNotifier {
   Future<void> sendOtp(String phoneNumber, BuildContext context) async {
     _isLoading = true;
     notifyListeners();
-    print('Sending OTP for phone number: $phoneNumber');
 
-    // Ensure phone number starts with +92
-    if (!phoneNumber.startsWith('+92')) {
-      phoneNumber = '+92$phoneNumber';
+    final countryCodeProvider =
+        Provider.of<CountryCodeProvider>(context, listen: false);
+    String countryCode = countryCodeProvider.countryCode;
+
+    // Ensure phone number starts with the selected country code
+    if (!phoneNumber.startsWith(countryCode)) {
+      phoneNumber = '$countryCode$phoneNumber';
+      print('Sending OTP for phone number: $phoneNumber');
     }
 
     try {
@@ -56,7 +61,7 @@ class SignInProvider extends ChangeNotifier {
       print('JSON response: $jsonResponse');
 
       if (response.statusCode == 200) {
-        if (jsonResponse["data"]["user"] == true) {
+        if (jsonResponse["data"] == true) {
           isRegistered = true;
         }
         showCustomSnackbar(context, 'OTP sent successfully');
@@ -115,6 +120,7 @@ class SignInProvider extends ChangeNotifier {
     super.dispose();
   }
 
+//////////////////////////////////////////////////////////
   Future<void> verifyOtp(
       String phoneNumber, String otp, BuildContext context) async {
     _isLoading = true;
@@ -143,8 +149,8 @@ class SignInProvider extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         if (jsonResponse['status'] == true) {
-          String successMsg = jsonResponse['message']?.toString() ??
-              'OTP verified successfully';
+          String successMsg =
+              jsonResponse['message']?.toString() ?? 'User Login successfully';
           print(successMsg);
           showCustomSnackbar(context, successMsg);
 
@@ -167,7 +173,9 @@ class SignInProvider extends ChangeNotifier {
             // Navigate to SignUpScreen
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => SignUpScreen()),
+              MaterialPageRoute(
+                builder: (context) => SignUpScreen(phoneNumber: phoneNumber),
+              ),
               (route) => false,
             );
           }
@@ -193,6 +201,8 @@ class SignInProvider extends ChangeNotifier {
     }
   }
 
+//////////////////////////////////////////////////////////
+  ///
   Future<void> signUp(
     String firstName,
     String lastName,
@@ -228,15 +238,35 @@ class SignInProvider extends ChangeNotifier {
       print('Response headers: ${response.headers}');
       print('Response body: ${response.body}');
 
-      if (response.statusCode == 201) {
-        final jsonResponse = json.decode(response.body);
-        print('JSON response: $jsonResponse');
+      final jsonResponse = json.decode(response.body);
+      print('JSON response: $jsonResponse');
 
+      if (response.statusCode == 201) {
         if (jsonResponse['data'] != null) {
           showCustomSnackbar(context, 'Sign up successful');
-          await showSuccessScreen(context);
+
+          // Save user data if available
+          final userJson = jsonResponse['data'] as Map<String, dynamic>?;
+          if (userJson != null) {
+            final user = User.fromJson(userJson);
+
+            // Save user data in SharedPreferences using Cruds provider
+            final crudsProvider = Provider.of<Cruds>(context, listen: false);
+            await crudsProvider.saveUser(user);
+
+            // Navigate to StoreScreen
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => StoreScreen()),
+              (route) => false,
+            );
+          } else {
+            _errorMessage = 'User data not found!';
+            print(_errorMessage);
+            showCustomSnackbar(context, _errorMessage!, isError: true);
+          }
         } else {
-          _errorMessage = 'Already registered!';
+          _errorMessage = 'User data not found!';
           print(_errorMessage);
           showCustomSnackbar(context, _errorMessage!, isError: true);
         }
@@ -277,62 +307,33 @@ class SignInProvider extends ChangeNotifier {
 
     Navigator.of(context).pop(); // Close the dialog
 
-    Navigator.pushReplacement(
+    // Navigate to StoreScreen
+    Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => StoreScreen()),
+      (route) => false,
     );
   }
+}
 
-  Future<void> showLoginSuccess(BuildContext context) async {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.transparent,
-          content: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              CircularProgressIndicator(
-                color: MyColors.black,
-              ),
-              // Container(
-              //     margin: EdgeInsets.only(left: 10), child: Text("login!")),
-            ],
-          ),
-        );
-      },
-    );
-
-    await Future.delayed(Duration(seconds: 3));
-
-    Navigator.of(context).pop(); // Close the dialog
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => StoreScreen()),
-    );
-  }
-
-  void showCustomSnackbar(BuildContext context, String message,
-      {bool isError = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            color: isError ? Colors.white : Colors.black,
-          ),
+void showCustomSnackbar(BuildContext context, String message,
+    {bool isError = false}) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        message,
+        style: TextStyle(
+          fontWeight: FontWeight.w700,
+          color: isError ? Colors.white : Colors.black,
         ),
-        backgroundColor: isError ? Colors.red : Colors.green,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        margin: EdgeInsets.all(10),
-        duration: Duration(seconds: 3),
       ),
-    );
-  }
+      backgroundColor: isError ? Colors.red : Colors.green,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      margin: EdgeInsets.all(10),
+      duration: Duration(seconds: 3),
+    ),
+  );
 }

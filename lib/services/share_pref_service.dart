@@ -107,7 +107,9 @@ class Cruds extends ChangeNotifier {
     await _removeUser();
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => LoginScreen()), // Assuming you have a LoginScreen
+      MaterialPageRoute(
+          builder: (context) =>
+              LoginScreen()), // Assuming you have a LoginScreen
     );
   }
 }

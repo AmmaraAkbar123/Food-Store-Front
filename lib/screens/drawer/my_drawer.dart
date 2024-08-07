@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:foodstorefront/services/share_pref_service.dart';
 import 'package:provider/provider.dart';
-import '../../services/share_pref_service.dart';
 import '../login and signup/login/login_screen.dart';
 
 class MyDrawer extends StatelessWidget {
