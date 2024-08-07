@@ -21,6 +21,7 @@ class SignInProvider extends ChangeNotifier {
 
   bool _isLoading = false;
   bool isRegistered = false;
+  bool isOtpSend = false;
   String? _errorMessage;
 
   bool get isLoading => _isLoading;
@@ -61,12 +62,14 @@ class SignInProvider extends ChangeNotifier {
       print('JSON response: $jsonResponse');
 
       if (response.statusCode == 200) {
+          isOtpSend = true;
+          
         if (jsonResponse["data"] == true) {
           isRegistered = true;
         }
-        showCustomSnackbar(context, 'OTP sent successfully');
 
-        if (jsonResponse["status"] == true) {
+        if (isOtpSend = true) {
+          showCustomSnackbar(context, 'OTP sent successfully');
           Navigator.push(
             context,
             MaterialPageRoute(
