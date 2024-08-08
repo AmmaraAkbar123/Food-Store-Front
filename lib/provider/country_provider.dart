@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CountryCodeProvider extends ChangeNotifier {
-  String _countryCode = '92'; // Default country code for Pakistan
+  String _countryCode = '+92'; // Default country code for Pakistan
   String _countryFlag = '🇵🇰'; // Default flag for Pakistan
 
   String get countryCode => _countryCode;

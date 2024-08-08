@@ -23,6 +23,7 @@ class SignInProvider extends ChangeNotifier {
   bool isRegistered = false;
   bool isOtpSend = false;
   String? _errorMessage;
+  List<String> _otpDigits = List.filled(4, ''); // List to hold each digit of the OTP
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
@@ -203,6 +204,15 @@ class SignInProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+  
+   void updateOtp(int index, String value) {
+    if (index < 0 || index >= _otpDigits.length) return;
+
+    _otpDigits[index] = value; // Update the specific digit in the list
+    notifyListeners();
+  }
+
+  String get otp => _otpDigits.join(); // Get the full OTP as a single string
 
 //////////////////////////////////////////////////////////
   ///

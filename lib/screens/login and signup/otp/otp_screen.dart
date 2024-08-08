@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 class OTPScreen extends StatefulWidget {
   final String phoneNumber;
 
-  const OTPScreen({required this.phoneNumber, Key? key}) : super(key: key);
+  const OTPScreen({required this.phoneNumber, super.key});
 
   @override
   _OTPScreenState createState() => _OTPScreenState();
@@ -22,7 +22,7 @@ class _OTPScreenState extends State<OTPScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      FocusScope.of(context).unfocus();
+      focusNodes[0].requestFocus(); // Automatically focus on the first field
       Provider.of<SignInProvider>(context, listen: false).startTimer();
     });
   }
@@ -38,18 +38,14 @@ class _OTPScreenState extends State<OTPScreen> {
     super.dispose();
   }
 
-  void clearPhoneNumberController() {
-    ;
-  }
-
   String _getOtp() {
     return otpControllers.map((controller) => controller.text).join();
   }
 
-  Future<void> _verifyOtp() async {
+  Future<void> _verifyOtp(BuildContext context) async {
     final otp = _getOtp();
     if (otp.length < 4) {
-      showCustomSnackbar(context, "Please enter the full OTP");
+      _showCustomSnackbar(context, "Please enter the full OTP");
       return;
     }
 
@@ -62,80 +58,84 @@ class _OTPScreenState extends State<OTPScreen> {
         context,
       );
     } catch (e) {
-      showCustomSnackbar(context, 'Verification failed. Please try again.');
+      _showCustomSnackbar(context, 'Verification failed. Please try again.');
     }
   }
 
-  Widget _buildOtpBox(int index, double boxWidth) {
-    return SizedBox(
-      width: boxWidth,
-      child: TextField(
-        cursorColor: MyColors.black,
-        controller: otpControllers[index],
-        focusNode: focusNodes[index],
-        maxLength: 1,
-        keyboardType: TextInputType.number,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 40, // Increase the text size
-        ),
-        decoration: InputDecoration(
-          counterText: '',
-          border: OutlineInputBorder(
-            borderSide: BorderSide.none,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: otpControllers[index].text.isNotEmpty
-                  ? MyColors.black // Border color when text is entered
-                  : MyColors.lightGrey, // Border color when empty
-              width: 1.5,
-            ),
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: MyColors.black,
-              width: 1.5, // Border color when focused
-            ),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          contentPadding: EdgeInsets.symmetric(
-            vertical: 25.0,
-          ), // Add vertical padding for height
-        ),
-        onChanged: (value) async {
-          setState(() {}); // Update the UI as text changes
-
-          if (value.isNotEmpty && index < otpControllers.length - 1) {
-            FocusScope.of(context).requestFocus(focusNodes[index + 1]);
-          } else if (value.isEmpty && index > 0) {
-            FocusScope.of(context).requestFocus(focusNodes[index - 1]);
-          }
-
-          if (_getOtp().length == otpControllers.length) {
-            await _verifyOtp();
-          }
-        },
-      ),
-    );
-  }
-
-  void showCustomSnackbar(BuildContext context, String message,
+  void _showCustomSnackbar(BuildContext context, String message,
       {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
           message,
-          style: TextStyle(fontWeight: FontWeight.w700, color: Colors.white),
+          style: const TextStyle(
+              fontWeight: FontWeight.w700, color: Colors.white),
         ),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        margin: EdgeInsets.all(10),
-        duration: Duration(seconds: 3),
+        margin: const EdgeInsets.all(10),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  Widget _buildOtpBox(int index, double boxWidth, BuildContext context) {
+    return SizedBox(
+      width: boxWidth,
+      child: Consumer<SignInProvider>(
+        builder: (context, signInProvider, child) {
+          return TextField(
+            cursorColor: MyColors.black,
+            controller: otpControllers[index],
+            focusNode: focusNodes[index],
+            maxLength: 1,
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 40, // Increase the text size
+            ),
+            decoration: InputDecoration(
+              counterText: '',
+              border: OutlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: otpControllers[index].text.isNotEmpty
+                      ? MyColors.black // Border color when text is entered
+                      : MyColors.lightGrey, // Border color when empty
+                  width: 1.5,
+                ),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(
+                  color: MyColors.black,
+                  width: 1.5, // Border color when focused
+                ),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 25.0,
+              ), // Add vertical padding for height
+            ),
+            onChanged: (value) async {
+              signInProvider.updateOtp(index, value);
+              if (value.isNotEmpty && index < otpControllers.length - 1) {
+                FocusScope.of(context).requestFocus(focusNodes[index + 1]);
+              } else if (value.isEmpty && index > 0) {
+                FocusScope.of(context).requestFocus(focusNodes[index - 1]);
+              }
+
+              if (_getOtp().length == otpControllers.length) {
+                await _verifyOtp(context);
+              }
+            },
+          );
+        },
       ),
     );
   }
@@ -143,6 +143,7 @@ class _OTPScreenState extends State<OTPScreen> {
   @override
   Widget build(BuildContext context) {
     final signInProvider = Provider.of<SignInProvider>(context);
+
     return WillPopScope(
       onWillPop: () async {
         FocusScope.of(context).unfocus();
@@ -179,16 +180,12 @@ class _OTPScreenState extends State<OTPScreen> {
                     ),
                   ),
                   const SizedBox(height: 50),
-                  Column(
-                    children: [
-                      const Text(
-                        'Enter The \nCode',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 35,
-                            height: 1),
-                      ),
-                    ],
+                  const Text(
+                    'Enter The \nCode',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 35,
+                        height: 1),
                   ),
                   const SizedBox(height: 10),
                   const Text(
@@ -199,13 +196,12 @@ class _OTPScreenState extends State<OTPScreen> {
                   LayoutBuilder(
                     builder: (context, constraints) {
                       // Calculate the width for each OTP box
-                      double boxWidth = (constraints.maxWidth - 30) /
-                          4; // Adjust 30 as per your margin
+                      double boxWidth = (constraints.maxWidth - 30) / 4;
 
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: List.generate(
-                            4, (index) => _buildOtpBox(index, boxWidth)),
+                            4, (index) => _buildOtpBox(index, boxWidth, context)),
                       );
                     },
                   ),
@@ -236,7 +232,7 @@ class _OTPScreenState extends State<OTPScreen> {
                             if (signInProvider.start != 0)
                               TextSpan(
                                 text: '${signInProvider.start} s',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.bold,
                                   color: MyColors.black87,
