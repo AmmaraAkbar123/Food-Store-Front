@@ -5,6 +5,7 @@ import 'package:foodstorefront/models/product_model.dart';
 import 'package:foodstorefront/provider/category_provider.dart';
 import 'package:foodstorefront/provider/product_provider.dart';
 import 'package:foodstorefront/provider/store_provider.dart';
+import 'package:foodstorefront/screens/cart_screens/add_to_cart.dart';
 import 'package:foodstorefront/screens/store/body_section/body_section.dart';
 import 'package:foodstorefront/screens/drawer/my_drawer.dart';
 import 'package:provider/provider.dart';
@@ -175,7 +176,7 @@ class StoreScreenState extends State<StoreScreen>
                     : const SizedBox.shrink(); // Hide the title when collapsed
               },
             ),
-            actions: const [
+            actions: [
               Padding(
                 padding: EdgeInsets.only(right: 18),
                 child: Row(
@@ -184,7 +185,16 @@ class StoreScreenState extends State<StoreScreen>
                     SizedBox(width: 12),
                     Icon(Icons.share_outlined),
                     SizedBox(width: 12),
-                    Icon(Icons.search_outlined)
+                    Icon(Icons.search_outlined),
+                    IconButton(
+                      icon: Icon(Icons.shopping_bag),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddToCartScreen(),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

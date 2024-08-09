@@ -55,12 +55,7 @@ class MyDrawer extends StatelessWidget {
               contentPadding: EdgeInsets.zero,
               leading: Icon(Icons.support_outlined),
               title: Text('Support Center'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AddToCartScreen()),
-                );
-              },
+              onTap: () {},
             ),
             ListTile(
               minTileHeight: 5,

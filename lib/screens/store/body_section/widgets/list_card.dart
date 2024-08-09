@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:foodstorefront/models/product_model.dart';
 import 'package:foodstorefront/utils/colors.dart';
+import 'package:provider/provider.dart';
+import 'package:foodstorefront/provider/product_provider.dart';
 
 class ListCard extends StatelessWidget {
   const ListCard({
@@ -54,7 +56,6 @@ class ListCard extends StatelessWidget {
                     color: MyColors.greyText,
                     fontWeight: FontWeight.w500,
                   ),
-                  // Setting maxLines and overflow
                   customStylesBuilder: (element) {
                     return {
                       'max-lines': '2',
@@ -90,7 +91,6 @@ class ListCard extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  // ignore: unnecessary_null_comparison
                   child: product.image.thumbnail != null
                       ? Image.network(
                           product.image.thumbnail,
@@ -144,27 +144,42 @@ class ListCard extends StatelessWidget {
                 Positioned(
                   bottom: 4,
                   right: 4,
-                  child: Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
+                  child: Consumer<ProductProvider>(
+                    builder: (context, productProvider, child) {
+                      final isAdded = productProvider.isProductAdded(product);
+
+                      return GestureDetector(
+                        onTap: () {
+                          if (isAdded) {
+                            productProvider.removeFromCart(product);
+                          } else {
+                            productProvider.addToCart(product);
+                          }
+                        },
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: Icon(
+                              isAdded ? Icons.check : Icons.add,
+                              color: MyColors.primary,
+                            ),
+                          ),
                         ),
-                      ],
-                    ),
-                    child: const Center(
-                      child: Icon(
-                        Icons.add,
-                        color: MyColors.primary,
-                      ),
-                    ),
+                      );
+                    },
                   ),
                 ),
               ],

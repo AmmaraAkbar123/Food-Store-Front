@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/models/product_model.dart';
 import 'package:foodstorefront/provider/product_provider.dart';
+import 'package:foodstorefront/screens/product_detail/widgets/reuired_optional_button.dart';
 import 'package:foodstorefront/utils/colors.dart';
 import 'package:foodstorefront/utils/images_strings.dart';
 import 'package:provider/provider.dart';
-import 'reuired_optional_button.dart';
 
 class FrequentlyBoughtTogetherSection extends StatelessWidget {
   final ProductModel product;

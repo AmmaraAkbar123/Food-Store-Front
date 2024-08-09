@@ -1,96 +1,84 @@
 import 'package:flutter/material.dart';
+import 'package:foodstorefront/models/product_model.dart';
+import 'package:foodstorefront/provider/product_provider.dart';
+import 'package:foodstorefront/utils/colors.dart';
+import 'package:provider/provider.dart';
 
-class AddToCartScreen extends StatelessWidget {
+class AddToCartScreen extends StatefulWidget {
+  const AddToCartScreen({super.key});
+
+  @override
+  _AddToCartScreenState createState() => _AddToCartScreenState();
+}
+
+class _AddToCartScreenState extends State<AddToCartScreen> {
+  String selectedDeliveryOption = "Delivery";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Icon(Icons.grid_view_rounded, color: Colors.green),
-        ),
         title: Text(
-          "Shopping Bag",
-          style: TextStyle(color: Colors.green),
+          "My Cart",
+          style: TextStyle(color: Colors.black),
         ),
         centerTitle: true,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              "3 Items",
-              style: TextStyle(color: Colors.black),
-            ),
-          ),
-        ],
+        iconTheme: IconThemeData(color: Colors.black),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView(
+      body: Consumer<ProductProvider>(
+        builder: (context, productProvider, child) {
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
                 children: [
-                  buildShoppingItemCard(
-                    imageUrl:
-                        "assets/images/meal.jpg", // Replace with your asset path
-                    title: "Healthy Meal",
-                    code: "glf23g",
-                    price: "50.00",
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: productProvider.cartItems.length,
+                    itemBuilder: (context, index) {
+                      final product =
+                          productProvider.cartItems.keys.elementAt(index);
+                      return buildShoppingItemCard(context, product);
+                    },
                   ),
-                  buildShoppingItemCard(
-                    imageUrl:
-                        "assets/images/buffet.jpg", // Replace with your asset path
-                    title: "Dinner Buffet",
-                    code: "2FG158",
-                    price: "250.00",
-                  ),
-                  buildShoppingItemCard(
-                    imageUrl:
-                        "assets/images/seafood.jpg", // Replace with your asset path
-                    title: "Seafood Buffet",
-                    code: "foods321",
-                    price: "250.00",
-                  ),
+                  SizedBox(height: 50),
+                  buildDeliveryOptions(),
+                  Divider(),
+                  buildPriceSummary(productProvider.cartItems),
                 ],
               ),
             ),
-            Divider(),
-            buildDeliveryOptions(),
-            Divider(),
-            buildPriceSummary(),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                // Handle checkout
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                padding: EdgeInsets.symmetric(vertical: 16),
-                minimumSize: Size(double.infinity, 50),
-              ),
-              child: Text(
-                "Process to Checkout",
-                style: TextStyle(fontSize: 16),
-              ),
+          );
+        },
+      ),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.transparent,
+        elevation: 0,
+        child: ElevatedButton(
+          onPressed: () {
+            // Handle checkout
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: MyColors.primary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
             ),
-          ],
+            padding: EdgeInsets.symmetric(vertical: 16),
+            minimumSize: Size(double.infinity, 50),
+          ),
+          child: Text(
+            "Proceed to Checkout",
+            style: TextStyle(fontSize: 18, color: MyColors.white),
+          ),
         ),
       ),
     );
   }
 
-  Widget buildShoppingItemCard({
-    required String imageUrl,
-    required String title,
-    required String code,
-    required String price,
-  }) {
+  Widget buildShoppingItemCard(BuildContext context, ProductModel product) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       elevation: 2,
@@ -100,52 +88,33 @@ class AddToCartScreen extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.asset(
-                imageUrl,
+              child: Image.network(
+                product.image.thumbnail ?? 'https://via.placeholder.com/70',
                 width: 70,
                 height: 70,
                 fit: BoxFit.cover,
               ),
             ),
             SizedBox(width: 16.0),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  Text(code),
-                ],
-              ),
-            ),
             Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "USD $price",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        // Handle decrement
-                      },
-                      icon: Icon(Icons.remove),
-                      color: Colors.green,
-                    ),
-                    Text("1"),
-                    IconButton(
-                      onPressed: () {
-                        // Handle increment
-                      },
-                      icon: Icon(Icons.add),
-                      color: Colors.green,
-                    ),
-                  ],
-                ),
+                Text(product.name ?? 'Unknown',
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Text('Code: ${product.price ?? 'N/A'}',
+                    style: TextStyle(color: Colors.grey)),
+                Text('Rs. ${product.price?.toString() ?? 'N/A'}',
+                    style: TextStyle(color: MyColors.primary)),
               ],
+            ),
+            Spacer(),
+            IconButton(
+              icon: Icon(Icons.remove_circle),
+              onPressed: () {
+                Provider.of<ProductProvider>(context, listen: false)
+                    .removeFromCart(product);
+              },
             ),
           ],
         ),
@@ -154,48 +123,66 @@ class AddToCartScreen extends StatelessWidget {
   }
 
   Widget buildDeliveryOptions() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           "Delivery Option",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        Row(
+        Column(
           children: [
-            buildDeliveryOption("Delivery", true),
-            SizedBox(width: 16),
-            buildDeliveryOption("Self Pickup", false),
+            buildDeliveryOption("Delivery"),
+            buildDeliveryOption("Self Pickup"),
           ],
         ),
       ],
     );
   }
 
-  Widget buildDeliveryOption(String title, bool isSelected) {
+  Widget buildDeliveryOption(String title) {
     return Row(
       children: [
-        Radio(
-          value: isSelected,
-          groupValue: true,
+        Radio<String>(
+          value: title,
+          groupValue: selectedDeliveryOption,
           onChanged: (value) {
-            // Handle selection
+            setState(() {
+              selectedDeliveryOption = value!;
+            });
           },
           activeColor: Colors.green,
         ),
-        Text(title),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 18,
+          ),
+        ),
       ],
     );
   }
 
-  Widget buildPriceSummary() {
+  Widget buildPriceSummary(Map<ProductModel, int> cartItems) {
+    double itemsPrice = 0;
+    cartItems.forEach((product, quantity) {
+      itemsPrice += (product.price ?? 0) * quantity;
+    });
+
+    double vatTax = itemsPrice * 0.06; // Example tax calculation
+    double subtotal = itemsPrice + vatTax;
+    double deliveryFee = selectedDeliveryOption == "Delivery" ? 0 : 0;
+
     return Column(
       children: [
-        buildPriceItem("Items Price", "USD 517.39"),
-        buildPriceItem("Vat/Tax", "(+) USD 32.61"),
+        buildPriceItem("Items Price", "Rs. ${itemsPrice.toStringAsFixed(2)}"),
+        buildPriceItem("Vat/Tax", "(+) Rs. ${vatTax.toStringAsFixed(2)}"),
         Divider(),
-        buildPriceItem("Subtotal", "USD 550.00"),
-        buildPriceItem("Delivery Fee", "(+) USD 0.00"),
+        buildPriceItem("Subtotal", "Rs. ${subtotal.toStringAsFixed(2)}"),
+        buildPriceItem(
+            "Delivery Fee", "(+) Rs. ${deliveryFee.toStringAsFixed(2)}"),
+        Divider(),
+        TotalAmount(amount: subtotal + deliveryFee),
       ],
     );
   }
@@ -216,6 +203,37 @@ class AddToCartScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class TotalAmount extends StatelessWidget {
+  final double amount;
+
+  const TotalAmount({super.key, required this.amount});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          "Total Amount",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.green,
+          ),
+        ),
+        Text(
+          "Rs. ${amount.toStringAsFixed(2)}",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.green,
+          ),
+        ),
+      ],
     );
   }
 }
