@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foodstorefront/screens/cart_screens/add_to_cart.dart';
 import 'package:foodstorefront/screens/drawer/about_us.dart';
 import 'package:foodstorefront/services/share_pref_service.dart';
 import 'package:provider/provider.dart';
@@ -55,7 +56,10 @@ class MyDrawer extends StatelessWidget {
               leading: Icon(Icons.support_outlined),
               title: Text('Support Center'),
               onTap: () {
-                // Navigate to Support Center page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddToCartScreen()),
+                );
               },
             ),
             ListTile(

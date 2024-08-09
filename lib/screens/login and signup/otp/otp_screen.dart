@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom_arrow_back_button.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
 import 'package:foodstorefront/services/sign_in_auth.dart';
@@ -57,8 +58,8 @@ class _OTPScreenState extends State<OTPScreen> {
       SnackBar(
         content: Text(
           message,
-          style: const TextStyle(
-              fontWeight: FontWeight.w700, color: Colors.white),
+          style:
+              const TextStyle(fontWeight: FontWeight.w700, color: Colors.white),
         ),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
@@ -92,31 +93,12 @@ class _OTPScreenState extends State<OTPScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  GestureDetector(
-                    onTap: () {
-                      FocusScope.of(context).unfocus();
-                      Navigator.of(context).pop();
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(7),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: MyColors.primary,
-                      ),
-                      child: const Icon(
-                        Icons.arrow_back_ios,
-                        color: Colors.white,
-                        size: 12.0,
-                      ),
-                    ),
-                  ),
+                  customArrowBackButton(),
                   const SizedBox(height: 50),
                   const Text(
                     'Enter The \nCode',
                     style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 35,
-                        height: 1),
+                        fontWeight: FontWeight.bold, fontSize: 35, height: 1),
                   ),
                   const SizedBox(height: 10),
                   const Text(
@@ -125,13 +107,19 @@ class _OTPScreenState extends State<OTPScreen> {
                   ),
                   const SizedBox(height: 30),
                   PinCodeTextField(
+                    showCursor: true,
+                    cursorColor: MyColors.black,
+                    cursorHeight: 50,
                     length: 4,
+                    textStyle:
+                        TextStyle(fontSize: 50, fontWeight: FontWeight.w400),
                     animationType: AnimationType.fade,
                     pinTheme: PinTheme(
                       shape: PinCodeFieldShape.box,
                       borderRadius: BorderRadius.circular(8),
-                      fieldHeight: 90, // Increased field height as you required
-                      fieldWidth: 70,  // Increased field width as you required
+                      fieldHeight:
+                          100, // Increased field height as you required
+                      fieldWidth: 82, // Increased field width as you required
                       activeFillColor: Colors.white,
                       activeColor: MyColors.black,
                       inactiveFillColor: Colors.white,
@@ -139,10 +127,10 @@ class _OTPScreenState extends State<OTPScreen> {
                       selectedFillColor: Colors.white,
                       selectedColor: MyColors.primary,
                     ),
-                    keyboardType: TextInputType.number, 
+                    keyboardType: TextInputType.number,
                     errorAnimationController: errorController,
                     appContext: context,
-                    autoFocus: true,  
+                    autoFocus: true,
                     onChanged: (value) {
                       signInProvider.updateOtp(0, value);
                     },

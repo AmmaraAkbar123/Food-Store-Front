@@ -46,7 +46,7 @@ class _CustomPhoneTextFieldState extends State<CustomPhoneTextField> {
                   );
                 },
           child: Container(
-            padding: EdgeInsets.all(7),
+            padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: MyColors.GreyWithOp,
               borderRadius: BorderRadius.circular(8),
@@ -65,7 +65,8 @@ class _CustomPhoneTextFieldState extends State<CustomPhoneTextField> {
                     style: TextStyle(fontSize: 24),
                   ),
                   SizedBox(width: 3),
-                  if (!widget.isReadOnly) // Show the dropdown icon only if not read-only
+                  if (!widget
+                      .isReadOnly) // Show the dropdown icon only if not read-only
                     Icon(
                       Icons.arrow_drop_down_circle_rounded,
                       size: 14,
@@ -83,10 +84,12 @@ class _CustomPhoneTextFieldState extends State<CustomPhoneTextField> {
             focusNode: widget.phoneFocusNode,
             hintText: "Your Phone Number",
             border: OutlineInputBorder(
-              borderSide: BorderSide(color: MyColors.GreyWithDarkOpacity, width: 1.0),
+              borderSide:
+                  BorderSide(color: MyColors.GreyWithDarkOpacity, width: 1.0),
               borderRadius: BorderRadius.circular(10.0),
             ),
-            enabled: !widget.isReadOnly, // Make text field editable based on isReadOnly
+            enabled: !widget
+                .isReadOnly, // Make text field editable based on isReadOnly
           ),
         ),
       ],

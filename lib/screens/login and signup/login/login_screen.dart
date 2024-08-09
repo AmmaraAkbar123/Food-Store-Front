@@ -47,7 +47,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   builder: (context, businessProvider, child) {
                     if (businessProvider.errorMessage != null) {
                       return Center(
-                          child: Text(businessProvider.errorMessage!));
+                        child: Text(businessProvider.errorMessage!),
+                      );
                     }
 
                     if (businessProvider.businessModel == null) {
@@ -67,6 +68,18 @@ class _LoginScreenState extends State<LoginScreen> {
                             height: 80,
                             width: 80,
                             fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              // Handle error state
+                              return Container(
+                                height: 80,
+                                width: 80,
+                                color:
+                                    Colors.grey, // Placeholder color or widget
+                                child: Icon(Icons.error,
+                                    color: Colors
+                                        .red), // Placeholder icon or widget
+                              );
+                            },
                           ),
                         ),
                       ],

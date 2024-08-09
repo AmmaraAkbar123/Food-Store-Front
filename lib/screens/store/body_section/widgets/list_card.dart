@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:foodstorefront/models/product_model.dart';
 import 'package:foodstorefront/utils/colors.dart';
 
@@ -45,14 +46,21 @@ class ListCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 6),
-                Text(
+                HtmlWidget(
                   product.description.toString(),
-                  style: const TextStyle(
-                      fontSize: 12,
-                      overflow: TextOverflow.clip,
-                      color: MyColors.greyText,
-                      fontWeight: FontWeight.w500),
-                  maxLines: 2,
+                  textStyle: const TextStyle(
+                    fontSize: 12,
+                    overflow: TextOverflow.clip,
+                    color: MyColors.greyText,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  // Setting maxLines and overflow
+                  customStylesBuilder: (element) {
+                    return {
+                      'max-lines': '2',
+                      'text-overflow': 'ellipsis',
+                    };
+                  },
                 ),
                 const Padding(
                   padding: EdgeInsets.only(top: 6),
@@ -82,9 +90,10 @@ class ListCard extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
+                  // ignore: unnecessary_null_comparison
                   child: product.image.thumbnail != null
                       ? Image.network(
-                          product.image.thumbnail!,
+                          product.image.thumbnail,
                           fit: BoxFit.cover,
                           width: double.infinity,
                           height: 110,

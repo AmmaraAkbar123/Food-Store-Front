@@ -23,7 +23,7 @@ class SignInProvider extends ChangeNotifier {
   bool isRegistered = false;
   bool isOtpSend = false;
   String? _errorMessage;
-  List<String> _otpDigits =
+  final List<String> _otpDigits =
       List.filled(4, ''); // List to hold each digit of the OTP
 
   bool get isLoading => _isLoading;
@@ -43,10 +43,15 @@ class SignInProvider extends ChangeNotifier {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(
-          child: CircularProgressIndicator(
-        color: MyColors.black,
-      )),
+      builder: (context) => Container(
+        color: MyColors.white,
+        height: double.infinity,
+        width: double.infinity,
+        child: const Center(
+            child: CircularProgressIndicator(
+          color: MyColors.black,
+        )),
+      ),
     );
 
     try {
