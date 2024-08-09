@@ -5,7 +5,7 @@ import 'package:foodstorefront/provider/country_provider.dart';
 import 'package:foodstorefront/screens/login%20and%20signup/otp/otp_screen.dart';
 import 'package:foodstorefront/screens/store/store_screen.dart';
 import 'package:foodstorefront/services/share_pref_service.dart';
-
+import 'package:foodstorefront/utils/colors.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import '../screens/login and signup/signup/signup_screen.dart';
@@ -23,24 +23,31 @@ class SignInProvider extends ChangeNotifier {
   bool isRegistered = false;
   bool isOtpSend = false;
   String? _errorMessage;
-  List<String> _otpDigits = List.filled(4, ''); // List to hold each digit of the OTP
+  List<String> _otpDigits =
+      List.filled(4, ''); // List to hold each digit of the OTP
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
   Future<void> sendOtp(String phoneNumber, BuildContext context) async {
-    _isLoading = true;
-    notifyListeners();
-
     final countryCodeProvider =
         Provider.of<CountryCodeProvider>(context, listen: false);
     String countryCode = countryCodeProvider.countryCode;
 
-    // Ensure phone number starts with the selected country code
     if (!phoneNumber.startsWith(countryCode)) {
       phoneNumber = '$countryCode$phoneNumber';
       print('Sending OTP for phone number: $phoneNumber');
     }
+
+    // Show the progress indicator dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+          child: CircularProgressIndicator(
+        color: MyColors.black,
+      )),
+    );
 
     try {
       final token = await AuthenticationService.getToken();
@@ -63,13 +70,14 @@ class SignInProvider extends ChangeNotifier {
       print('JSON response: $jsonResponse');
 
       if (response.statusCode == 200) {
-          isOtpSend = true;
-          
+        isOtpSend = true;
+
         if (jsonResponse["data"] == true) {
           isRegistered = true;
         }
 
-        if (isOtpSend = true) {
+        if (isOtpSend) {
+          Navigator.pop(context); // Close the progress indicator dialog
           showCustomSnackbar(context, 'OTP sent successfully');
           Navigator.push(
             context,
@@ -81,15 +89,14 @@ class SignInProvider extends ChangeNotifier {
       } else {
         _errorMessage = 'Failed to send OTP';
         print(_errorMessage);
+        Navigator.pop(context); // Close the progress indicator dialog
         showCustomSnackbar(context, 'Failed to send OTP', isError: true);
       }
     } catch (e) {
       _errorMessage = 'Failed to send OTP. Please try again later.';
       print('An error occurred: $e');
+      Navigator.pop(context); // Close the progress indicator dialog
       showCustomSnackbar(context, _errorMessage!, isError: true);
-    } finally {
-      _isLoading = false;
-      notifyListeners();
     }
   }
 
@@ -204,8 +211,8 @@ class SignInProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-  
-   void updateOtp(int index, String value) {
+
+  void updateOtp(int index, String value) {
     if (index < 0 || index >= _otpDigits.length) return;
 
     _otpDigits[index] = value; // Update the specific digit in the list

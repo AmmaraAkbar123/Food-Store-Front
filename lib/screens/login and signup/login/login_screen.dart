@@ -35,112 +35,109 @@ class _LoginScreenState extends State<LoginScreen> {
         onTap: () {
           FocusScope.of(context).unfocus();
         },
-        child: _buildLoginScreen(context),
-      ),
-    );
-  }
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 50),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const customArrowBackButton(),
+                Consumer<BusinessProvider>(
+                  builder: (context, businessProvider, child) {
+                    if (businessProvider.errorMessage != null) {
+                      return Center(
+                          child: Text(businessProvider.errorMessage!));
+                    }
 
-  Widget _buildLoginScreen(BuildContext context) {
-    final signInProvider = Provider.of<SignInProvider>(context);
+                    if (businessProvider.businessModel == null) {
+                      return const Center(child: Text('No data available'));
+                    }
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 50),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const customArrowBackButton(),
-            Consumer<BusinessProvider>(
-              builder: (context, businessProvider, child) {
-                if (businessProvider.errorMessage != null) {
-                  return Center(child: Text(businessProvider.errorMessage!));
-                }
+                    Datum business = businessProvider.businessModel!.data.first;
 
-                if (businessProvider.businessModel == null) {
-                  return const Center(child: Text('No data available'));
-                }
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.network(
+                            business.logo ??
+                                'https://t3.ftcdn.net/jpg/05/62/05/20/360_F_562052065_yk3KPuruq10oyfeu5jniLTS4I2ky3bYX.jpg',
+                            height: 80,
+                            width: 80,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                const SizedBox(height: 5),
+                const Text(
+                  'Unlock Your OneApp experience',
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 40),
+                CustomPhoneTextField(
+                  phoneController: phoneController,
+                  phoneFocusNode: _emailFocusNode,
+                ),
+                const SizedBox(height: 40),
+                CustomButton(
+                  text: 'Continue',
+                  onPressed: () {
+                    final phoneNumber = phoneController.text.trim();
+                    print('Phone number entered: $phoneNumber');
 
-                Datum business = businessProvider.businessModel!.data.first;
-
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Image.network(
-                        business.logo ??
-                            'https://t3.ftcdn.net/jpg/05/62/05/20/360_F_562052065_yk3KPuruq10oyfeu5jniLTS4I2ky3bYX.jpg',
-                        height: 80,
-                        width: 80,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ],
-                );
-              },
+                    if (phoneNumber.isNotEmpty) {
+                      final signInProvider =
+                          Provider.of<SignInProvider>(context, listen: false);
+                      signInProvider.sendOtp(phoneNumber, context);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Please enter a phone number')),
+                      );
+                    }
+                  },
+                  clrtext: MyColors.white,
+                ),
+                const SizedBox(height: 40),
+                const Text(
+                  'Or',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 40),
+                CustomSocialButton(
+                  text: "Continue with Google",
+                  imagePath: "assets/icons/icons8-google-24.png",
+                  onPressed: () {
+                    // Implement Google Sign-In
+                  },
+                ),
+                const SizedBox(height: 20),
+                CustomSocialButton(
+                  text: "Continue with Facebook",
+                  imagePath: "assets/icons/icons8-facebook-24.png",
+                  onPressed: () {
+                    // Implement Facebook Sign-In
+                  },
+                ),
+                const SizedBox(height: 20),
+                CustomSocialButton(
+                  text: "Continue with Apple",
+                  imagePath: "assets/icons/apple-icon.png",
+                  onPressed: () {
+                    // Implement Apple Sign-In
+                  },
+                ),
+              ],
             ),
-            const SizedBox(height: 5),
-            const Text(
-              'Unlock Your OneApp experience',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 40),
-            CustomPhoneTextField(
-              phoneController: phoneController,
-              phoneFocusNode: _emailFocusNode,
-            ),
-            const SizedBox(height: 40),
-            CustomButton(
-              text: 'Continue',
-              onPressed: () {
-                // Ensure the phone number is not empty
-                final phoneNumber = phoneController.text.trim();
-                print('Phone number entered: $phoneNumber');
-
-                if (phoneNumber.isNotEmpty) {
-                  // Ensure signInProvider is properly instantiated
-                  final signInProvider =
-                      Provider.of<SignInProvider>(context, listen: false);
-                  print('Sending OTP...');
-                  signInProvider.sendOtp(phoneNumber, context);
-                } else {
-                  // Optionally show an error message if phone number is empty
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Please enter a phone number')),
-                  );
-                }
-              },
-              clrtext: MyColors.white,
-            ),
-            const SizedBox(height: 40),
-            const Text(
-              'Or',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 40),
-            CustomSocialButton(
-              text: "Continue with Google",
-              imagePath: "assets/icons/icons8-google-24.png",
-              onPressed: () {},
-            ),
-            const SizedBox(height: 20),
-            CustomSocialButton(
-              text: "Continue with Facebook",
-              imagePath: "assets/icons/icons8-facebook-24.png",
-              onPressed: () {},
-            ),
-            const SizedBox(height: 20),
-            CustomSocialButton(
-              text: "Continue with Apple",
-              imagePath: "assets/icons/apple-icon.png",
-              onPressed: () {},
-            ),
-          ],
+          ),
         ),
       ),
     );

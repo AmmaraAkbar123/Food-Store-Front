@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:foodstorefront/screens/drawer/about_us.dart';
 import 'package:foodstorefront/services/share_pref_service.dart';
 import 'package:provider/provider.dart';
 import '../login and signup/login/login_screen.dart';
+import 'terms_conditions.dart';
 
 class MyDrawer extends StatelessWidget {
   @override
@@ -28,7 +30,11 @@ class MyDrawer extends StatelessWidget {
               leading: Icon(Icons.privacy_tip),
               title: Text('Terms and Conditions'),
               onTap: () {
-                // Navigate to Terms and Conditions page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => TermsAndConditionsPage()),
+                );
               },
             ),
             ListTile(
@@ -37,7 +43,10 @@ class MyDrawer extends StatelessWidget {
               leading: Icon(Icons.add_box_outlined),
               title: Text('About Us'),
               onTap: () {
-                // Navigate to About Us page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AboutUsPage()),
+                );
               },
             ),
             ListTile(

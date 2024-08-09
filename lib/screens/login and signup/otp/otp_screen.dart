@@ -22,7 +22,10 @@ class _OTPScreenState extends State<OTPScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      focusNodes[0].requestFocus(); // Automatically focus on the first field
+      // Delay focus request slightly
+      Future.delayed(Duration(milliseconds: 100), () {
+        focusNodes[0].requestFocus(); // Automatically focus on the first field
+      });
       Provider.of<SignInProvider>(context, listen: false).startTimer();
     });
   }
@@ -68,8 +71,8 @@ class _OTPScreenState extends State<OTPScreen> {
       SnackBar(
         content: Text(
           message,
-          style: const TextStyle(
-              fontWeight: FontWeight.w700, color: Colors.white),
+          style:
+              const TextStyle(fontWeight: FontWeight.w700, color: Colors.white),
         ),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
@@ -183,9 +186,7 @@ class _OTPScreenState extends State<OTPScreen> {
                   const Text(
                     'Enter The \nCode',
                     style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 35,
-                        height: 1),
+                        fontWeight: FontWeight.bold, fontSize: 35, height: 1),
                   ),
                   const SizedBox(height: 10),
                   const Text(
@@ -200,8 +201,8 @@ class _OTPScreenState extends State<OTPScreen> {
 
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: List.generate(
-                            4, (index) => _buildOtpBox(index, boxWidth, context)),
+                        children: List.generate(4,
+                            (index) => _buildOtpBox(index, boxWidth, context)),
                       );
                     },
                   ),

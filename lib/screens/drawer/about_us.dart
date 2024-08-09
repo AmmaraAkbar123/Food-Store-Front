@@ -4,6 +4,8 @@ import 'package:foodstorefront/provider/business_provider.dart';
 import 'package:provider/provider.dart';
 
 class AboutUsPage extends StatelessWidget {
+  const AboutUsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<BusinessProvider>(context);

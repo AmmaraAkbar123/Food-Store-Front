@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:foodstorefront/utils/colors.dart';
 
 class SignUpTextfield extends StatelessWidget {
