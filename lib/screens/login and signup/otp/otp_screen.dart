@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:provider/provider.dart';
 import 'package:foodstorefront/services/sign_in_auth.dart';
 import 'package:foodstorefront/utils/colors.dart';
-import 'package:provider/provider.dart';
 
 class OTPScreen extends StatefulWidget {
   final String phoneNumber;
@@ -14,39 +15,24 @@ class OTPScreen extends StatefulWidget {
 }
 
 class _OTPScreenState extends State<OTPScreen> {
-  final List<TextEditingController> otpControllers =
-      List.generate(4, (index) => TextEditingController());
-  final List<FocusNode> focusNodes = List.generate(4, (index) => FocusNode());
+  late StreamController<ErrorAnimationType> errorController;
 
   @override
   void initState() {
     super.initState();
+    errorController = StreamController<ErrorAnimationType>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Delay focus request slightly
-      Future.delayed(Duration(milliseconds: 100), () {
-        focusNodes[0].requestFocus(); // Automatically focus on the first field
-      });
       Provider.of<SignInProvider>(context, listen: false).startTimer();
     });
   }
 
   @override
   void dispose() {
-    for (final controller in otpControllers) {
-      controller.dispose();
-    }
-    for (final focusNode in focusNodes) {
-      focusNode.dispose();
-    }
+    errorController.close();
     super.dispose();
   }
 
-  String _getOtp() {
-    return otpControllers.map((controller) => controller.text).join();
-  }
-
-  Future<void> _verifyOtp(BuildContext context) async {
-    final otp = _getOtp();
+  Future<void> _verifyOtp(String otp, BuildContext context) async {
     if (otp.length < 4) {
       _showCustomSnackbar(context, "Please enter the full OTP");
       return;
@@ -71,8 +57,8 @@ class _OTPScreenState extends State<OTPScreen> {
       SnackBar(
         content: Text(
           message,
-          style:
-              const TextStyle(fontWeight: FontWeight.w700, color: Colors.white),
+          style: const TextStyle(
+              fontWeight: FontWeight.w700, color: Colors.white),
         ),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
@@ -81,64 +67,6 @@ class _OTPScreenState extends State<OTPScreen> {
         ),
         margin: const EdgeInsets.all(10),
         duration: const Duration(seconds: 3),
-      ),
-    );
-  }
-
-  Widget _buildOtpBox(int index, double boxWidth, BuildContext context) {
-    return SizedBox(
-      width: boxWidth,
-      child: Consumer<SignInProvider>(
-        builder: (context, signInProvider, child) {
-          return TextField(
-            cursorColor: MyColors.black,
-            controller: otpControllers[index],
-            focusNode: focusNodes[index],
-            maxLength: 1,
-            keyboardType: TextInputType.number,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 40, // Increase the text size
-            ),
-            decoration: InputDecoration(
-              counterText: '',
-              border: OutlineInputBorder(
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: otpControllers[index].text.isNotEmpty
-                      ? MyColors.black // Border color when text is entered
-                      : MyColors.lightGrey, // Border color when empty
-                  width: 1.5,
-                ),
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(
-                  color: MyColors.black,
-                  width: 1.5, // Border color when focused
-                ),
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                vertical: 25.0,
-              ), // Add vertical padding for height
-            ),
-            onChanged: (value) async {
-              signInProvider.updateOtp(index, value);
-              if (value.isNotEmpty && index < otpControllers.length - 1) {
-                FocusScope.of(context).requestFocus(focusNodes[index + 1]);
-              } else if (value.isEmpty && index > 0) {
-                FocusScope.of(context).requestFocus(focusNodes[index - 1]);
-              }
-
-              if (_getOtp().length == otpControllers.length) {
-                await _verifyOtp(context);
-              }
-            },
-          );
-        },
       ),
     );
   }
@@ -186,27 +114,43 @@ class _OTPScreenState extends State<OTPScreen> {
                   const Text(
                     'Enter The \nCode',
                     style: TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 35, height: 1),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 35,
+                        height: 1),
                   ),
                   const SizedBox(height: 10),
                   const Text(
                     "We've sent a verification code to your number. \nPlease enter it below",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
-                  const SizedBox(height: 35),
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      // Calculate the width for each OTP box
-                      double boxWidth = (constraints.maxWidth - 30) / 4;
-
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: List.generate(4,
-                            (index) => _buildOtpBox(index, boxWidth, context)),
-                      );
+                  const SizedBox(height: 30),
+                  PinCodeTextField(
+                    length: 4,
+                    animationType: AnimationType.fade,
+                    pinTheme: PinTheme(
+                      shape: PinCodeFieldShape.box,
+                      borderRadius: BorderRadius.circular(8),
+                      fieldHeight: 90, // Increased field height as you required
+                      fieldWidth: 70,  // Increased field width as you required
+                      activeFillColor: Colors.white,
+                      activeColor: MyColors.black,
+                      inactiveFillColor: Colors.white,
+                      inactiveColor: MyColors.lightGrey,
+                      selectedFillColor: Colors.white,
+                      selectedColor: MyColors.primary,
+                    ),
+                    keyboardType: TextInputType.number, 
+                    errorAnimationController: errorController,
+                    appContext: context,
+                    autoFocus: true,  
+                    onChanged: (value) {
+                      signInProvider.updateOtp(0, value);
+                    },
+                    onCompleted: (value) {
+                      _verifyOtp(value, context);
                     },
                   ),
-                  const SizedBox(height: 35),
+                  const SizedBox(height: 16),
                   Center(
                     child: GestureDetector(
                       onTap: signInProvider.start == 0

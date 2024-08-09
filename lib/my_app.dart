@@ -5,7 +5,7 @@ import 'package:foodstorefront/services/share_pref_service.dart';
 class MyApp extends StatelessWidget {
   final Cruds cruds;
 
-  const MyApp({Key? key, required this.cruds}) : super(key: key);
+  const MyApp({super.key, required this.cruds});
 
   @override
   Widget build(BuildContext context) {
