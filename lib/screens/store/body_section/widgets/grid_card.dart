@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:foodstorefront/provider/product_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:foodstorefront/provider/product_provider.dart';
 import 'package:foodstorefront/models/product_model.dart';
 import 'package:foodstorefront/utils/colors.dart';
 
@@ -88,9 +88,9 @@ class GridCard extends StatelessWidget {
                     child: GestureDetector(
                       onTap: () {
                         if (isAdded) {
-                          productProvider.removeFromCart(product);
+                          productProvider.removeFromCart(context, product);
                         } else {
-                          productProvider.addToCart(product);
+                          productProvider.addToCart(context, product);
                         }
                       },
                       child: Container(

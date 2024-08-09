@@ -142,8 +142,8 @@ class ListCard extends StatelessWidget {
                         ),
                 ),
                 Positioned(
-                  bottom: 4,
-                  right: 4,
+                  bottom: 8,
+                  right: 8,
                   child: Consumer<ProductProvider>(
                     builder: (context, productProvider, child) {
                       final isAdded = productProvider.isProductAdded(product);
@@ -151,9 +151,9 @@ class ListCard extends StatelessWidget {
                       return GestureDetector(
                         onTap: () {
                           if (isAdded) {
-                            productProvider.removeFromCart(product);
+                            productProvider.removeFromCart(context, product);
                           } else {
-                            productProvider.addToCart(product);
+                            productProvider.addToCart(context, product);
                           }
                         },
                         child: Container(
@@ -175,6 +175,7 @@ class ListCard extends StatelessWidget {
                             child: Icon(
                               isAdded ? Icons.check : Icons.add,
                               color: MyColors.primary,
+                              size: 20,
                             ),
                           ),
                         ),

@@ -12,7 +12,12 @@ class AddToCartScreen extends StatefulWidget {
 }
 
 class _AddToCartScreenState extends State<AddToCartScreen> {
-  String selectedDeliveryOption = "Delivery";
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<ProductProvider>(context, listen: false)
+        .loadCartAndDeliveryOptions();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,13 +46,15 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
                     itemBuilder: (context, index) {
                       final product =
                           productProvider.cartItems.keys.elementAt(index);
-                      return buildShoppingItemCard(context, product);
+                      return buildShoppingItemCard(context, product,
+                          productProvider.cartItems[product]!);
                     },
                   ),
                   SizedBox(height: 50),
-                  buildDeliveryOptions(),
+                  buildDeliveryOptions(productProvider),
                   Divider(),
-                  buildPriceSummary(productProvider.cartItems),
+                  buildPriceSummary(productProvider.cartItems,
+                      productProvider.selectedDeliveryOption),
                 ],
               ),
             ),
@@ -78,7 +85,8 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
     );
   }
 
-  Widget buildShoppingItemCard(BuildContext context, ProductModel product) {
+  Widget buildShoppingItemCard(
+      BuildContext context, ProductModel product, int quantity) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       elevation: 2,
@@ -109,12 +117,27 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
               ],
             ),
             Spacer(),
-            IconButton(
-              icon: Icon(Icons.remove_circle),
-              onPressed: () {
-                Provider.of<ProductProvider>(context, listen: false)
-                    .removeFromCart(product);
-              },
+            Row(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.remove),
+                  onPressed: () {
+                    Provider.of<ProductProvider>(context, listen: false)
+                        .removeProduct(product);
+                  },
+                ),
+                Text(
+                  '$quantity',
+                  style: TextStyle(fontSize: 16),
+                ),
+                IconButton(
+                  icon: Icon(Icons.add),
+                  onPressed: () {
+                    Provider.of<ProductProvider>(context, listen: false)
+                        .addProduct(product);
+                  },
+                ),
+              ],
             ),
           ],
         ),
@@ -122,118 +145,78 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
     );
   }
 
-  Widget buildDeliveryOptions() {
+  Widget buildDeliveryOptions(ProductProvider productProvider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "Delivery Option",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        Column(
-          children: [
-            buildDeliveryOption("Delivery"),
-            buildDeliveryOption("Self Pickup"),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget buildDeliveryOption(String title) {
-    return Row(
-      children: [
-        Radio<String>(
-          value: title,
-          groupValue: selectedDeliveryOption,
+        Text("Delivery Options",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        RadioListTile<String>(
+          title: Text("Delivery"),
+          value: "Delivery",
+          groupValue: productProvider.selectedDeliveryOption,
           onChanged: (value) {
-            setState(() {
-              selectedDeliveryOption = value!;
-            });
+            if (value != null) {
+              productProvider.updateDeliveryOption(value);
+            }
           },
-          activeColor: Colors.green,
         ),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 18,
-          ),
+        RadioListTile<String>(
+          title: Text("Pick Up"),
+          value: "Pick Up",
+          groupValue: productProvider.selectedDeliveryOption,
+          onChanged: (value) {
+            if (value != null) {
+              productProvider.updateDeliveryOption(value);
+            }
+          },
         ),
       ],
     );
   }
 
-  Widget buildPriceSummary(Map<ProductModel, int> cartItems) {
-    double itemsPrice = 0;
+  Widget buildPriceSummary(
+      Map<ProductModel, int> cartItems, String deliveryOption) {
+    // Calculate subtotal, tax, and total
+    double subtotal = 0;
+    double taxRate = 0.07; // Example tax rate of 7%
+
     cartItems.forEach((product, quantity) {
-      itemsPrice += (product.price ?? 0) * quantity;
+      subtotal += (product.price ?? 0) * quantity;
     });
 
-    double vatTax = itemsPrice * 0.06; // Example tax calculation
-    double subtotal = itemsPrice + vatTax;
-    double deliveryFee = selectedDeliveryOption == "Delivery" ? 0 : 0;
+    double tax = subtotal * taxRate;
+    double total = subtotal + tax;
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        buildPriceItem("Items Price", "Rs. ${itemsPrice.toStringAsFixed(2)}"),
-        buildPriceItem("Vat/Tax", "(+) Rs. ${vatTax.toStringAsFixed(2)}"),
+        Text("Price Summary",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        buildSummaryRow("Subtotal", "Rs. ${subtotal.toStringAsFixed(2)}"),
+        buildSummaryRow("Tax", "Rs. ${tax.toStringAsFixed(2)}"),
+        buildSummaryRow("Delivery Charge",
+            deliveryOption == "Delivery" ? "Rs. 50.00" : "Free"),
         Divider(),
-        buildPriceItem("Subtotal", "Rs. ${subtotal.toStringAsFixed(2)}"),
-        buildPriceItem(
-            "Delivery Fee", "(+) Rs. ${deliveryFee.toStringAsFixed(2)}"),
-        Divider(),
-        TotalAmount(amount: subtotal + deliveryFee),
+        buildSummaryRow("Total", "Rs. ${total.toStringAsFixed(2)}",
+            isTotal: true),
       ],
     );
   }
 
-  Widget buildPriceItem(String label, String amount) {
+  Widget buildSummaryRow(String label, String value, {bool isTotal = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            amount,
-            style: TextStyle(fontSize: 16),
-          ),
+          Text(label, style: TextStyle(fontSize: 16)),
+          Text(value,
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: isTotal ? FontWeight.bold : FontWeight.normal)),
         ],
       ),
-    );
-  }
-}
-
-class TotalAmount extends StatelessWidget {
-  final double amount;
-
-  const TotalAmount({super.key, required this.amount});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          "Total Amount",
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.green,
-          ),
-        ),
-        Text(
-          "Rs. ${amount.toStringAsFixed(2)}",
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.green,
-          ),
-        ),
-      ],
     );
   }
 }

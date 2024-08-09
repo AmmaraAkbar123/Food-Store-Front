@@ -47,7 +47,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           builder: (context, productProvider, child) {
             final product = productProvider.products.firstWhere(
               (product) => product.name == widget.productName,
+             
             );
+
             if (productProvider.isLoading) {
               return const Center(child: CircularProgressIndicator());
             } else {
@@ -84,7 +86,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          //header
                           ProductTitleSection(product: product),
                           const SizedBox(height: 15),
                           ...product.variations.map((variation) {
@@ -106,7 +107,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           SpecialInstructionSection(),
                           SizedBox(height: 40),
                           RemoveFromOrderSection(),
-                          SizedBox(height: 20)
+                          SizedBox(height: 20),
                         ],
                       ),
                     ),
@@ -122,100 +123,110 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
-        child: Stack(
-          children: [
-            Container(
-              height: 80,
-              decoration: BoxDecoration(
-                color: MyColors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-                border: Border.all(
-                  color: MyColors.lightGrey,
-                ),
-              ),
+        child: Container(
+          height: 80,
+          decoration: BoxDecoration(
+            color: MyColors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
             ),
-            BottomAppBar(
-              color: Colors.transparent,
-              child: Container(
-                height: 85,
-                child: Consumer<ProductProvider>(
-                  builder: (context, productProvider, child) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          height: 32,
-                          width: 32,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(100),
-                            color: productProvider.quantity > 1
-                                ? MyColors.primary
-                                : MyColors.grey,
-                          ),
-                          child: IconButton(
-                            padding: EdgeInsets.all(0),
-                            onPressed: productProvider.decrementQuantity,
-                            icon: Icon(
-                              Icons.remove,
-                              color: MyColors.white,
-                              size: 22,
-                            ),
-                          ),
-                        ),
-                        Text(
-                          '${productProvider.quantity}',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        Container(
-                          height: 32,
-                          width: 32,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(100),
-                            color: MyColors.primary,
-                          ),
-                          child: IconButton(
-                            padding: EdgeInsets.all(0),
-                            onPressed: productProvider.incrementQuantity,
-                            icon: Icon(
-                              Icons.add,
-                              size: 22,
-                              color: MyColors.white,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          width: 170,
-                          height: 48,
-                          padding: EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 20),
-                          decoration: BoxDecoration(
-                            color: productProvider.isOptionSelected
-                                ? MyColors.primary
-                                : MyColors.grey,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Add to cart',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ),
+            border: Border.all(
+              color: MyColors.lightGrey,
             ),
-          ],
+          ),
+          child: BottomAppBar(
+            color: Colors.transparent,
+            child: Consumer<ProductProvider>(
+              builder: (context, productProvider, child) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      height: 32,
+                      width: 32,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        color: productProvider.quantity > 1
+                            ? MyColors.primary
+                            : MyColors.grey,
+                      ),
+                      child: IconButton(
+                        padding: EdgeInsets.all(0),
+                        onPressed: () {
+                          productProvider.decrementQuantity();
+                        },
+                        icon: Icon(
+                          Icons.remove,
+                          color: MyColors.white,
+                          size: 22,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      '${productProvider.quantity}',
+                      style: TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    Container(
+                      height: 32,
+                      width: 32,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        color: MyColors.primary,
+                      ),
+                      child: IconButton(
+                        padding: EdgeInsets.all(0),
+                        onPressed: () {
+                          productProvider.incrementQuantity();
+                        },
+                        icon: Icon(
+                          Icons.add,
+                          size: 22,
+                          color: MyColors.white,
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        if (productProvider.isOptionSelected) {
+                         // productProvider.addToCartProduct(context, product);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Please select an option before adding to cart.'),
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        }
+                      },
+                      child: Container(
+                        width: 170,
+                        height: 48,
+                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        decoration: BoxDecoration(
+                          color: productProvider.isOptionSelected
+                              ? MyColors.primary
+                              : MyColors.grey,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Add to cart',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
         ),
       ),
     );
