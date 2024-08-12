@@ -14,6 +14,8 @@ class ProductProvider with ChangeNotifier {
   final Map<String, String> _selectedOptions =
       {}; // New field for selected options
   String _specialInstructions = ''; // New field for special instructions
+  final Map<int, Map<ProductModel, int>> _userCarts = {};
+  int? _currentUserId; // Track the current user ID
 
   // New fields for cart management
   final Map<ProductModel, int> _cartItems =
@@ -37,6 +39,20 @@ class ProductProvider with ChangeNotifier {
 
   // Getter for the delivery option
   String get selectedDeliveryOption => _selectedDeliveryOption;
+    // Getter for the current user's cart
+  Map<ProductModel, int> get currentUserCart {
+    if (_currentUserId != null) {
+      return _userCarts[_currentUserId] ?? {};
+    }
+    return {};
+  }
+
+  // Set the current user ID (should be called when a user logs in)
+  void setUser(int userId) {
+    _currentUserId = userId;
+    loadCartAndDeliveryOptions();
+  }
+
 
   Future<void> fetchProducts() async {
     _isLoading = true;
@@ -83,15 +99,17 @@ class ProductProvider with ChangeNotifier {
 
   // Add or remove items in the cart
   // Method to add a product to the cart
-  void addToCart(BuildContext context, ProductModel product) {
-    if (!_addedProducts.contains(product)) {
-      _cartItems[product] = (_cartItems[product] ?? 0) + 1;
-      _addedProducts.add(product);
-      saveCartToLocalStorage();
-      _showSnackBar(context, 'Product added to cart!');
-      notifyListeners();
-    }
+ void addToCart(BuildContext context, ProductModel product) {
+  if (_currentUserId != null) {
+    _userCarts[_currentUserId!] ??= {};
+    _userCarts[_currentUserId!]![product] = (_userCarts[_currentUserId!]![product] ?? 0) + 1;
+    saveCartToLocalStorage();
+    _showSnackBar(context, 'Product added to cart!');
+    notifyListeners();
+  } else {
+    _showSnackBar(context, 'Error: User ID is null.');
   }
+}
 
   void addToCartProduct(BuildContext context, ProductModel product) {
     if (_isOptionSelected) {
@@ -107,19 +125,23 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  void removeFromCart(BuildContext context, ProductModel product) {
-    if (_addedProducts.contains(product)) {
-      if (_cartItems[product] == 1) {
-        _cartItems.remove(product);
-        _addedProducts.remove(product);
+void removeFromCart(BuildContext context, ProductModel product) {
+  if (_currentUserId != null && _userCarts[_currentUserId!] != null) {
+    final cart = _userCarts[_currentUserId!]!;
+    if (cart.containsKey(product)) {
+      if (cart[product] == 1) {
+        cart.remove(product);
       } else {
-        _cartItems[product] = (_cartItems[product] ?? 0) - 1;
+        cart[product] = (cart[product] ?? 0) - 1; // Ensure non-null integer
       }
       saveCartToLocalStorage();
       _showSnackBar(context, 'Product removed from cart!');
       notifyListeners();
     }
+  } else {
+    _showSnackBar(context, 'Error: User ID is null.');
   }
+}
 
   void _showSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -167,16 +189,16 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void updateCart(ProductModel product, int newQuantity) {
-    if (newQuantity > 0) {
-      _cartItems[product] = newQuantity;
-    } else {
-      _cartItems.remove(product);
-      _addedProducts.remove(product);
-    }
-    saveCartToLocalStorage();
-    notifyListeners();
+void updateCart(ProductModel product, int newQuantity) {
+  if (newQuantity > 0) {
+    _cartItems[product] = newQuantity;
+  } else {
+    _cartItems.remove(product);
+    _addedProducts.remove(product);
   }
+  saveCartToLocalStorage();
+  notifyListeners();
+}
 
   // New method for toggling selection
   void toggleSelection(int index) {
@@ -188,23 +210,23 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Method to save cart items to local storage
+  // Adjust local storage methods to use the user ID
   Future<void> saveCartToLocalStorage() async {
-    await _localStorageService.saveCartItems(_cartItems);
+  if (_currentUserId != null) {
+    await _localStorageService.saveCartItems(_currentUserId!, _userCarts[_currentUserId!]!);
     await _localStorageService.saveDeliveryOption(_selectedDeliveryOption);
   }
+}
 
   // Method to load cart items from local storage
-  Future<void> loadCartAndDeliveryOptions() async {
-    _cartItems.clear();
-    _addedProducts.clear();
-    final loadedCartItems = await _localStorageService.loadCartItems();
-    final loadedDeliveryOption =
-        await _localStorageService.loadDeliveryOption();
+Future<void> loadCartAndDeliveryOptions() async {
+  if (_currentUserId != null) {
+    _userCarts[_currentUserId!] ??= {};
+    final loadedCartItems = await _localStorageService.loadCartItems(_currentUserId!);
+    final loadedDeliveryOption = await _localStorageService.loadDeliveryOption();
 
-    if (loadedCartItems != null) {
-      _cartItems.addAll(loadedCartItems);
-      _addedProducts.addAll(loadedCartItems.keys);
+    if (loadedCartItems.isNotEmpty) {
+      _userCarts[_currentUserId!]!.addAll(loadedCartItems);
     }
 
     if (loadedDeliveryOption != null) {
@@ -212,7 +234,10 @@ class ProductProvider with ChangeNotifier {
     }
 
     notifyListeners();
+  } else {
+    print('Error: User ID is null.');
   }
+}
 
   // Update delivery option
   void updateDeliveryOption(String deliveryOption) {
