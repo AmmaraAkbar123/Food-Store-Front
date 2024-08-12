@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/my_app.dart';
 import 'package:foodstorefront/provider/business_provider.dart';
+import 'package:foodstorefront/provider/cart_provider.dart';
 import 'package:foodstorefront/provider/category_provider.dart';
 import 'package:foodstorefront/provider/country_provider.dart';
 import 'package:foodstorefront/provider/product_provider.dart';
@@ -31,6 +32,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => cruds),
         ChangeNotifierProvider(create: (_) => CountryCodeProvider()),
         ChangeNotifierProvider(create: (context) => SignInProvider()),
+        ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(
           create: (_) => CategoryProvider(),
         ),

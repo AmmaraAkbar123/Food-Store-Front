@@ -47,6 +47,7 @@ dependencies:
   flutter_widget_from_html: ^0.14.11
   country_picker: ^2.0.26
   pin_code_fields: ^8.0.1
+  uuid: ^4.4.2
   
 dev_dependencies:
   flutter_test:
