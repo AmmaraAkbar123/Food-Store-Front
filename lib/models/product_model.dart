@@ -38,6 +38,8 @@ class ProductModel {
     );
   }
 
+  get code => null;
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

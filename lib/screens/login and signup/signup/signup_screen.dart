@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom_phone_textfield.dart';
-import 'package:foodstorefront/services/sign_in_auth.dart';
+import 'package:foodstorefront/authentication/sign_in_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom_arrow_back_button.dart';
 import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom_button.dart';

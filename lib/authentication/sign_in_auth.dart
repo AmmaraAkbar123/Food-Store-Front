@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:foodstorefront/models/user_model.dart';
 import 'package:foodstorefront/provider/country_provider.dart';
+import 'package:foodstorefront/provider/user_provider.dart';
 import 'package:foodstorefront/screens/login%20and%20signup/otp/otp_screen.dart';
 import 'package:foodstorefront/screens/store/store_screen.dart';
-import 'package:foodstorefront/services/share_pref_service.dart';
 import 'package:foodstorefront/utils/colors.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import '../screens/login and signup/signup/signup_screen.dart';
-import 'authentication_service.dart';
+import '../services/secure_storage.dart';
 
 class SignInProvider extends ChangeNotifier {
   final String _otpUrl =
@@ -176,7 +177,7 @@ class SignInProvider extends ChangeNotifier {
             final user = User.fromJson(userJson);
 
             // Save user data in SharedPreferences using Cruds provider
-            final crudsProvider = Provider.of<Cruds>(context, listen: false);
+            final crudsProvider = Provider.of<UserProvider>(context, listen: false);
             await crudsProvider.saveUser(user);
 
             // User is not null, navigate to StoreScreen
@@ -276,7 +277,7 @@ class SignInProvider extends ChangeNotifier {
             final user = User.fromJson(userJson);
 
             // Save user data in SharedPreferences using Cruds provider
-            final crudsProvider = Provider.of<Cruds>(context, listen: false);
+            final crudsProvider = Provider.of<UserProvider>(context, listen: false);
             await crudsProvider.saveUser(user);
 
             // Navigate to StoreScreen

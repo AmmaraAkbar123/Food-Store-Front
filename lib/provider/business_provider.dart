@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:foodstorefront/api_service.dart';
+import 'package:foodstorefront/api_services/api_service.dart';
 import 'package:foodstorefront/models/business_model.dart';
-import 'package:foodstorefront/services/authentication_service.dart';
+import 'package:foodstorefront/services/secure_storage.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 

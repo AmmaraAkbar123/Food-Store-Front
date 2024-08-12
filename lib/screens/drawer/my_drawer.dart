@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:foodstorefront/screens/cart_screens/add_to_cart.dart';
+import 'package:foodstorefront/provider/user_provider.dart';
 import 'package:foodstorefront/screens/drawer/about_us.dart';
-import 'package:foodstorefront/services/share_pref_service.dart';
 import 'package:provider/provider.dart';
 import '../login and signup/login/login_screen.dart';
 import 'terms_conditions.dart';
@@ -9,7 +8,7 @@ import 'terms_conditions.dart';
 class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final cruds = Provider.of<Cruds>(context);
+    final cruds = Provider.of<UserProvider>(context);
     final user = cruds.user;
 
     return Drawer(

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom_arrow_back_button.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
-import 'package:foodstorefront/services/sign_in_auth.dart';
+import 'package:foodstorefront/authentication/sign_in_auth.dart';
 import 'package:foodstorefront/utils/colors.dart';
 
 class OTPScreen extends StatefulWidget {

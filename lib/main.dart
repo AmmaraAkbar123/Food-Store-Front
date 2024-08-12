@@ -6,8 +6,8 @@ import 'package:foodstorefront/provider/category_provider.dart';
 import 'package:foodstorefront/provider/country_provider.dart';
 import 'package:foodstorefront/provider/product_provider.dart';
 import 'package:foodstorefront/provider/radio_provider.dart';
-import 'package:foodstorefront/services/share_pref_service.dart';
-import 'package:foodstorefront/services/sign_in_auth.dart';
+import 'package:foodstorefront/provider/user_provider.dart';
+import 'package:foodstorefront/authentication/sign_in_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'provider/store_provider.dart';
@@ -23,26 +23,27 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   final sharedPreferences = await SharedPreferences.getInstance();
-  final cruds = Cruds(sharedPreferences);
+  final userProvider = UserProvider(sharedPreferences);
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => BusinessProvider()),
-        ChangeNotifierProvider(create: (_) => cruds),
+        ChangeNotifierProvider(create: (_) => userProvider),
         ChangeNotifierProvider(create: (_) => CountryCodeProvider()),
         ChangeNotifierProvider(create: (context) => SignInProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(
           create: (_) => CategoryProvider(),
         ),
-        ChangeNotifierProvider(
-          create: (_) => ProductProvider(),
+        ChangeNotifierProxyProvider<UserProvider, ProductProvider>(
+          create: (context) => ProductProvider(userProvider),
+          update: (context, userProvider, productProvider) => ProductProvider(userProvider),
         ),
         ChangeNotifierProvider(create: (_) => RadioProvider()),
         ChangeNotifierProvider(create: (_) => DeliveryInfoProvider()),
       ],
-      child: MyApp(cruds: cruds),
+      child: MyApp(userProvider: userProvider),
     ),
   );
 }

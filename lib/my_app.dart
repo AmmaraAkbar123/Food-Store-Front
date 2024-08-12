@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:foodstorefront/provider/user_provider.dart';
 import 'package:foodstorefront/screens/splash/splash_screen.dart';
-import 'package:foodstorefront/services/share_pref_service.dart';
 
 class MyApp extends StatelessWidget {
-  final Cruds cruds;
+  final UserProvider userProvider;
 
-  const MyApp({super.key, required this.cruds});
+  const MyApp({super.key, required this.userProvider});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'FoodStore Front',
       // theme: ThemeData(textTheme: MyTextTheme.lightTextTheme),
-      home: SplashScreen(cruds: cruds), // Pass cruds to SplashScreen
+      home: SplashScreen(userProvider: userProvider), // Pass cruds to SplashScreen
     );
   }
 }

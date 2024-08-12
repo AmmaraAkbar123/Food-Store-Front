@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:foodstorefront/provider/user_provider.dart';
 import 'package:foodstorefront/screens/location/location_access_screen.dart';
 import 'package:foodstorefront/utils/colors.dart';
 import 'package:foodstorefront/utils/images_strings.dart';
 import 'package:provider/provider.dart';
-
 import '../../provider/business_provider.dart';
-import '../../services/share_pref_service.dart';
 import '../store/store_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-  final Cruds cruds; // Add Cruds instance
+  final UserProvider userProvider; // Add Cruds instance
 
-  const SplashScreen({Key? key, required this.cruds}) : super(key: key);
+  const SplashScreen({Key? key, required this.userProvider}) : super(key: key);
 
   @override
   _SplashScreenState createState() => _SplashScreenState();
@@ -37,7 +36,7 @@ class _SplashScreenState extends State<SplashScreen> {
   _navigateToHome() async {
     await Future.delayed(const Duration(seconds: 3), () {});
 
-    if (widget.cruds.isLoggedIn()) {
+    if (widget.userProvider.isLoggedIn()) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => StoreScreen()),
