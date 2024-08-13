@@ -43,13 +43,20 @@ class BusinessProvider with ChangeNotifier {
         _isLoading = false;
         notifyListeners();
       } else {
-        _errorMessage = 'Failed to load data: ${response.statusCode}';
+        _errorMessage = 'Failed to load business data. Please try again later.';
         print(_errorMessage);
         _isLoading = false;
         notifyListeners();
       }
     } catch (e) {
-      _errorMessage = 'Error: $e';
+      // Check the type of exception and set a user-friendly error message
+      if (e is http.ClientException) {
+        _errorMessage = 'Network error. Please check your internet connection.';
+      } else if (e is FormatException) {
+        _errorMessage = 'Invalid data format. Please try again later.';
+      } else {
+        _errorMessage = 'An unexpected error occurred. Please try again later.';
+      }
       print(_errorMessage);
       _isLoading = false;
       notifyListeners();

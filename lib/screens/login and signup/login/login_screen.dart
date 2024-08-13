@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const customArrowBackButton(),
+                const CustomArrowBackButton(),
                 Consumer<BusinessProvider>(
                   builder: (context, businessProvider, child) {
                     if (businessProvider.errorMessage != null) {

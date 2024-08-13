@@ -107,7 +107,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const customArrowBackButton(),
+                    const CustomArrowBackButton(),
                     const SizedBox(height: 50),
                     _buildHeaderText(),
                     const SizedBox(height: 40),

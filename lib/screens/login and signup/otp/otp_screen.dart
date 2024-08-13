@@ -93,7 +93,7 @@ class _OTPScreenState extends State<OTPScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  customArrowBackButton(),
+                  CustomArrowBackButton(),
                   const SizedBox(height: 50),
                   const Text(
                     'Enter The \nCode',

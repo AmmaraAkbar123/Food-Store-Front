@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/utils/colors.dart';
 
-class customArrowBackButton extends StatelessWidget {
-  const customArrowBackButton({
-    super.key,
-  });
+class CustomArrowBackButton extends StatelessWidget {
+  final VoidCallback? onPressed; // Add this parameter
+
+  const CustomArrowBackButton({
+    Key? key,
+    this.onPressed, // Initialize the parameter
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +27,7 @@ class customArrowBackButton extends StatelessWidget {
               color: MyColors.white,
               size: 12,
             ),
-            onPressed: () {
-              // Navigator.pop(context);
-            },
+            onPressed: onPressed, // Use the callback
           ),
         ),
       ],

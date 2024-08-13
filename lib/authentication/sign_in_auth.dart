@@ -10,6 +10,7 @@ import 'package:foodstorefront/utils/colors.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import '../screens/login and signup/signup/signup_screen.dart';
+import '../screens/login and signup/signup/successful_created_screen.dart';
 import '../services/secure_storage.dart';
 
 class SignInProvider extends ChangeNotifier {
@@ -114,7 +115,7 @@ class SignInProvider extends ChangeNotifier {
   void startTimer() {
     _start = 60;
     _timer?.cancel();
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_start == 0) {
         timer.cancel();
       } else {
@@ -177,13 +178,14 @@ class SignInProvider extends ChangeNotifier {
             final user = User.fromJson(userJson);
 
             // Save user data in SharedPreferences using Cruds provider
-            final crudsProvider = Provider.of<UserProvider>(context, listen: false);
+            final crudsProvider =
+                Provider.of<UserProvider>(context, listen: false);
             await crudsProvider.saveUser(user);
 
             // User is not null, navigate to StoreScreen
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => StoreScreen()),
+              MaterialPageRoute(builder: (context) => const StoreScreen()),
               (route) => false,
             );
           } else {
@@ -275,17 +277,24 @@ class SignInProvider extends ChangeNotifier {
           final userJson = jsonResponse['data'] as Map<String, dynamic>?;
           if (userJson != null) {
             final user = User.fromJson(userJson);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const SuccessfulCreatedScreen(),
+              ),
+            );
 
             // Save user data in SharedPreferences using Cruds provider
-            final crudsProvider = Provider.of<UserProvider>(context, listen: false);
-            await crudsProvider.saveUser(user);
+            final userProvider =
+                Provider.of<UserProvider>(context, listen: false);
+            await userProvider.saveUser(user);
 
-            // Navigate to StoreScreen
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => StoreScreen()),
-              (route) => false,
-            );
+            // // Navigate to StoreScreen
+            // Navigator.pushAndRemoveUntil(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => StoreScreen()),
+            //   (route) => false,
+            // );
           } else {
             _errorMessage = 'User data not found!';
             print(_errorMessage);
@@ -311,55 +320,56 @@ class SignInProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> showSuccessScreen(BuildContext context) async {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Row(
-            children: <Widget>[
-              CircularProgressIndicator(),
-              Container(
-                  margin: EdgeInsets.only(left: 10),
-                  child: Text("Account created successfully!")),
-            ],
+//   Future<void> showSuccessScreen(BuildContext context) async {
+//     showDialog(
+//       context: context,
+//       barrierDismissible: false,
+//       builder: (BuildContext context) {
+//         return AlertDialog(
+//           content: Row(
+//             children: <Widget>[
+//               CircularProgressIndicator(),
+//               Container(
+//                   margin: EdgeInsets.only(left: 10),
+//                   child: Text("Account created successfully!")),
+//             ],
+//           ),
+//         );
+//       },
+//     );
+
+//     await Future.delayed(Duration(seconds: 3));
+
+//     Navigator.of(context).pop(); // Close the dialog
+
+//     // Navigate to StoreScreen
+//     Navigator.pushAndRemoveUntil(
+//       context,
+//       MaterialPageRoute(builder: (context) => StoreScreen()),
+//       (route) => false,
+//     );
+//   }
+// }
+
+  void showCustomSnackbar(BuildContext context, String message,
+      {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            color: isError ? Colors.white : Colors.black,
           ),
-        );
-      },
-    );
-
-    await Future.delayed(Duration(seconds: 3));
-
-    Navigator.of(context).pop(); // Close the dialog
-
-    // Navigate to StoreScreen
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => StoreScreen()),
-      (route) => false,
+        ),
+        backgroundColor: isError ? Colors.red : Colors.green,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        margin: const EdgeInsets.all(10),
+        duration: const Duration(seconds: 3),
+      ),
     );
   }
-}
-
-void showCustomSnackbar(BuildContext context, String message,
-    {bool isError = false}) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(
-        message,
-        style: TextStyle(
-          fontWeight: FontWeight.w700,
-          color: isError ? Colors.white : Colors.black,
-        ),
-      ),
-      backgroundColor: isError ? Colors.red : Colors.green,
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      margin: EdgeInsets.all(10),
-      duration: Duration(seconds: 3),
-    ),
-  );
 }

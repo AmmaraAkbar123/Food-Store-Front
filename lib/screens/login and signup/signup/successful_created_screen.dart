@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom_arrow_back_button.dart';
+import 'package:foodstorefront/screens/store/store_screen.dart';
 
 class SuccessfulCreatedScreen extends StatelessWidget {
   const SuccessfulCreatedScreen({super.key});
@@ -8,11 +9,16 @@ class SuccessfulCreatedScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 18),
+        padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            customArrowBackButton(),
+            CustomArrowBackButton(
+                onPressed: () => Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => StoreScreen()),
+                      (route) => false,
+                    )),
             const SizedBox(height: 40),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -21,22 +27,22 @@ class SuccessfulCreatedScreen extends StatelessWidget {
                   "Account \nCreated!",
                   style: TextStyle(
                     height: 1,
-                    fontSize: 35,
+                    fontSize: 40,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 SizedBox(height: 10),
                 Text(
                   "Your account has been successfully created.\nLet's continue to setup your business",
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                 ),
-                SizedBox(height: 80),
+                SizedBox(height: 70),
                 Image(
                   image: AssetImage(
-                      'assets/images/pandasplash.png'), // Replace with your image asset
+                      'assets/images/imagwe.png'), // Replace with your image asset
                   width: double.infinity, // Adjust the width if necessary
-                  height: 200, // Adjust the height if necessary
-                  fit: BoxFit.cover, // Adjust the fit if necessary
+                  // height: 200, // Adjust the height if necessary
+                  // fit: BoxFit.cover, // Adjust the fit if necessary
                 ),
               ],
             ),
