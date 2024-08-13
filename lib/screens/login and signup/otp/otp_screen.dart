@@ -107,6 +107,7 @@ class _OTPScreenState extends State<OTPScreen> {
                   ),
                   const SizedBox(height: 30),
                   PinCodeTextField(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     showCursor: true,
                     cursorColor: MyColors.black,
                     cursorHeight: 50,
@@ -119,7 +120,7 @@ class _OTPScreenState extends State<OTPScreen> {
                       borderRadius: BorderRadius.circular(8),
                       fieldHeight:
                           100, // Increased field height as you required
-                      fieldWidth: 82, // Increased field width as you required
+                      fieldWidth: 75, // Increased field width as you required
                       activeFillColor: Colors.white,
                       activeColor: MyColors.black,
                       inactiveFillColor: Colors.white,

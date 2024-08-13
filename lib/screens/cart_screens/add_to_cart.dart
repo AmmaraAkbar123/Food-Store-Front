@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/models/product_model.dart';
 import 'package:foodstorefront/provider/product_provider.dart';
+import 'package:foodstorefront/screens/store/app_bar/widgets/separater.dart';
 import 'package:foodstorefront/utils/colors.dart';
 import 'package:provider/provider.dart';
 
@@ -26,7 +27,9 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
     return Scaffold(
       appBar: buildAppBar(),
       body: buildBody(context),
-      bottomNavigationBar: buildBottomBar(),
+       bottomNavigationBar: Provider.of<ProductProvider>(context).cartItems.isEmpty
+          ? null
+          : buildBottomBar(),
     );
   }
 
@@ -34,11 +37,6 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 0,
-      title: const Text(
-        "My Cart",
-        style: TextStyle(color: Colors.black),
-      ),
-      centerTitle: true,
       iconTheme: const IconThemeData(color: Colors.black),
     );
   }
@@ -46,21 +44,55 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
   Widget buildBody(BuildContext context) {
     return Consumer<ProductProvider>(
       builder: (context, productProvider, child) {
-        return SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
+        if (productProvider.cartItems.isEmpty) {
+          // If cart is empty, show a message and a button to go back to StoreScreen
+          return Center(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                buildCartItemsList(productProvider),
-                const SizedBox(height: 50),
-                buildDeliveryOptions(productProvider),
-                const Divider(),
-                buildPriceSummary(productProvider.cartItems,
-                    productProvider.selectedDeliveryOption),
+                const Text(
+                  "Your cart is empty",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: MyColors.primary,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 16, horizontal: 32),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    "Back to Store",
+                    style: TextStyle(fontSize: 16, color: MyColors.white),
+                  ),
+                ),
               ],
             ),
-          ),
-        );
+          );
+        } else {
+          // If cart is not empty, show the cart items and price summary
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  buildCartItemsList(productProvider),
+                  const SizedBox(height: 50),
+                  buildDeliveryOptions(productProvider),
+                  const SizedBox(height: 15),
+                  buildPriceSummary(productProvider.cartItems,
+                      productProvider.selectedDeliveryOption),
+                ],
+              ),
+            ),
+          );
+        }
       },
     );
   }
@@ -89,8 +121,9 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
           children: [
             buildProductImage(product),
             const SizedBox(width: 16.0),
-            buildProductDetails(product),
-            const Spacer(),
+            Expanded(
+              child: buildProductDetails(product),
+            ),
             buildQuantityController(context, product, quantity),
           ],
         ),
@@ -116,7 +149,10 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
       children: [
         Text(
           product.name,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              overflow: TextOverflow.ellipsis),
         ),
         Text(
           'Code: ${product.price}',
@@ -130,37 +166,36 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
     );
   }
 
- Widget buildQuantityController(
-    BuildContext context, ProductModel product, int quantity) {
-  return Row(
-    children: [
-      IconButton(
-        icon: const Icon(Icons.remove),
-        onPressed: () {
-          if (quantity > 1) {
+  Widget buildQuantityController(
+      BuildContext context, ProductModel product, int quantity) {
+    return Row(
+      children: [
+        IconButton(
+          icon: const Icon(Icons.remove),
+          onPressed: () {
+            if (quantity > 1) {
+              Provider.of<ProductProvider>(context, listen: false)
+                  .removeProduct(product);
+            } else {
+              Provider.of<ProductProvider>(context, listen: false)
+                  .removeFromCart(context, product);
+            }
+          },
+        ),
+        Text(
+          '$quantity',
+          style: const TextStyle(fontSize: 16),
+        ),
+        IconButton(
+          icon: const Icon(Icons.add),
+          onPressed: () {
             Provider.of<ProductProvider>(context, listen: false)
-                .removeProduct(product);
-          } else {
-            Provider.of<ProductProvider>(context, listen: false)
-                .removeFromCart(context, product);
-          }
-        },
-      ),
-      Text(
-        '$quantity',
-        style: const TextStyle(fontSize: 16),
-      ),
-      IconButton(
-        icon: const Icon(Icons.add),
-        onPressed: () {
-          Provider.of<ProductProvider>(context, listen: false)
-              .addProduct(product);
-        },
-      ),
-    ],
-  );
-}
-
+                .addProduct(product);
+          },
+        ),
+      ],
+    );
+  }
 
   Widget buildDeliveryOptions(ProductProvider productProvider) {
     return Column(
@@ -184,55 +219,75 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
     );
   }
 
-  Widget buildDeliveryOptionTile(
-      String title, String value, String groupValue, Function(String?) onChanged) {
-    return RadioListTile<String>(
-      title: Text(title),
-      value: value,
-      groupValue: groupValue,
-      onChanged: onChanged,
+  Widget buildDeliveryOptionTile(String title, String value, String groupValue,
+      Function(String?) onChanged) {
+    return InkWell(
+      onTap: () => onChanged(value),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Radio<String>(
+            value: value,
+            groupValue: groupValue,
+            onChanged: onChanged,
+            activeColor: MyColors.primary,
+            visualDensity:
+                VisualDensity.compact, // Optional: reduces the Radio's size
+            materialTapTargetSize:
+                MaterialTapTargetSize.shrinkWrap, // Shrinks the tap area
+          ),
+          Text(title),
+        ],
+      ),
     );
   }
 
   Widget buildPriceSummary(
       Map<ProductModel, int> cartItems, String deliveryOption) {
-    double subtotal = cartItems.entries.fold(
-        0, (sum, item) => sum + (item.key.price) * item.value);
+    double itemsPrice = cartItems.entries
+        .fold(0, (sum, item) => sum + (item.key.price) * item.value);
     double taxRate = 0.07;
-    double tax = subtotal * taxRate;
-    double total = subtotal + tax;
-    String deliveryCharge =
-        deliveryOption == "Delivery" ? "Rs. 50.00" : "Free";
+    double tax = itemsPrice * taxRate;
+    double subTotal = itemsPrice + tax;
+    double deliveryCharge = deliveryOption == "Delivery" ? 50.0 : 0.0;
+    double total = subTotal + deliveryCharge;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Price Summary",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        buildSummaryRow("Subtotal", "Rs. ${subtotal.toStringAsFixed(2)}"),
-        buildSummaryRow("Tax", "Rs. ${tax.toStringAsFixed(2)}"),
-        buildSummaryRow("Delivery Charge", deliveryCharge),
-        const Divider(),
+        buildSummaryRow("Items Price", "Rs. ${itemsPrice.toStringAsFixed(2)}"),
+        buildSummaryRow("Vat/Tax", "Rs. ${tax.toStringAsFixed(2)}"),
+        SizedBox(height: 5),
+        MySeparator(),
+        SizedBox(height: 5),
+        buildSummaryRow("Subtotal", "Rs. ${subTotal.toStringAsFixed(2)}",
+            boldText: true),
+        buildSummaryRow(
+            "Delivery Charge", "Rs. ${deliveryCharge.toStringAsFixed(2)}"),
+        SizedBox(height: 5),
+        MySeparator(),
+        SizedBox(height: 5),
         buildSummaryRow("Total", "Rs. ${total.toStringAsFixed(2)}",
-            isTotal: true),
+            boldText: true),
       ],
     );
   }
 
-  Widget buildSummaryRow(String label, String value, {bool isTotal = false}) {
+  Widget buildSummaryRow(String label, String value, {bool boldText = false}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontSize: 16)),
+          Text(label,
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: boldText ? FontWeight.bold : FontWeight.normal)),
           Text(
             value,
             style: TextStyle(
                 fontSize: 16,
-                fontWeight: isTotal ? FontWeight.bold : FontWeight.normal),
+                fontWeight: boldText ? FontWeight.bold : FontWeight.normal),
           ),
         ],
       ),
