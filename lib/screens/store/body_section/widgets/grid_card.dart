@@ -34,7 +34,7 @@ class GridCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     child: product.image.thumbnail != null
                         ? Image.network(
-                            product.image.thumbnail!,
+                            product.image.thumbnail,
                             fit: BoxFit.cover,
                             width: double.infinity,
                             height: 160,
@@ -87,11 +87,7 @@ class GridCard extends StatelessWidget {
                     right: 8,
                     child: GestureDetector(
                       onTap: () {
-                        if (isAdded) {
-                          productProvider.removeFromCart(context, product);
-                        } else {
-                          productProvider.addToCart(context, product);
-                        }
+                        productProvider.addToCart(context, product);
                       },
                       child: Container(
                         width: 32,
@@ -110,7 +106,7 @@ class GridCard extends StatelessWidget {
                         ),
                         child: Center(
                           child: Icon(
-                            isAdded ? Icons.check : Icons.add,
+                            Icons.add,
                             color: MyColors.primary,
                             size: 20,
                           ),

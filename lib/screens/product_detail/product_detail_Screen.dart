@@ -47,7 +47,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           builder: (context, productProvider, child) {
             final product = productProvider.products.firstWhere(
               (product) => product.name == widget.productName,
-             
             );
 
             if (productProvider.isLoading) {
@@ -165,8 +164,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                     Text(
                       '${productProvider.quantity}',
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     Container(
                       height: 32,
@@ -190,11 +189,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     GestureDetector(
                       onTap: () {
                         if (productProvider.isOptionSelected) {
-                         // productProvider.addToCartProduct(context, product);
+                          // productProvider.addToCartProduct(context, product);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Please select an option before adding to cart.'),
+                              content: Text(
+                                  'Please select an option before adding to cart.'),
                               duration: Duration(seconds: 2),
                             ),
                           );
@@ -203,7 +203,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       child: Container(
                         width: 170,
                         height: 48,
-                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                         decoration: BoxDecoration(
                           color: productProvider.isOptionSelected
                               ? MyColors.primary

@@ -150,11 +150,7 @@ class ListCard extends StatelessWidget {
 
                       return GestureDetector(
                         onTap: () {
-                          if (isAdded) {
-                            productProvider.removeFromCart(context, product);
-                          } else {
-                            productProvider.addToCart(context, product);
-                          }
+                          productProvider.addToCart(context, product);
                         },
                         child: Container(
                           width: 32,
@@ -173,7 +169,7 @@ class ListCard extends StatelessWidget {
                           ),
                           child: Center(
                             child: Icon(
-                              isAdded ? Icons.check : Icons.add,
+                              Icons.add,
                               color: MyColors.primary,
                               size: 20,
                             ),

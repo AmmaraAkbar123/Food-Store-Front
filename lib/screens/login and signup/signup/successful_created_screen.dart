@@ -41,8 +41,7 @@ class SuccessfulCreatedScreen extends StatelessWidget {
                   image: AssetImage(
                       'assets/images/imagwe.png'), // Replace with your image asset
                   width: double.infinity, // Adjust the width if necessary
-                  // height: 200, // Adjust the height if necessary
-                  // fit: BoxFit.cover, // Adjust the fit if necessary
+                
                 ),
               ],
             ),
