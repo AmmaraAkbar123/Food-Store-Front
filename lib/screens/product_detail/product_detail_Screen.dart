@@ -146,14 +146,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       width: 32,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(100),
-                        color: productProvider.quantity > 1
-                            ? MyColors.primary
-                            : MyColors.grey,
+
+                        //   color: productProvider.quantity > 1
+                        //       ? MyColors.primary
+                        //       : MyColors.grey,
                       ),
                       child: IconButton(
                         padding: EdgeInsets.all(0),
                         onPressed: () {
-                          productProvider.decrementQuantity();
+                          //productProvider.decrementQuantity(product);
                         },
                         icon: Icon(
                           Icons.remove,
@@ -162,11 +163,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                       ),
                     ),
-                    Text(
-                      '${productProvider.quantity}',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
+                    // Text(
+                    //   '${productProvider.quantity}',
+                    //   style:
+                    //       TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    // ),
                     Container(
                       height: 32,
                       width: 32,
@@ -177,7 +178,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       child: IconButton(
                         padding: EdgeInsets.all(0),
                         onPressed: () {
-                          productProvider.incrementQuantity();
+                          //productProvider.incrementQuantity();
                         },
                         icon: Icon(
                           Icons.add,

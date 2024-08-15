@@ -5,6 +5,9 @@ import 'package:foodstorefront/screens/store/app_bar/widgets/separater.dart';
 import 'package:foodstorefront/utils/colors.dart';
 import 'package:provider/provider.dart';
 
+import '../login and signup/login/widgets/custom_button.dart';
+import 'checkout_page.dart';
+
 class AddToCartScreen extends StatefulWidget {
   const AddToCartScreen({super.key});
 
@@ -27,9 +30,10 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
     return Scaffold(
       appBar: buildAppBar(),
       body: buildBody(context),
-       bottomNavigationBar: Provider.of<ProductProvider>(context).cartItems.isEmpty
-          ? null
-          : buildBottomBar(),
+      bottomNavigationBar:
+          Provider.of<ProductProvider>(context).cartItems.isEmpty
+              ? null
+              : buildBottomBar(),
     );
   }
 
@@ -189,10 +193,13 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
         IconButton(
           icon: const Icon(Icons.add),
           onPressed: () {
-            Provider.of<ProductProvider>(context, listen: false)
-                .addProduct(product);
+            final provider =
+                Provider.of<ProductProvider>(context, listen: false);
+            provider.addProduct(
+              product,
+            ); // Use dynamic quantity
           },
-        ),
+        )
       ],
     );
   }
@@ -208,12 +215,12 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
         buildDeliveryOptionTile(
             "Delivery", "Delivery", productProvider.selectedDeliveryOption,
             (value) {
-          productProvider.updateDeliveryOption(value!);
+          productProvider.setDeliveryOption(value!);
         }),
         buildDeliveryOptionTile(
             "Pick Up", "Pick Up", productProvider.selectedDeliveryOption,
             (value) {
-          productProvider.updateDeliveryOption(value!);
+          productProvider.setDeliveryOption(value!);
         }),
       ],
     );
@@ -296,25 +303,14 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
 
   Widget buildBottomBar() {
     return BottomAppBar(
-      color: Colors.transparent,
-      elevation: 0,
-      child: ElevatedButton(
-        onPressed: () {
-          // Handle checkout
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: MyColors.primary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          minimumSize: const Size(double.infinity, 50),
-        ),
-        child: const Text(
-          "Proceed to Checkout",
-          style: TextStyle(fontSize: 18, color: MyColors.white),
-        ),
-      ),
-    );
+        color: Colors.transparent,
+        elevation: 0,
+        child: CustomButton(
+            onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CheckoutPage()),
+                ),
+            text: "Proceed to Checkout",
+            clrtext: MyColors.white));
   }
 }

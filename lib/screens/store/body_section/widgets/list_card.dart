@@ -146,11 +146,10 @@ class ListCard extends StatelessWidget {
                   right: 8,
                   child: Consumer<ProductProvider>(
                     builder: (context, productProvider, child) {
-                      final isAdded = productProvider.isProductAdded(product);
-
                       return GestureDetector(
                         onTap: () {
-                          productProvider.addToCart(context, product);
+                          productProvider.addToCart(context,
+                              product); // Add product to cart, incrementing if it already exists
                         },
                         child: Container(
                           width: 32,
