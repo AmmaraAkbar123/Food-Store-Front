@@ -28,7 +28,7 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MyColors.white,
+      //  backgroundColor: MyColors.white,
       appBar: buildAppBar(),
       body: buildBody(context),
       bottomNavigationBar:
@@ -120,8 +120,10 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
   Widget buildShoppingItemCard(
       BuildContext context, ProductModel product, int quantity) {
     return Card(
+      color: MyColors.white,
+
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      elevation: 2,
+      // elevation: 2, // This applies elevation on all sides of the card
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
@@ -144,8 +146,8 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
       borderRadius: BorderRadius.circular(8),
       child: Image.network(
         product.image.thumbnail,
-        width: 70,
-        height: 70,
+        width: 80,
+        height: 80,
         fit: BoxFit.cover,
         errorBuilder:
             (BuildContext context, Object exception, StackTrace? stackTrace) {
@@ -173,7 +175,7 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
               overflow: TextOverflow.ellipsis),
         ),
         SizedBox(
-          height: 8,
+          height: 10,
         ),
         Text(
           'Code: ---',
