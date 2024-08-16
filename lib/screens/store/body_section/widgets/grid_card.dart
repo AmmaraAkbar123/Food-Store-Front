@@ -54,18 +54,17 @@ class GridCard extends StatelessWidget {
                             },
                             errorBuilder: (context, error, stackTrace) {
                               return Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: MyColors.lightGrey),
-                                ),
-                                height: 160,
-                                width: double.infinity,
-                                child: const Icon(
-                                  Icons.error,
-                                  size: 50,
-                                  color: Colors.grey,
-                                ),
-                              );
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    border:
+                                        Border.all(color: MyColors.lightGrey),
+                                  ),
+                                  height: 160,
+                                  width: double.infinity,
+                                  child: Image.asset(
+                                    "assets/images/defaultimage.jpeg",
+                                    fit: BoxFit.cover,
+                                  ));
                             },
                           )
                         : Container(

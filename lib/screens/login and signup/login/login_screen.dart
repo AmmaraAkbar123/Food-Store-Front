@@ -68,16 +68,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             height: 80,
                             width: 80,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              // Handle error state
-                              return Container(
-                                height: 80,
+                            errorBuilder: (BuildContext context,
+                                Object exception, StackTrace? stackTrace) {
+                              return Image.asset(
+                                "assets/images/defaultimage.jpeg",
                                 width: 80,
-                                color:
-                                    Colors.grey, // Placeholder color or widget
-                                child: Icon(Icons.error,
-                                    color: Colors
-                                        .red), // Placeholder icon or widget
+                                height: 80,
+                                fit: BoxFit.cover,
                               );
                             },
                           ),

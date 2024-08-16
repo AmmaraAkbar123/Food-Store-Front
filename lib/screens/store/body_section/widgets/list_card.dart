@@ -113,18 +113,16 @@ class ListCard extends StatelessWidget {
                           },
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: MyColors.lightGrey),
-                              ),
-                              height: 110,
-                              width: double.infinity,
-                              child: const Icon(
-                                Icons.error,
-                                size: 50,
-                                color: Colors.grey,
-                              ),
-                            );
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: MyColors.lightGrey),
+                                ),
+                                height: 110,
+                                width: double.infinity,
+                                child: Image.asset(
+                                  "assets/images/defaultimage.jpeg",
+                                  fit: BoxFit.cover,
+                                ));
                           },
                         )
                       : Container(
@@ -166,7 +164,7 @@ class ListCard extends StatelessWidget {
                               ),
                             ],
                           ),
-                          child: Center(
+                          child: const Center(
                             child: Icon(
                               Icons.add,
                               color: MyColors.primary,

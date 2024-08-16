@@ -6,6 +6,8 @@ import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom
 import 'package:foodstorefront/utils/colors.dart';
 
 class CheckoutPage extends StatefulWidget {
+  const CheckoutPage({super.key});
+
   @override
   _CheckoutPageState createState() => _CheckoutPageState();
 }
@@ -44,7 +46,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
       try {
         await Provider.of<PaymentProvider>(context, listen: false)
-            .fetchPaymentMethods(); 
+            .fetchPaymentMethods();
       } catch (e) {
         // Handle the error if needed
       } finally {
@@ -57,13 +59,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Checkout',
           style: TextStyle(fontSize: 22),
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios),
+          icon: const Icon(Icons.arrow_back_ios),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -78,7 +80,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     'Delivery Address',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
@@ -86,8 +88,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     onPressed: () {
                       // Handle adding new address
                     },
-                    icon: Icon(Icons.add, color: Colors.blue),
-                    label: Text(
+                    icon: const Icon(Icons.add, color: Colors.blue),
+                    label: const Text(
                       'Add',
                       style: TextStyle(color: Colors.blue, fontSize: 20),
                     ),
@@ -96,7 +98,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ),
               ListView.builder(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: addresses.length,
                 itemBuilder: (context, index) {
                   return GestureDetector(
@@ -107,7 +109,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     },
                     child: Container(
                       margin: const EdgeInsets.symmetric(vertical: 5),
-                      padding: EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         border: Border.all(
                           color: _selectedAddress == index
@@ -117,6 +119,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Icon(
                             _selectedAddress == index
@@ -126,7 +129,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 ? MyColors.black
                                 : MyColors.greyText,
                           ),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -141,7 +144,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               ),
                               Text(
                                 addresses[index],
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: MyColors.greyText,
                                 ),
                               ),
@@ -153,12 +156,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   );
                 },
               ),
-              SizedBox(height: 30),
-              Text(
+              const SizedBox(height: 30),
+              const Text(
                 'Payment Method',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Consumer<PaymentProvider>(
                 builder: (context, paymentProvider, child) {
                   final paymentMethods = paymentProvider.paymentMethods;
@@ -172,7 +175,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           });
                         },
                         child: Container(
-                          padding: EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             border: Border.all(
                               color: _selectedPaymentMethod == method.id
@@ -191,13 +194,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                     ? MyColors.black
                                     : MyColors.greyText,
                               ),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               Image.network(
                                 method
                                     .logo, // Use Image.network for dynamic URLs
                                 height: 30,
                               ),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               Text(
                                 method.name,
                                 style: TextStyle(
@@ -218,7 +221,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   );
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
             ],
           ),
         ),

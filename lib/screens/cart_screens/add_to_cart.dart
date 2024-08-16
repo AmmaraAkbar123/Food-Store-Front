@@ -28,6 +28,7 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: MyColors.white,
       appBar: buildAppBar(),
       body: buildBody(context),
       bottomNavigationBar:
@@ -39,8 +40,10 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
 
   AppBar buildAppBar() {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: MyColors.white,
       elevation: 0,
+      title: Text("Cart"),
+      centerTitle: true,
       iconTheme: const IconThemeData(color: Colors.black),
     );
   }
@@ -122,6 +125,7 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             buildProductImage(product),
             const SizedBox(width: 16.0),
@@ -139,10 +143,19 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: Image.network(
-        product.image.thumbnail ?? 'https://via.placeholder.com/70',
+        product.image.thumbnail,
         width: 70,
         height: 70,
         fit: BoxFit.cover,
+        errorBuilder:
+            (BuildContext context, Object exception, StackTrace? stackTrace) {
+          return Image.asset(
+            "assets/images/defaultimage.jpeg",
+            width: 70,
+            height: 70,
+            fit: BoxFit.cover,
+          );
+        },
       ),
     );
   }
@@ -150,21 +163,21 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
   Widget buildProductDetails(ProductModel product) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Text(
           product.name,
           style: const TextStyle(
               fontSize: 16,
-              fontWeight: FontWeight.bold,
+              // fontWeight: FontWeight.bold,
               overflow: TextOverflow.ellipsis),
         ),
-        Text(
-          'Code: ${product.price}',
-          style: const TextStyle(color: Colors.grey),
+        SizedBox(
+          height: 8,
         ),
         Text(
-          'Rs. ${product.price.toString()}',
-          style: TextStyle(color: MyColors.primary),
+          'Code: ---',
+          style: const TextStyle(color: MyColors.greyText, fontSize: 15),
         ),
       ],
     );
@@ -172,34 +185,40 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
 
   Widget buildQuantityController(
       BuildContext context, ProductModel product, int quantity) {
-    return Row(
+    final provider = Provider.of<ProductProvider>(context);
+    final double totalPrice = product.price * quantity;
+
+    return Column(
       children: [
-        IconButton(
-          icon: const Icon(Icons.remove),
-          onPressed: () {
-            if (quantity > 1) {
-              Provider.of<ProductProvider>(context, listen: false)
-                  .removeProduct(product);
-            } else {
-              Provider.of<ProductProvider>(context, listen: false)
-                  .removeFromCart(context, product);
-            }
-          },
-        ),
         Text(
-          '$quantity',
-          style: const TextStyle(fontSize: 16),
+          'Rs. ${totalPrice.toStringAsFixed(2)}', // Display total price with 2 decimal places
+          style: const TextStyle(
+              color: MyColors.primary, fontWeight: FontWeight.bold),
         ),
-        IconButton(
-          icon: const Icon(Icons.add),
-          onPressed: () {
-            final provider =
-                Provider.of<ProductProvider>(context, listen: false);
-            provider.addProduct(
-              product,
-            ); // Use dynamic quantity
-          },
-        )
+        Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.remove),
+              onPressed: () {
+                if (quantity > 1) {
+                  provider.removeProduct(product);
+                } else {
+                  provider.removeFromCart(context, product);
+                }
+              },
+            ),
+            Text(
+              '$quantity',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            ),
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () {
+                provider.addProduct(product);
+              },
+            )
+          ],
+        ),
       ],
     );
   }
@@ -228,7 +247,7 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
 
   Widget buildDeliveryOptionTile(String title, String value, String groupValue,
       Function(String?) onChanged) {
-    return InkWell(
+    return GestureDetector(
       onTap: () => onChanged(value),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -264,16 +283,16 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
       children: [
         buildSummaryRow("Items Price", "Rs. ${itemsPrice.toStringAsFixed(2)}"),
         buildSummaryRow("Vat/Tax", "Rs. ${tax.toStringAsFixed(2)}"),
-        SizedBox(height: 5),
-        MySeparator(),
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
+        const MySeparator(),
+        const SizedBox(height: 5),
         buildSummaryRow("Subtotal", "Rs. ${subTotal.toStringAsFixed(2)}",
             boldText: true),
         buildSummaryRow(
             "Delivery Charge", "Rs. ${deliveryCharge.toStringAsFixed(2)}"),
-        SizedBox(height: 5),
-        MySeparator(),
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
+        const MySeparator(),
+        const SizedBox(height: 5),
         buildSummaryRow("Total", "Rs. ${total.toStringAsFixed(2)}",
             boldText: true),
       ],
@@ -308,7 +327,7 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
         child: CustomButton(
             onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => CheckoutPage()),
+                  MaterialPageRoute(builder: (context) => const CheckoutPage()),
                 ),
             text: "Proceed to Checkout",
             clrtext: MyColors.white));

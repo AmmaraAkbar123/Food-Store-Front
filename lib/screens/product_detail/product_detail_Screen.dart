@@ -60,13 +60,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       background: Image.network(
                         product.image.thumbnail,
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Center(
-                            child: Icon(
-                              Icons.error,
-                              color: Colors.red,
-                              size: 50,
-                            ),
+                        errorBuilder: (BuildContext context, Object exception,
+                            StackTrace? stackTrace) {
+                          return Image.asset(
+                            "assets/images/defaultimage.jpeg",
+                            fit: BoxFit.cover,
                           );
                         },
                       ),
