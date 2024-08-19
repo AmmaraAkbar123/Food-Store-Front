@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:foodstorefront/provider/place_order_provider.dart'; // Import your PlaceOrderProvider
 import 'package:foodstorefront/provider/payment_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:foodstorefront/provider/product_provider.dart';
 import 'package:foodstorefront/screens/cart_screens/order_confirmation_page.dart';
 import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom_button.dart';
 import 'package:foodstorefront/utils/colors.dart';
+import 'package:provider/provider.dart';
 
-class PlaceOrder extends StatefulWidget {
-  const PlaceOrder({super.key});
+class PlaceOrderScreen extends StatefulWidget {
+  final double deliveryCharges;
+  final String orderType;
+
+  const PlaceOrderScreen({
+    super.key,
+    required this.deliveryCharges,
+    required this.orderType,
+  });
 
   @override
-  _PlaceOrderState createState() => _PlaceOrderState();
+  _PlaceOrderScreenState createState() => _PlaceOrderScreenState();
 }
 
-class _PlaceOrderState extends State<PlaceOrder> {
+class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
   int _selectedAddress = 0;
   int _selectedPaymentMethod = 0;
 
@@ -27,7 +36,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
   @override
   void initState() {
     super.initState();
-    // Fetch payment methods when the page is initialized
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       showDialog(
         context: context,
@@ -45,14 +53,64 @@ class _PlaceOrderState extends State<PlaceOrder> {
       );
 
       try {
+        // Fetch payment methods
         await Provider.of<PaymentProvider>(context, listen: false)
             .fetchPaymentMethods();
+
+        // Fetch products
+        await Provider.of<ProductProvider>(context, listen: false)
+            .fetchProducts();
       } catch (e) {
         // Handle the error if needed
+        print('Error fetching data: $e');
       } finally {
-        Navigator.of(context, rootNavigator: true).pop(); // Close the dialog
+        Navigator.of(context, rootNavigator: true)
+            .pop(); // Close the loading dialog
       }
     });
+  }
+
+  Future<void> _placeOrder() async {
+    final productProvider =
+        Provider.of<ProductProvider>(context, listen: false);
+    final paymentProvider =
+        Provider.of<PaymentProvider>(context, listen: false);
+    final placeOrderProvider =
+        Provider.of<PlaceOrderProvider>(context, listen: false);
+
+    try {
+      // Ensure products are fetched
+      if (productProvider.products.isEmpty) {
+        await productProvider.fetchProducts();
+      }
+
+      // Convert the cart items map to a list of products
+      final cartProducts = productProvider.cartItems.keys.toList();
+
+      // // Prepare the order data
+      // final orderData = {
+      //   'products': cartProducts,
+      //   'orderType': widget.orderType,
+      //   'shippingCharges': widget.deliveryCharges.toString(),
+      // };
+
+      // Place the order using PlaceOrderProvider
+      await placeOrderProvider.createOrder(
+        cartProducts,
+        widget.orderType,
+        widget.deliveryCharges.toString(),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => OrderConfirmationPage()),
+      );
+    } catch (e) {
+      // Handle error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error placing order: $e')),
+      );
+    }
   }
 
   @override
@@ -196,8 +254,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                               ),
                               const SizedBox(width: 10),
                               Image.network(
-                                method
-                                    .logo, // Use Image.network for dynamic URLs
+                                method.logo,
                                 height: 30,
                               ),
                               const SizedBox(width: 10),
@@ -235,10 +292,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
       color: Colors.transparent,
       elevation: 0,
       child: CustomButton(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => OrderConfirmationPage()),
-        ),
+        onPressed: _placeOrder,
         text: "Place Order",
         clrtext: MyColors.white,
       ),

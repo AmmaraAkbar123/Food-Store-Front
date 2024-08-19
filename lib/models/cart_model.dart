@@ -4,6 +4,7 @@ class CartModel {
   double tax;
   double deliveryCharges;
   double discount;
+  
   double total;
 
   CartModel({
@@ -26,7 +27,7 @@ class CartModel {
       tax: json['tax'],
       deliveryCharges: json['deliveryCharges'],
       discount: json['discount'],
-      total: json['total'], 
+      total: json['total'],
     );
   }
 

@@ -7,7 +7,7 @@ import 'package:foodstorefront/utils/colors.dart';
 import 'package:provider/provider.dart';
 
 import '../login and signup/login/widgets/custom_button.dart';
-import 'checkout_page.dart';
+import 'place_order_screen.dart';
 
 class AddToCartScreen extends StatefulWidget {
   const AddToCartScreen({super.key});
@@ -240,7 +240,7 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
           productProvider.setDeliveryOption(value!);
         }),
         buildDeliveryOptionTile(
-            "Pick Up", "Pick Up", productProvider.selectedDeliveryOption,
+            "Pick Up", "Pickup", productProvider.selectedDeliveryOption,
             (value) {
           productProvider.setDeliveryOption(value!);
         }),
@@ -323,25 +323,26 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
     );
   }
 
- Widget buildBottomBar() {
+  Widget buildBottomBar() {
   return BottomAppBar(
     color: Colors.transparent,
     elevation: 0,
     child: CustomButton(
       onPressed: () {
-        final productProvider = Provider.of<ProductProvider>(context, listen: false);
+        final productProvider =
+            Provider.of<ProductProvider>(context, listen: false);
         final orderType = productProvider.selectedDeliveryOption;
-        final shippingCharges = orderType == "Delivery" ? "110.0000" : "0.0000";
-
-        createOrder(
-          productProvider.cartItems.keys.toList(),
-          orderType,
-          shippingCharges,
-        );
+        final shippingCharges =
+            orderType == "Delivery" ? 50.0 : 0.0; // Change 50.0 to your desired shipping charge
 
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const PlaceOrder()),
+          MaterialPageRoute(
+            builder: (context) => PlaceOrderScreen(
+              deliveryCharges: shippingCharges,
+              orderType: orderType,
+            ),
+          ),
         );
       },
       text: "Proceed to Checkout",
@@ -349,5 +350,6 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
     ),
   );
 }
+
 
 }
