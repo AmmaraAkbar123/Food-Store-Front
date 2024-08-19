@@ -2,24 +2,19 @@ class ProductModel {
   int id;
   String name;
   String? description;
- 
   final ProductImage image;
   final double price;
   final ProductCategory category;
- 
   final List<Variation> variations;
 
   ProductModel({
-    this.id = 0,
+    required this.id,
     required this.name,
     required this.description,
-    
     required this.variations,
-   
     required this.image,
     required this.price,
     required this.category,
-   
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
@@ -30,11 +25,9 @@ class ProductModel {
       image: ProductImage.fromJson(json['image'] ?? {}),
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       category: ProductCategory.fromJson(json['category'] ?? {}),
-     
       variations: (json['variations'] as List<dynamic>? ?? [])
           .map((item) => Variation.fromJson(item))
           .toList(),
-     
     );
   }
 
@@ -45,13 +38,10 @@ class ProductModel {
       'id': id,
       'name': name,
       'description': description,
-      
       'image': image.toJson(),
       'price': price,
       'category': category.toJson(),
-    
       'variations': variations.map((item) => item.toJson()).toList(),
-     
     };
   }
 }
@@ -84,29 +74,23 @@ class ProductImage {
   }
 }
 
-
 class ProductCategory {
   final int id;
   final String name;
-  
+
   final String description;
-  
 
   ProductCategory({
     required this.id,
     required this.name,
-   
     required this.description,
- 
   });
 
   factory ProductCategory.fromJson(Map<String, dynamic> json) {
     return ProductCategory(
       id: json['id'],
       name: json['name'],
-     
       description: json['description'] ?? '',
-     
     );
   }
 
@@ -114,12 +98,11 @@ class ProductCategory {
     return {
       'id': id,
       'name': name,
-    
       'description': description,
-     
     };
   }
 }
+
 class Variation {
   final int id;
   final String value;
@@ -127,7 +110,7 @@ class Variation {
   final String defaultSellPrice;
   final String sellPriceIncTax;
   final String compareAtPrice;
-  
+
   Variation({
     required this.id,
     required this.value,

@@ -232,3 +232,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 }
+ // void incrementQuantity(ProductModel product) {
+  //   if (_currentUserId != null && cartItems.containsKey(product)) {
+  //     addProduct(product, quantityToAdd: 1);
+  //   }
+  // }
+
+  // void decrementQuantity(ProductModel product) {
+  //   if (_currentUserId != null && cartItems.containsKey(product)) {
+  //     final currentQuantity = cartItems[product]!;
+  //     if (currentQuantity > 1) {
+  //       cartItems[product] = currentQuantity - 1;
+  //       saveCartToLocalStorage();
+  //       notifyListeners();
+  //     }
+  //   }
+  // }

@@ -1,4 +1,4 @@
-class Cartt {
+class CartModel {
   final int id;
   double subtotal;
   double tax;
@@ -6,7 +6,7 @@ class Cartt {
   double discount;
   double total;
 
-  Cartt({
+  CartModel({
     required this.id,
     required this.subtotal,
     required this.tax,
@@ -19,14 +19,14 @@ class Cartt {
     total = (subtotal + tax + deliveryCharges) - discount;
   }
 
-  factory Cartt.fromJson(Map<String, dynamic> json) {
-    return Cartt(
+  factory CartModel.fromJson(Map<String, dynamic> json) {
+    return CartModel(
       id: json['id'],
       subtotal: json['subtotal'],
       tax: json['tax'],
       deliveryCharges: json['deliveryCharges'],
       discount: json['discount'],
-      total: json['total'],
+      total: json['total'], 
     );
   }
 

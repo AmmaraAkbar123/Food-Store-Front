@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/models/product_model.dart';
+import 'package:foodstorefront/provider/place_order_provider.dart';
 import 'package:foodstorefront/provider/product_provider.dart';
 import 'package:foodstorefront/screens/store/app_bar/widgets/separater.dart';
 import 'package:foodstorefront/utils/colors.dart';
@@ -42,7 +43,7 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
     return AppBar(
       backgroundColor: MyColors.white,
       elevation: 0,
-      title: Text("Cart"),
+      title: const Text("Cart"),
       centerTitle: true,
       iconTheme: const IconThemeData(color: Colors.black),
     );
@@ -174,12 +175,12 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
               // fontWeight: FontWeight.bold,
               overflow: TextOverflow.ellipsis),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
-        Text(
+        const Text(
           'Code: ---',
-          style: const TextStyle(color: MyColors.greyText, fontSize: 15),
+          style: TextStyle(color: MyColors.greyText, fontSize: 15),
         ),
       ],
     );
@@ -322,16 +323,31 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
     );
   }
 
-  Widget buildBottomBar() {
-    return BottomAppBar(
-        color: Colors.transparent,
-        elevation: 0,
-        child: CustomButton(
-            onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const CheckoutPage()),
-                ),
-            text: "Proceed to Checkout",
-            clrtext: MyColors.white));
-  }
+ Widget buildBottomBar() {
+  return BottomAppBar(
+    color: Colors.transparent,
+    elevation: 0,
+    child: CustomButton(
+      onPressed: () {
+        final productProvider = Provider.of<ProductProvider>(context, listen: false);
+        final orderType = productProvider.selectedDeliveryOption;
+        final shippingCharges = orderType == "Delivery" ? "110.0000" : "0.0000";
+
+        createOrder(
+          productProvider.cartItems.keys.toList(),
+          orderType,
+          shippingCharges,
+        );
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const PlaceOrder()),
+        );
+      },
+      text: "Proceed to Checkout",
+      clrtext: MyColors.white,
+    ),
+  );
+}
+
 }

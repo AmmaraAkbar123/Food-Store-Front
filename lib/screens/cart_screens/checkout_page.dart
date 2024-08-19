@@ -5,14 +5,14 @@ import 'package:foodstorefront/screens/cart_screens/order_confirmation_page.dart
 import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom_button.dart';
 import 'package:foodstorefront/utils/colors.dart';
 
-class CheckoutPage extends StatefulWidget {
-  const CheckoutPage({super.key});
+class PlaceOrder extends StatefulWidget {
+  const PlaceOrder({super.key});
 
   @override
-  _CheckoutPageState createState() => _CheckoutPageState();
+  _PlaceOrderState createState() => _PlaceOrderState();
 }
 
-class _CheckoutPageState extends State<CheckoutPage> {
+class _PlaceOrderState extends State<PlaceOrder> {
   int _selectedAddress = 0;
   int _selectedPaymentMethod = 0;
 
