@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:foodstorefront/provider/place_order_provider.dart'; // Import your PlaceOrderProvider
 import 'package:foodstorefront/provider/payment_provider.dart';
 import 'package:foodstorefront/provider/product_provider.dart';
+import 'package:foodstorefront/provider/user_provider.dart';
 import 'package:foodstorefront/screens/cart_screens/order_confirmation_page.dart';
 import 'package:foodstorefront/screens/login%20and%20signup/login/widgets/custom_button.dart';
 import 'package:foodstorefront/utils/colors.dart';
@@ -10,11 +11,15 @@ import 'package:provider/provider.dart';
 class PlaceOrderScreen extends StatefulWidget {
   final double deliveryCharges;
   final String orderType;
+  final double totalBeforeTax;
+  final double taxAmount;
 
   const PlaceOrderScreen({
     super.key,
     required this.deliveryCharges,
     required this.orderType,
+    required this.totalBeforeTax,
+    required this.taxAmount,
   });
 
   @override
@@ -77,6 +82,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
         Provider.of<PaymentProvider>(context, listen: false);
     final placeOrderProvider =
         Provider.of<PlaceOrderProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     try {
       // Ensure products are fetched
@@ -87,23 +93,29 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
       // Convert the cart items map to a list of products
       final cartProducts = productProvider.cartItems.keys.toList();
 
-      // // Prepare the order data
-      // final orderData = {
-      //   'products': cartProducts,
-      //   'orderType': widget.orderType,
-      //   'shippingCharges': widget.deliveryCharges.toString(),
-      // };
+      // Prepare the order data
+      final orderData = {
+        'products': cartProducts,
+        'orderType': widget.orderType,
+        'shippingCharges': widget.deliveryCharges.toString(),
+      };
+
+      // Fetch the user's name from UserProvider
+      final deliveredTo = userProvider.user?.name ?? 'Unknown';
 
       // Place the order using PlaceOrderProvider
       await placeOrderProvider.createOrder(
-        cartProducts,
-        widget.orderType,
-        widget.deliveryCharges.toString(),
-      );
+          cartProducts,
+          widget.orderType,
+          widget.deliveryCharges.toString(),
+          deliveredTo,
+          widget.totalBeforeTax,
+          widget.taxAmount);
 
-      Navigator.pushReplacement(
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => OrderConfirmationPage()),
+        (route) => false, // Remove all previous routes
       );
     } catch (e) {
       // Handle error

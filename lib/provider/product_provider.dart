@@ -139,7 +139,8 @@ class ProductProvider with ChangeNotifier {
       if (cart.containsKey(product)) {
         cart[product] = cart[product]! + quantityToAdd; // Update quantity
       } else {
-        cart[product] = quantityToAdd; // Add new product with specified quantity
+        cart[product] =
+            quantityToAdd; // Add new product with specified quantity
       }
 
       // Debugging: Print updated cart state

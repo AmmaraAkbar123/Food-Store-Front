@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/models/product_model.dart';
 import 'package:foodstorefront/services/secure_storage.dart';
@@ -9,6 +10,9 @@ class PlaceOrderProvider with ChangeNotifier {
     List<ProductModel> products,
     String orderType,
     String shippingCharges,
+    String deliveredTo,
+    double totalBeforeTax, // Add this parameter
+    double taxAmount, // Add this parameter
   ) async {
     final url = Uri.parse(
         'https://api.myignite.online/connector/api/sell'); // Replace with your API endpoint
@@ -40,7 +44,7 @@ class PlaceOrderProvider with ChangeNotifier {
           "order_type": orderType, // Use dynamic order type
           "location_id": "288",
           "contact_id": "13495",
-          "delivered_to": "Muhammad Mehboob",
+          "delivered_to": deliveredTo, // Use the deliveredTo parameter
           "shipping_charges": shippingCharges, // Use dynamic shipping charges
           "shipping_custom_field_4": "Sell shipping method",
           "discount_amount": "0.0000",
@@ -57,7 +61,9 @@ class PlaceOrderProvider with ChangeNotifier {
             }
           ],
           "order_source": "storefront",
-          "total_before_tax": "100.0000",
+          "total_before_tax":
+              totalBeforeTax, // Use the totalBeforeTax parameter
+          "tax_amount": taxAmount, // Use the taxAmount parameter
           "products": productData,
           "custom_field_4": null,
           "payment_method": null

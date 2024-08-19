@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/models/product_model.dart';
-import 'package:foodstorefront/provider/place_order_provider.dart';
 import 'package:foodstorefront/provider/product_provider.dart';
 import 'package:foodstorefront/screens/store/app_bar/widgets/separater.dart';
 import 'package:foodstorefront/utils/colors.dart';
@@ -324,32 +323,39 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
   }
 
   Widget buildBottomBar() {
-  return BottomAppBar(
-    color: Colors.transparent,
-    elevation: 0,
-    child: CustomButton(
-      onPressed: () {
-        final productProvider =
-            Provider.of<ProductProvider>(context, listen: false);
-        final orderType = productProvider.selectedDeliveryOption;
-        final shippingCharges =
-            orderType == "Delivery" ? 50.0 : 0.0; // Change 50.0 to your desired shipping charge
+    return BottomAppBar(
+      color: Colors.transparent,
+      elevation: 0,
+      child: CustomButton(
+        onPressed: () {
+          final productProvider =
+              Provider.of<ProductProvider>(context, listen: false);
+          final orderType = productProvider.selectedDeliveryOption;
+          final shippingCharges =
+              orderType == "Delivery" ? 50.0 : 0.0; // Shipping charge
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PlaceOrderScreen(
-              deliveryCharges: shippingCharges,
-              orderType: orderType,
+          // Calculate the total before tax and tax amount
+          double itemsPrice = productProvider.cartItems.entries
+              .fold(0, (sum, item) => sum + (item.key.price) * item.value);
+          double taxRate = 0.18; // Assuming 7% tax rate
+          double taxAmount = itemsPrice * taxRate;
+          double totalBeforeTax = itemsPrice + taxAmount;
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PlaceOrderScreen(
+                deliveryCharges: shippingCharges,
+                orderType: orderType,
+                totalBeforeTax: totalBeforeTax,
+                taxAmount: taxAmount,
+              ),
             ),
-          ),
-        );
-      },
-      text: "Proceed to Checkout",
-      clrtext: MyColors.white,
-    ),
-  );
-}
-
-
+          );
+        },
+        text: "Proceed to Checkout",
+        clrtext: MyColors.white,
+      ),
+    );
+  }
 }
