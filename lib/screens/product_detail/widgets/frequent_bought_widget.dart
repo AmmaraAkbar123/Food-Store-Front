@@ -43,7 +43,7 @@ class FrequentlyBoughtTogetherSection extends StatelessWidget {
           builder: (context, productProvider, child) {
             return ListView.builder(
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: product.variations.length,
               itemBuilder: (context, index) {
                 final variation = product.variations[index];
@@ -64,8 +64,7 @@ class FrequentlyBoughtTogetherSection extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: isSelected ? MyColors.primary : Colors.white,
                             borderRadius: BorderRadius.circular(5),
-                            border:
-                                Border.all(color: MyColors.primary, width: 2),
+                            border: Border.all(color: MyColors.primary, width: 2),
                           ),
                           child: isSelected
                               ? Center(
@@ -73,7 +72,7 @@ class FrequentlyBoughtTogetherSection extends StatelessWidget {
                                       size: 12, color: MyColors.white))
                               : null,
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
                           child: Image.asset(
@@ -83,7 +82,7 @@ class FrequentlyBoughtTogetherSection extends StatelessWidget {
                             fit: BoxFit.cover,
                           ),
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             variation.compareAtPrice,
@@ -94,7 +93,7 @@ class FrequentlyBoughtTogetherSection extends StatelessWidget {
                             ),
                           ),
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Text(
                           '\$${variation.defaultSellPrice}',
                           style: const TextStyle(

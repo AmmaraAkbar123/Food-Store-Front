@@ -25,6 +25,37 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
     });
   }
 
+  double calculateTotalBeforeTax(Map<ProductModel, int> cartItems) {
+    double itemsPrice = cartItems.entries
+        .fold(0, (sum, item) => sum + (item.key.price) * item.value);
+    return itemsPrice;
+  }
+
+  ///
+  double calculateTaxAmount(double itemsPrice, double taxRate) {
+    return itemsPrice * taxRate;
+  }
+
+  ////
+  Map<String, double> calculatePriceSummary(
+      Map<ProductModel, int> cartItems, String deliveryOption,
+      {double taxRate = 0.18, double deliveryCharge = 50.0}) {
+    double itemsPrice = calculateTotalBeforeTax(cartItems);
+    double tax = calculateTaxAmount(itemsPrice, taxRate);
+    double subTotal = itemsPrice + tax;
+    double totalDeliveryCharge =
+        deliveryOption == "Delivery" ? deliveryCharge : 0.0;
+    double total = subTotal + totalDeliveryCharge;
+
+    return {
+      'itemsPrice': itemsPrice,
+      'tax': tax,
+      'subTotal': subTotal,
+      'deliveryCharge': totalDeliveryCharge,
+      'total': total,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -272,30 +303,26 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
 
   Widget buildPriceSummary(
       Map<ProductModel, int> cartItems, String deliveryOption) {
-    double itemsPrice = cartItems.entries
-        .fold(0, (sum, item) => sum + (item.key.price) * item.value);
-    double taxRate = 0.07;
-    double tax = itemsPrice * taxRate;
-    double subTotal = itemsPrice + tax;
-    double deliveryCharge = deliveryOption == "Delivery" ? 50.0 : 0.0;
-    double total = subTotal + deliveryCharge;
+    final prices = calculatePriceSummary(cartItems, deliveryOption);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        buildSummaryRow("Items Price", "Rs. ${itemsPrice.toStringAsFixed(2)}"),
-        buildSummaryRow("Vat/Tax", "Rs. ${tax.toStringAsFixed(2)}"),
-        const SizedBox(height: 5),
-        const MySeparator(),
-        const SizedBox(height: 5),
-        buildSummaryRow("Subtotal", "Rs. ${subTotal.toStringAsFixed(2)}",
-            boldText: true),
         buildSummaryRow(
-            "Delivery Charge", "Rs. ${deliveryCharge.toStringAsFixed(2)}"),
+            "Items Price", "Rs. ${prices['itemsPrice']!.toStringAsFixed(2)}"),
+        buildSummaryRow("Vat/Tax", "Rs. ${prices['tax']!.toStringAsFixed(2)}"),
         const SizedBox(height: 5),
         const MySeparator(),
         const SizedBox(height: 5),
-        buildSummaryRow("Total", "Rs. ${total.toStringAsFixed(2)}",
+        buildSummaryRow(
+            "Subtotal", "Rs. ${prices['subTotal']!.toStringAsFixed(2)}",
+            boldText: true),
+        buildSummaryRow("Delivery Charge",
+            "Rs. ${prices['deliveryCharge']!.toStringAsFixed(2)}"),
+        const SizedBox(height: 5),
+        const MySeparator(),
+        const SizedBox(height: 5),
+        buildSummaryRow("Total", "Rs. ${prices['total']!.toStringAsFixed(2)}",
             boldText: true),
       ],
     );
@@ -323,32 +350,24 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
   }
 
   Widget buildBottomBar() {
+    final productProvider =
+        Provider.of<ProductProvider>(context, listen: false);
+    final prices = calculatePriceSummary(
+        productProvider.cartItems, productProvider.selectedDeliveryOption);
+
     return BottomAppBar(
       color: Colors.transparent,
       elevation: 0,
       child: CustomButton(
         onPressed: () {
-          final productProvider =
-              Provider.of<ProductProvider>(context, listen: false);
-          final orderType = productProvider.selectedDeliveryOption;
-          final shippingCharges =
-              orderType == "Delivery" ? 50.0 : 0.0; // Shipping charge
-
-          // Calculate the total before tax and tax amount
-          double itemsPrice = productProvider.cartItems.entries
-              .fold(0, (sum, item) => sum + (item.key.price) * item.value);
-          double taxRate = 0.18; // Assuming 7% tax rate
-          double taxAmount = itemsPrice * taxRate;
-          double totalBeforeTax = itemsPrice + taxAmount;
-
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => PlaceOrderScreen(
-                deliveryCharges: shippingCharges,
-                orderType: orderType,
-                totalBeforeTax: totalBeforeTax,
-                taxAmount: taxAmount,
+                deliveryCharges: prices['deliveryCharge']!,
+                orderType: productProvider.selectedDeliveryOption,
+                totalBeforeTax: prices['subTotal']!,
+                taxAmount: prices['tax']!,
               ),
             ),
           );

@@ -76,12 +76,8 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
   }
 
   Future<void> _placeOrder() async {
-    final productProvider =
-        Provider.of<ProductProvider>(context, listen: false);
-    final paymentProvider =
-        Provider.of<PaymentProvider>(context, listen: false);
-    final placeOrderProvider =
-        Provider.of<PlaceOrderProvider>(context, listen: false);
+    final productProvider = Provider.of<ProductProvider>(context, listen: false);
+    final placeOrderProvider = Provider.of<PlaceOrderProvider>(context, listen: false);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     try {
@@ -93,25 +89,19 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
       // Convert the cart items map to a list of products
       final cartProducts = productProvider.cartItems.keys.toList();
 
-      // Prepare the order data
-      final orderData = {
-        'products': cartProducts,
-        'orderType': widget.orderType,
-        'shippingCharges': widget.deliveryCharges.toString(),
-      };
-
       // Fetch the user's name from UserProvider
       final deliveredTo = userProvider.user?.name ?? 'Unknown';
 
       // Place the order using PlaceOrderProvider
       await placeOrderProvider.createOrder(
-          cartProducts,
-          widget.orderType,
-          widget.deliveryCharges.toString(),
-          deliveredTo,
-          widget.totalBeforeTax,
-          widget.taxAmount);
-
+        context,
+        cartProducts,
+        widget.orderType,
+        widget.deliveryCharges,
+        deliveredTo,
+       
+       
+      );
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => OrderConfirmationPage()),

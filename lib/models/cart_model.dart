@@ -1,14 +1,17 @@
+import 'package:foodstorefront/models/product_model.dart';
+
 class CartModel {
   final int id;
+  final ProductModel product;
   double subtotal;
   double tax;
   double deliveryCharges;
   double discount;
-  
   double total;
 
   CartModel({
     required this.id,
+    required this.product,
     required this.subtotal,
     required this.tax,
     required this.deliveryCharges,
@@ -16,13 +19,16 @@ class CartModel {
     required this.total,
   });
 
+  // Method to calculate the total
   void calculateTotal() {
     total = (subtotal + tax + deliveryCharges) - discount;
   }
 
+  // Factory constructor to create an instance from JSON
   factory CartModel.fromJson(Map<String, dynamic> json) {
     return CartModel(
       id: json['id'],
+      product: ProductModel.fromJson(json['product']),
       subtotal: json['subtotal'],
       tax: json['tax'],
       deliveryCharges: json['deliveryCharges'],
@@ -31,9 +37,11 @@ class CartModel {
     );
   }
 
+  // Method to convert the instance to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'product': product.toJson(),
       'subtotal': subtotal,
       'tax': tax,
       'deliveryCharges': deliveryCharges,
@@ -45,7 +53,7 @@ class CartModel {
 
 class CartDetail {
   final int id;
-  final int cartId; // Unique identifier for the cart item
+  final int cartId; // Unique identifier for the cart
   final int productId;
   String? variationId; // Ensure this field is present in ProductModel
   double quantity;
@@ -62,22 +70,25 @@ class CartDetail {
     this.totalPrice,
   });
 
+  // Method to calculate the total price for this cart detail
   double calculateTotalPrice() {
-    return quantity * unitPrice!;
+    return quantity * (unitPrice ?? 0.0);
   }
 
+  // Factory constructor to create an instance from JSON
   factory CartDetail.fromJson(Map<String, dynamic> json) {
     return CartDetail(
       id: json['id'],
       cartId: json['cartId'],
       productId: json['productId'],
-      variationId: json['variationId'] ?? "",
-      quantity: json['quantity'],
-      unitPrice: json['unitPrice'] ?? "",
-      totalPrice: json['totalPrice'] ?? "",
+      variationId: json['variationId'],
+      quantity: json['quantity'].toDouble(),
+      unitPrice: json['unitPrice']?.toDouble(),
+      totalPrice: json['totalPrice']?.toDouble(),
     );
   }
 
+  // Method to convert the instance to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,

@@ -1,21 +1,37 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/models/product_model.dart';
+import 'package:foodstorefront/provider/product_provider.dart';
 import 'package:foodstorefront/services/secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class PlaceOrderProvider with ChangeNotifier {
   Future<void> createOrder(
+    BuildContext context, // Add context parameter
     List<ProductModel> products,
     String orderType,
-    String shippingCharges,
+    double shippingCharges, // Delivery charges parameter
     String deliveredTo,
-    double totalBeforeTax, // Add this parameter
-    double taxAmount, // Add this parameter
+    
   ) async {
     final url = Uri.parse(
         'https://api.myignite.online/connector/api/sell'); // Replace with your API endpoint
+
+    // Calculate total before tax and tax amount dynamically
+    final productProvider =
+        Provider.of<ProductProvider>(context, listen: false);
+    double itemsPrice = products.fold(
+      0,
+      (sum, item) => sum + (item.price * productProvider.getQuantity(item)),
+    );
+
+    double taxRate = 0.18; // Assuming 18% tax rate, adjust as needed
+    double taxAmount = itemsPrice * taxRate;
+    double totalBeforeTax = itemsPrice;
+
+    // Include shippingCharges in the final total calculation
+    double finalTotal = totalBeforeTax + taxAmount + shippingCharges;
 
     // Convert product data to the format expected by the API
     final List<Map<String, dynamic>> productData = products.map((product) {
@@ -24,7 +40,7 @@ class PlaceOrderProvider with ChangeNotifier {
       return {
         "product_id": product.id,
         "variation_id": variation?.id,
-        "quantity": 1, // Adjust quantity as needed
+        "quantity": productProvider.getQuantity(product), // Use actual quantity
         "unit_price": product.price,
         "tax_rate_id": null,
         "discount_amount": 0,
@@ -40,7 +56,7 @@ class PlaceOrderProvider with ChangeNotifier {
           "sale_note": "",
           "shipping_status": "pending",
           "status": "final",
-          "shipping_address": "",
+          "shipping_address": "", // Add if needed
           "order_type": orderType, // Use dynamic order type
           "location_id": "288",
           "contact_id": "13495",
@@ -54,7 +70,7 @@ class PlaceOrderProvider with ChangeNotifier {
           "einvoicing_status": "yet_to_be_pushed",
           "payments": [
             {
-              "amount": "215",
+              "amount": finalTotal.toString(), // Update with final total
               "method": "cash",
               "card_type": null,
               "note": "Test notes"
@@ -102,6 +118,7 @@ class PlaceOrderProvider with ChangeNotifier {
         // Handle successful order creation
         final responseData = json.decode(response.body);
         print("Order created successfully: $responseData");
+        // Notify listeners or perform additional actions if needed
       } else {
         // Handle error response
         print(

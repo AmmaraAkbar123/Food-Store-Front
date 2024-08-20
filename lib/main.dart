@@ -34,7 +34,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => userProvider),
         ChangeNotifierProvider(create: (_) => CountryCodeProvider()),
         ChangeNotifierProvider(create: (context) => SignInProvider()),
-        ChangeNotifierProvider(create: (_) => CartProvider()),
+        //  ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(
           create: (_) => CategoryProvider(),
         ),

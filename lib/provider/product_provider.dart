@@ -59,6 +59,14 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  int getQuantity(ProductModel product) {
+    if (_currentUserId != null && _userCarts[_currentUserId!] != null) {
+      return _userCarts[_currentUserId]![product] ?? 0;
+    } else {
+      return 0;
+    }
+  }
+
   Future<void> fetchProducts() async {
     _isLoading = true;
     notifyListeners();
