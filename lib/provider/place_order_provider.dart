@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/models/product_model.dart';
-import 'package:foodstorefront/provider/cart_provider.dart';
 import 'package:foodstorefront/provider/product_provider.dart';
 import 'package:foodstorefront/services/secure_storage.dart';
 import 'package:http/http.dart' as http;

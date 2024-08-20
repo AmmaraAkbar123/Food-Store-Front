@@ -178,25 +178,25 @@ class StoreScreenState extends State<StoreScreen>
             ),
             actions: [
               Padding(
-                padding: EdgeInsets.only(right: 18),
+                padding: const EdgeInsets.only(right: 18),
                 child: Row(
                   children: [
-                    Icon(Icons.favorite_outline),
-                    SizedBox(width: 12),
-                    Icon(Icons.share_outlined),
-                    SizedBox(width: 12),
-                    Icon(Icons.search_outlined),
+                    const Icon(Icons.favorite_outline),
+                    const SizedBox(width: 12),
+                    const Icon(Icons.share_outlined),
+                    const SizedBox(width: 12),
+                    const Icon(Icons.search_outlined),
                     Consumer<ProductProvider>(
                       builder: (context, productProvider, child) {
                         return Stack(
                           clipBehavior: Clip.none,
                           children: [
                             IconButton(
-                              icon: Icon(Icons.shopping_bag),
+                              icon: const Icon(Icons.shopping_bag),
                               onPressed: () => Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => AddToCartScreen(),
+                                  builder: (context) => const AddToCartScreen(),
                                 ),
                               ),
                             ),
@@ -209,7 +209,7 @@ class StoreScreenState extends State<StoreScreen>
                                   backgroundColor: MyColors.primary,
                                   child: Text(
                                     '${productProvider.totalCartQuantity}',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       color: MyColors.white,
                                       fontSize: 12,
                                     ),
@@ -220,6 +220,7 @@ class StoreScreenState extends State<StoreScreen>
                         );
                       },
                     ),
+                  
                   ],
                 ),
               ),
@@ -293,7 +294,7 @@ class StoreScreenState extends State<StoreScreen>
         index: index,
         controller: scrollController,
         child: Container(
-          margin: EdgeInsets.only(bottom: 16),
+          margin: const EdgeInsets.only(bottom: 16),
           child: BodySection(
             categoryIndex: index,
             showGrid: index == 0,

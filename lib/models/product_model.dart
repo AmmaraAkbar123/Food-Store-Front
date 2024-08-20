@@ -17,6 +17,15 @@ class ProductModel {
     required this.category,
   });
 
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is ProductModel && other.id == id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
+
   factory ProductModel.fromJson(Map<String, dynamic> json) {
     return ProductModel(
       id: json['id'] ?? 0,
