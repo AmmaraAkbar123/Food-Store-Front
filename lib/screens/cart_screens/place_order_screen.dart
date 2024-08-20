@@ -76,8 +76,10 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
   }
 
   Future<void> _placeOrder() async {
-    final productProvider = Provider.of<ProductProvider>(context, listen: false);
-    final placeOrderProvider = Provider.of<PlaceOrderProvider>(context, listen: false);
+    final productProvider =
+        Provider.of<ProductProvider>(context, listen: false);
+    final placeOrderProvider =
+        Provider.of<PlaceOrderProvider>(context, listen: false);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     try {
@@ -99,9 +101,10 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
         widget.orderType,
         widget.deliveryCharges,
         deliveredTo,
-       
-       
       );
+      // Clear the cart after successful order placement
+      productProvider.clearCart();
+      
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => OrderConfirmationPage()),

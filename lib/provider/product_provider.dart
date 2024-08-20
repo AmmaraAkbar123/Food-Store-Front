@@ -66,13 +66,16 @@ class ProductProvider with ChangeNotifier {
       return 0;
     }
   }
+
   int get totalCartQuantity {
-  if (_currentUserId != null && _userCarts[_currentUserId!] != null) {
-    // Sum all the quantities of products in the cart
-    return _userCarts[_currentUserId!]!.values.fold(0, (sum, quantity) => sum + quantity);
+    if (_currentUserId != null && _userCarts[_currentUserId!] != null) {
+      // Sum all the quantities of products in the cart
+      return _userCarts[_currentUserId!]!
+          .values
+          .fold(0, (sum, quantity) => sum + quantity);
+    }
+    return 0;
   }
-  return 0;
-}
 
   Future<void> fetchProducts() async {
     _isLoading = true;
@@ -103,8 +106,8 @@ class ProductProvider with ChangeNotifier {
   }
 
   void incrementQuantity(ProductModel product) {
-    if (_currentUserId != null && cartItems.containsKey(product)) {
-      addProduct(product, quantityToAdd: 1);
+    if (_currentUserId != null) {
+      addProduct(product, quantityToAdd: 1); // Simply add 1 to quantity
     }
   }
 
@@ -112,9 +115,9 @@ class ProductProvider with ChangeNotifier {
     if (_currentUserId != null && cartItems.containsKey(product)) {
       final currentQuantity = cartItems[product]!;
       if (currentQuantity > 1) {
-        cartItems[product] = currentQuantity - 1;
-        saveCartToLocalStorage();
-        notifyListeners();
+        addProduct(product, quantityToAdd: -1); // Subtract 1 from quantity
+      } else {
+        removeProduct(product); // Remove the product if quantity is 1
       }
     }
   }
@@ -130,11 +133,8 @@ class ProductProvider with ChangeNotifier {
       final cart = _userCarts[_currentUserId!]!;
 
       if (cart.containsKey(product)) {
-        if (cart[product] == 1) {
-          cart.remove(product);
-        } else {
-          cart[product] = cart[product]! - 1;
-        }
+        cart.remove(product); // Remove product completely from cart
+        _addedProducts.remove(product); // Remove from added products list
         saveCartToLocalStorage();
         notifyListeners();
       }
@@ -147,9 +147,6 @@ class ProductProvider with ChangeNotifier {
       _userCarts[_currentUserId!] ??= {}; // Initialize cart if not present
       final cart = _userCarts[_currentUserId!]!;
 
-      // Debugging: Print current cart state before addition
-      print("Before adding product: $cart");
-
       // Check if product already exists in the cart
       if (cart.containsKey(product)) {
         cart[product] = cart[product]! + quantityToAdd; // Update quantity
@@ -158,10 +155,7 @@ class ProductProvider with ChangeNotifier {
             quantityToAdd; // Add new product with specified quantity
       }
 
-      // Debugging: Print updated cart state
-      print("After adding product: $cart");
-
-      _addedProducts.add(product); // Update list of added products
+      _addedProducts.add(product); // Track added product
       saveCartToLocalStorage(); // Save cart state to local storage
       notifyListeners(); // Notify listeners about cart update
     }
@@ -214,14 +208,15 @@ class ProductProvider with ChangeNotifier {
   }
 
   void updateCart(ProductModel product, int newQuantity) {
-    if (newQuantity > 0) {
-      _userCarts[_currentUserId!]![product] = newQuantity;
-    } else {
-      _userCarts[_currentUserId!]!.remove(product);
-      _addedProducts.remove(product);
+    if (_currentUserId != null) {
+      if (newQuantity > 0) {
+        _userCarts[_currentUserId!]![product] = newQuantity; // Update quantity
+      } else {
+        removeProduct(product); // Remove product if quantity is 0
+      }
+      saveCartToLocalStorage();
+      notifyListeners();
     }
-    saveCartToLocalStorage();
-    notifyListeners();
   }
 
   Future<void> saveCartToLocalStorage() async {
