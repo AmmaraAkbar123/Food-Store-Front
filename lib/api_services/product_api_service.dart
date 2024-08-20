@@ -28,11 +28,11 @@ class ProductApiService {
         }
       } else {
         print(
-            'Error fetching products. Status code: ${response.statusCode}\nResponse body: ${response.body}');
-        throw Exception('Failed to load products: ${response.statusCode}');
+            'Error fetching products. Status code: ${response.statusCode}\nResponse body ProductApiService: ${response.body}');
+        throw Exception('Failed to load products ProductApiService: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Error fetching products: ${e.toString()}');
+      throw Exception('Error fetching products : ${e.toString()}');
     }
   }
 
@@ -52,7 +52,7 @@ class ProductApiService {
         }
       } else {
         print(
-            'Error fetching product by name. Status code: ${response.statusCode}\nResponse body: ${response.body}');
+            'Error fetching product by name. Status code: ${response.statusCode}\nResponse body ProductApiService : ${response.body}');
         throw Exception('Failed to load product: ${response.statusCode}');
       }
     } catch (e) {

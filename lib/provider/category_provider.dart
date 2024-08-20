@@ -54,7 +54,7 @@ class CategoryProvider with ChangeNotifier {
         }
       } else {
         errorMessage = 'Failed to load categories: ${response.statusCode}';
-        print('Error: $errorMessage\nResponse body: ${response.body}');
+        print('Error: $errorMessage\nResponse body CategoryApi: ${response.body}');
       }
     } catch (e) {
       errorMessage = 'Error: ${e.toString()}';

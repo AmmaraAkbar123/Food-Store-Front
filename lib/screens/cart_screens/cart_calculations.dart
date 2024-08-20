@@ -20,7 +20,8 @@ Map<String, double> calculatePriceSummary(
   double itemsPrice = calculateTotalBeforeTax(cartDetails);
   double tax = calculateTaxAmount(itemsPrice, taxRate);
   double subTotal = itemsPrice + tax;
-  double totalDeliveryCharge = deliveryOption == "Delivery" ? deliveryCharge : 0.0;
+  double totalDeliveryCharge =
+      deliveryOption == "Delivery" ? deliveryCharge : 0.0;
   double total = subTotal + totalDeliveryCharge;
 
   return {

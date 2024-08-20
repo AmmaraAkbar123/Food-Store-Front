@@ -186,14 +186,39 @@ class StoreScreenState extends State<StoreScreen>
                     Icon(Icons.share_outlined),
                     SizedBox(width: 12),
                     Icon(Icons.search_outlined),
-                    IconButton(
-                      icon: Icon(Icons.shopping_bag),
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AddToCartScreen(),
-                        ),
-                      ),
+                    Consumer<ProductProvider>(
+                      builder: (context, productProvider, child) {
+                        return Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.shopping_bag),
+                              onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AddToCartScreen(),
+                                ),
+                              ),
+                            ),
+                            if (productProvider.totalCartQuantity > 0)
+                              Positioned(
+                                right: 0,
+                                top: 0,
+                                child: CircleAvatar(
+                                  radius: 10,
+                                  backgroundColor: MyColors.primary,
+                                  child: Text(
+                                    '${productProvider.totalCartQuantity}',
+                                    style: TextStyle(
+                                      color: MyColors.white,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      },
                     ),
                   ],
                 ),

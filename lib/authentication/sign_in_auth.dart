@@ -37,7 +37,7 @@ class SignInProvider extends ChangeNotifier {
     String countryCode = countryCodeProvider.countryCode;
 
     if (!phoneNumber.startsWith(countryCode)) {
-      phoneNumber = '$countryCode$phoneNumber';
+      phoneNumber = '+$countryCode$phoneNumber';
       print('Sending OTP for phone number: $phoneNumber');
     }
 
@@ -69,9 +69,9 @@ class SignInProvider extends ChangeNotifier {
         body: json.encode({'mobile_no': phoneNumber}),
       );
 
-      print('Response status: ${response.statusCode}');
-      print('Response headers: ${response.headers}');
-      print('Response body: ${response.body}');
+      print('Response status sendOtp api: ${response.statusCode}');
+      print('Response headers sendOtp api: ${response.headers}');
+      print('Response body sendOtp api: ${response.body}');
 
       final jsonResponse = json.decode(response.body);
       print('JSON response: $jsonResponse');
@@ -160,7 +160,7 @@ class SignInProvider extends ChangeNotifier {
 
       print('Response status: ${response.statusCode}');
       print('Response headers: ${response.headers}');
-      print('Response body: ${response.body}');
+      print('Response body : ${response.body}');
 
       final jsonResponse = json.decode(response.body);
       print('JSON response: $jsonResponse');
@@ -264,7 +264,7 @@ class SignInProvider extends ChangeNotifier {
 
       print('Response status: ${response.statusCode}');
       print('Response headers: ${response.headers}');
-      print('Response body: ${response.body}');
+      print('Response body signUp: ${response.body}');
 
       final jsonResponse = json.decode(response.body);
       print('JSON response: $jsonResponse');
