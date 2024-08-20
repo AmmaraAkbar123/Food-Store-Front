@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:foodstorefront/provider/cart_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:foodstorefront/provider/product_provider.dart';
 import 'package:foodstorefront/models/product_model.dart';
 import 'package:foodstorefront/utils/colors.dart';
 
@@ -14,9 +14,8 @@ class GridCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ProductProvider>(
-      builder: (context, productProvider, child) {
-        final isAdded = productProvider.isProductAdded(product);
+    return Consumer<CartProvider>(
+      builder: (context, cartProvider, child) {
 
         return Container(
           decoration: BoxDecoration(
@@ -86,7 +85,7 @@ class GridCard extends StatelessWidget {
                     right: 8,
                     child: GestureDetector(
                       onTap: () {
-                        productProvider.addToCart(context, product);
+                        cartProvider.addToCart(context, product);
                       },
                       child: Container(
                         width: 32,

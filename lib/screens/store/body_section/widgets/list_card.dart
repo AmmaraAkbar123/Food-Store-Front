@@ -3,7 +3,7 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:foodstorefront/models/product_model.dart';
 import 'package:foodstorefront/utils/colors.dart';
 import 'package:provider/provider.dart';
-import 'package:foodstorefront/provider/product_provider.dart';
+import 'package:foodstorefront/provider/cart_provider.dart';
 
 class ListCard extends StatelessWidget {
   const ListCard({
@@ -142,11 +142,11 @@ class ListCard extends StatelessWidget {
                 Positioned(
                   bottom: 8,
                   right: 8,
-                  child: Consumer<ProductProvider>(
-                    builder: (context, productProvider, child) {
+                  child: Consumer<CartProvider>(
+                    builder: (context, cartProvider, child) {
                       return GestureDetector(
                         onTap: () {
-                          productProvider.addToCart(context,
+                          cartProvider.addToCart(context,
                               product); // Add product to cart, incrementing if it already exists
                         },
                         child: Container(

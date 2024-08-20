@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/models/product_model.dart';
-import 'package:foodstorefront/provider/product_provider.dart';
+import 'package:foodstorefront/provider/cart_provider.dart';
 import 'package:foodstorefront/services/secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -19,11 +19,11 @@ class PlaceOrderProvider with ChangeNotifier {
         'https://api.myignite.online/connector/api/sell'); // Replace with your API endpoint
 
     // Calculate total before tax and tax amount dynamically
-    final productProvider =
-        Provider.of<ProductProvider>(context, listen: false);
+    final cartProvider =
+        Provider.of<CartProvider>(context, listen: false);
     double itemsPrice = products.fold(
       0,
-      (sum, item) => sum + (item.price * productProvider.getQuantity(item)),
+      (sum, item) => sum + (item.price * cartProvider.getQuantity(item)),
     );
 
     double taxRate = 0.18; // Assuming 18% tax rate, adjust as needed
@@ -40,7 +40,7 @@ class PlaceOrderProvider with ChangeNotifier {
       return {
         "product_id": product.id,
         "variation_id": variation?.id,
-        "quantity": productProvider.getQuantity(product), // Use actual quantity
+        "quantity": cartProvider.getQuantity(product), // Use actual quantity
         "unit_price": product.price,
         "tax_rate_id": null,
         "discount_amount": 0,

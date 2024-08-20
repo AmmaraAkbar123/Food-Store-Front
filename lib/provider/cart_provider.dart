@@ -1,103 +1,187 @@
-// import 'package:flutter/material.dart';
-// import 'package:foodstorefront/models/product_model.dart';
-// import 'package:foodstorefront/models/cart_model.dart';
-// import 'package:foodstorefront/services/local_storage_service.dart';
+import 'package:flutter/material.dart';
+import 'package:foodstorefront/models/product_model.dart';
+import 'package:foodstorefront/provider/user_provider.dart';
+import 'package:foodstorefront/services/local_storage_service.dart';
 
-// class CartProvider with ChangeNotifier {
-//   final Map<int, Map<ProductModel, int>> _userCarts = {}; // User-specific carts
-//   int? _currentUserId; // Track the current user ID
-//   final LocalStorageService _localStorageService = LocalStorageService();
-//   String _selectedDeliveryOption = "Delivery";
-//   List<CartModel> _cartModels = []; // List of cart models
+class CartProvider with ChangeNotifier {
+  ProductModel? _selectedProduct;
+  bool _isOptionSelected = false;
+  Set<int> selectedIndices = {}; // For selected indices
+  final Map<String, String> _selectedOptions = {}; // For selected options
+  final Map<int, Map<ProductModel, int>> _userCarts = {}; // User-specific carts
+  int? _currentUserId; // Track the current user ID
+  final UserProvider _userProvider;
 
-//   // Getter for the delivery option
-//   String get selectedDeliveryOption => _selectedDeliveryOption;
+  // New fields for cart management
+  final Set<ProductModel> _addedProducts = {}; // Track added products
 
-//   // Cart items for the current user
-//   Map<ProductModel, int> get cartItems => _userCarts[_currentUserId] ?? {};
+  ProductModel? get selectedProduct => _selectedProduct;
+  bool get isOptionSelected => _isOptionSelected;
+  Map<String, String> get selectedOptions => _selectedOptions;
+  Map<ProductModel, int> get cartItems =>
+      _userCarts[_currentUserId] ?? {}; // Cart items for the current user
+  Set<ProductModel> get addedProducts => _addedProducts;
 
-//   List<CartModel> get cartModels => _cartModels;
+  final LocalStorageService _localStorageService = LocalStorageService();
+  String _selectedDeliveryOption = "Delivery";
 
-//   // Initialize with user provider
-//   void setUser(int userId) {
-//     _currentUserId = userId;
-//     loadCartAndDeliveryOptions();
-//   }
+  // Getter for the delivery option
+  String get selectedDeliveryOption => _selectedDeliveryOption;
 
-//   void setDeliveryOption(String option) {
-//     _selectedDeliveryOption = option;
-//     notifyListeners();
-//   }
+  // Initialize with user provider
+  CartProvider(this._userProvider) {
+    _currentUserId = _userProvider.userId;
+    loadCartAndDeliveryOptions();
+  }
 
-//   Future<void> loadCartAndDeliveryOptions() async {
-//     // Load cart and delivery options logic here
-//     // Simulate loading cart data
-//     _cartModels = _userCarts[_currentUserId]!.entries.map((entry) {
-//       final product = entry.key;
-//       final quantity = entry.value;
-//       return CartModel(
-//         id: product.id,
-//         product: product,
-//         subtotal: product.price * quantity,
-//         tax: (product.price * quantity) * 0.07,
-//         deliveryCharges: _selectedDeliveryOption == "Delivery" ? 50.0 : 0.0,
-//         discount: 0.0,
-//         total: (product.price * quantity) * 1.07 +
-//             (_selectedDeliveryOption == "Delivery" ? 50.0 : 0.0),
-//       );
-//     }).toList();
-//     notifyListeners();
-//   }
+  // Set the current user ID (should be called when a user logs in)
+  void setUser(int userId) {
+    _currentUserId = userId;
+    loadCartAndDeliveryOptions();
+  }
 
-//   Future<void> addProduct(ProductModel product, {int quantityToAdd = 1}) async {
-//     if (_currentUserId != null) {
-//       _userCarts[_currentUserId!] ??= {};
-//       final cart = _userCarts[_currentUserId!]!;
-//       if (cart.containsKey(product)) {
-//         cart[product] = cart[product]! + quantityToAdd;
-//       } else {
-//         cart[product] = quantityToAdd;
-//       }
-//       await saveCartToLocalStorage();
-//       notifyListeners();
-//     }
-//   }
+  int getQuantity(ProductModel product) {
+    if (_currentUserId != null && _userCarts[_currentUserId!] != null) {
+      return _userCarts[_currentUserId]![product] ?? 0;
+    } else {
+      return 0;
+    }
+  }
 
+  void setOptionSelected(bool isSelected) {
+    _isOptionSelected = isSelected;
+    notifyListeners();
+  }
 
-//   Future<void> removeProduct(ProductModel product) async {
-//     if (_currentUserId != null) {
-//       _userCarts[_currentUserId!] ??= {};
-//       final cart = _userCarts[_currentUserId!]!;
-//       if (cart.containsKey(product)) {
-//         if (cart[product] == 1) {
-//           cart.remove(product);
-//         } else {
-//           cart[product] = cart[product]! - 1;
-//         }
-//         await saveCartToLocalStorage();
-//         notifyListeners();
-//       }
-//     }
-//   }
+  void removeProduct(ProductModel product) {
+    if (_currentUserId != null) {
+      _userCarts[_currentUserId!] ??= {};
+      final cart = _userCarts[_currentUserId!]!;
 
-//   Future<void> saveCartToLocalStorage() async {
-//     if (_currentUserId != null) {
-//       final cartItems = _userCarts[_currentUserId!] ?? {};
-//       await _localStorageService.saveCartItems(_currentUserId!, cartItems);
-//     }
-//   }
+      if (cart.containsKey(product)) {
+        if (cart[product] == 1) {
+          cart.remove(product);
+        } else {
+          cart[product] = cart[product]! - 1;
+        }
+        saveCartToLocalStorage();
+        notifyListeners();
+      }
+    }
+  }
 
-//   double getTotalBeforeTax() {
-//     double itemsPrice = cartItems.entries
-//         .fold(0, (sum, item) => sum + (item.key.price) * item.value);
-//     double taxRate = 0.18; // Assuming 18% tax rate
-//     double taxAmount = itemsPrice * taxRate;
-//     return itemsPrice + taxAmount;
-//   }
+  // Method to add or update product quantity in the cart
+  void addProduct(ProductModel product, {int quantityToAdd = 1}) {
+    if (_currentUserId != null) {
+      _userCarts[_currentUserId!] ??= {}; // Initialize cart if not present
+      final cart = _userCarts[_currentUserId!]!;
 
-//   double getTotal() {
-//     double totalBeforeTax = getTotalBeforeTax();
-//     double deliveryCharge = _selectedDeliveryOption == "Delivery" ? 50.0 : 0.0;
-//     return totalBeforeTax + deliveryCharge;
-//   }
-// }
+      // Debugging: Print current cart state before addition
+      print("Before adding product: $cart");
+
+      // Check if product already exists in the cart
+      if (cart.containsKey(product)) {
+        cart[product] = cart[product]! + quantityToAdd; // Update quantity
+      } else {
+        cart[product] =
+            quantityToAdd; // Add new product with specified quantity
+      }
+
+      // Debugging: Print updated cart state
+      print("After adding product: $cart");
+
+      _addedProducts.add(product); // Update list of added products
+      saveCartToLocalStorage(); // Save cart state to local storage
+      notifyListeners(); // Notify listeners about cart update
+    }
+  }
+
+  // Method to handle adding products from the UI
+  void addToCart(BuildContext context, ProductModel product) {
+    if (_currentUserId != null) {
+      // Add the product with the existing quantity
+      addProduct(product, quantityToAdd: 1);
+
+      // Show confirmation message
+      _showSnackBar(context, 'Product added to cart!');
+    } else {
+      _showSnackBar(context, 'Error: User ID is null.');
+    }
+  }
+
+  void removeFromCart(BuildContext context, ProductModel product) {
+    if (_currentUserId != null && _userCarts[_currentUserId!] != null) {
+      final cart = _userCarts[_currentUserId!]!;
+      if (cart.containsKey(product)) {
+        if (cart[product] == 1) {
+          cart.remove(product);
+          _addedProducts.remove(product);
+        } else {
+          cart[product] = (cart[product] ?? 0) - 1;
+        }
+        saveCartToLocalStorage();
+        _showSnackBar(context, 'Product removed from cart!');
+        notifyListeners();
+      }
+    } else {
+      _showSnackBar(context, 'Error: User ID is null.');
+    }
+  }
+
+  // bool isProductAdded(ProductModel product) {
+  //   return _addedProducts.contains(product);
+  // }
+
+  void updateCart(ProductModel product, int newQuantity) {
+    if (newQuantity > 0) {
+      _userCarts[_currentUserId!]![product] = newQuantity;
+    } else {
+      _userCarts[_currentUserId!]!.remove(product);
+      _addedProducts.remove(product);
+    }
+    saveCartToLocalStorage();
+    notifyListeners();
+  }
+
+  Future<void> saveCartToLocalStorage() async {
+    if (_currentUserId != null) {
+      await _localStorageService.saveCartItems(
+        _currentUserId!,
+        _userCarts[_currentUserId!]!,
+      );
+      await _localStorageService.saveDeliveryOption(_selectedDeliveryOption);
+    }
+  }
+
+  Future<void> loadCartAndDeliveryOptions() async {
+    if (_currentUserId != null) {
+      _userCarts[_currentUserId!] =
+          await _localStorageService.loadCartItems(_currentUserId!);
+      _selectedDeliveryOption =
+          await _localStorageService.loadDeliveryOption() ?? "Delivery";
+      notifyListeners();
+    }
+  }
+
+  void setDeliveryOption(String option) {
+    _selectedDeliveryOption = option;
+    saveCartToLocalStorage();
+    notifyListeners();
+  }
+
+  void clearCart() {
+    if (_currentUserId != null) {
+      _userCarts[_currentUserId!]?.clear();
+      saveCartToLocalStorage();
+      notifyListeners();
+    }
+  }
+
+  void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
+}

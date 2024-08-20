@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/models/product_model.dart';
-import 'package:foodstorefront/provider/product_provider.dart';
+import 'package:foodstorefront/provider/cart_provider.dart';
 import 'package:foodstorefront/screens/store/app_bar/widgets/separater.dart';
 import 'package:foodstorefront/utils/colors.dart';
 import 'package:provider/provider.dart';
-
 import '../login and signup/login/widgets/custom_button.dart';
 import 'place_order_screen.dart';
 
@@ -20,7 +19,7 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ProductProvider>(context, listen: false)
+      Provider.of<CartProvider>(context, listen: false)
           .loadCartAndDeliveryOptions();
     });
   }
@@ -63,7 +62,7 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
       appBar: buildAppBar(),
       body: buildBody(context),
       bottomNavigationBar:
-          Provider.of<ProductProvider>(context).cartItems.isEmpty
+          Provider.of<CartProvider>(context).cartItems.isEmpty
               ? null
               : buildBottomBar(),
     );
@@ -80,9 +79,9 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
   }
 
   Widget buildBody(BuildContext context) {
-    return Consumer<ProductProvider>(
-      builder: (context, productProvider, child) {
-        if (productProvider.cartItems.isEmpty) {
+    return Consumer<CartProvider>(
+      builder: (context, cartProvider, child) {
+        if (cartProvider.cartItems.isEmpty) {
           // If cart is empty, show a message and a button to go back to StoreScreen
           return Center(
             child: Column(
@@ -120,12 +119,12 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  buildCartItemsList(productProvider),
+                  buildCartItemsList(cartProvider),
                   const SizedBox(height: 50),
-                  buildDeliveryOptions(productProvider),
+                  buildDeliveryOptions(cartProvider),
                   const SizedBox(height: 15),
-                  buildPriceSummary(productProvider.cartItems,
-                      productProvider.selectedDeliveryOption),
+                  buildPriceSummary(cartProvider.cartItems,
+                      cartProvider.selectedDeliveryOption),
                 ],
               ),
             ),
@@ -135,14 +134,14 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
     );
   }
 
-  Widget buildCartItemsList(ProductProvider productProvider) {
+  Widget buildCartItemsList(CartProvider cartProvider) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: productProvider.cartItems.length,
+      itemCount: cartProvider.cartItems.length,
       itemBuilder: (context, index) {
-        final product = productProvider.cartItems.keys.elementAt(index);
-        final quantity = productProvider.cartItems[product]!;
+        final product = cartProvider.cartItems.keys.elementAt(index);
+        final quantity = cartProvider.cartItems[product]!;
         return buildShoppingItemCard(context, product, quantity);
       },
     );
@@ -218,7 +217,7 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
 
   Widget buildQuantityController(
       BuildContext context, ProductModel product, int quantity) {
-    final provider = Provider.of<ProductProvider>(context);
+    final provider = Provider.of<CartProvider>(context);
     final double totalPrice = product.price * quantity;
 
     return Column(
@@ -256,7 +255,7 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
     );
   }
 
-  Widget buildDeliveryOptions(ProductProvider productProvider) {
+  Widget buildDeliveryOptions(CartProvider cartProvider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -265,14 +264,14 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         buildDeliveryOptionTile(
-            "Delivery", "Delivery", productProvider.selectedDeliveryOption,
+            "Delivery", "Delivery", cartProvider.selectedDeliveryOption,
             (value) {
-          productProvider.setDeliveryOption(value!);
+          cartProvider.setDeliveryOption(value!);
         }),
         buildDeliveryOptionTile(
-            "Pick Up", "Pickup", productProvider.selectedDeliveryOption,
+            "Pick Up", "Pickup", cartProvider.selectedDeliveryOption,
             (value) {
-          productProvider.setDeliveryOption(value!);
+          cartProvider.setDeliveryOption(value!);
         }),
       ],
     );
@@ -350,10 +349,10 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
   }
 
   Widget buildBottomBar() {
-    final productProvider =
-        Provider.of<ProductProvider>(context, listen: false);
+    final cartProvider =
+        Provider.of<CartProvider>(context, listen: false);
     final prices = calculatePriceSummary(
-        productProvider.cartItems, productProvider.selectedDeliveryOption);
+        cartProvider.cartItems, cartProvider.selectedDeliveryOption);
 
     return BottomAppBar(
       color: Colors.transparent,
@@ -365,7 +364,7 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
             MaterialPageRoute(
               builder: (context) => PlaceOrderScreen(
                 deliveryCharges: prices['deliveryCharge']!,
-                orderType: productProvider.selectedDeliveryOption,
+                orderType: cartProvider.selectedDeliveryOption,
                 totalBeforeTax: prices['subTotal']!,
                 taxAmount: prices['tax']!,
               ),
