@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:foodstorefront/provider/place_order_provider.dart'; // Import your PlaceOrderProvider
 import 'package:foodstorefront/provider/payment_provider.dart';
 import 'package:foodstorefront/provider/product_provider.dart';
@@ -13,14 +12,14 @@ class PlaceOrderScreen extends StatefulWidget {
   final double deliveryCharges;
   final String orderType;
   final double totalBeforeTax;
-  final double total;
+  final double taxAmount;
 
   const PlaceOrderScreen({
     super.key,
     required this.deliveryCharges,
     required this.orderType,
     required this.totalBeforeTax,
-    required this.total,
+    required this.taxAmount,
   });
 
   @override
@@ -96,11 +95,16 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
       final deliveredTo = userProvider.user?.name ?? 'Unknown';
 
       // Place the order using PlaceOrderProvider
-      await placeOrderProvider.createOrder(context, cartProducts,
-          widget.orderType, widget.deliveryCharges, deliveredTo, widget.total);
+      await placeOrderProvider.createOrder(
+        context,
+        cartProducts,
+        widget.orderType,
+        widget.deliveryCharges,
+        deliveredTo,
+      );
       // Clear the cart after successful order placement
       productProvider.clearCart();
-
+      
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => OrderConfirmationPage()),
