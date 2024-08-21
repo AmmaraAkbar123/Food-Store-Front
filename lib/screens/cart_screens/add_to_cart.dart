@@ -35,15 +35,23 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
     return itemsPrice * taxRate;
   }
 
-  ////
   Map<String, double> calculatePriceSummary(
       Map<ProductModel, int> cartItems, String deliveryOption,
       {double taxRate = 0.18, double deliveryCharge = 50.0}) {
+    // Calculate the total price of items before tax
     double itemsPrice = calculateTotalBeforeTax(cartItems);
+
+    // Calculate the tax amount
     double tax = calculateTaxAmount(itemsPrice, taxRate);
+
+    // Subtotal is the sum of items' price and tax
     double subTotal = itemsPrice + tax;
+
+    // Apply delivery charge if delivery option is selected
     double totalDeliveryCharge =
         deliveryOption == "Delivery" ? deliveryCharge : 0.0;
+
+    // Final total should include the subtotal and delivery charge
     double total = subTotal + totalDeliveryCharge;
 
     return {
@@ -364,7 +372,8 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
                 deliveryCharges: prices['deliveryCharge']!,
                 orderType: productProvider.selectedDeliveryOption,
                 totalBeforeTax: prices['subTotal']!,
-                taxAmount: prices['tax']!,
+                total: prices['total']!,
+               
               ),
             ),
           );

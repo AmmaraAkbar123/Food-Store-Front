@@ -13,6 +13,7 @@ class PlaceOrderProvider with ChangeNotifier {
     String orderType,
     double shippingCharges, // Delivery charges parameter
     String deliveredTo,
+    double taxAmount,
   ) async {
     final url = Uri.parse(
         'https://api.myignite.online/connector/api/sell'); // Replace with your API endpoint
@@ -24,13 +25,18 @@ class PlaceOrderProvider with ChangeNotifier {
       0,
       (sum, item) => sum + (item.price * productProvider.getQuantity(item)),
     );
+    print("itemsPrice:$itemsPrice");
 
     double taxRate = 0.18; // Assuming 18% tax rate, adjust as needed
-    double taxAmount = itemsPrice * taxRate;
     double totalBeforeTax = itemsPrice;
+    print("totalBeforeTax:$totalBeforeTax");
+
+    double taxAmount = totalBeforeTax * taxRate;
+    print("taxAmount:$taxAmount");
 
     // Include shippingCharges in the final total calculation
     double finalTotal = totalBeforeTax + taxAmount + shippingCharges;
+    print("FinalTOtalll:$finalTotal");
 
     // Convert product data to the format expected by the API
     final List<Map<String, dynamic>> productData = products.map((product) {
@@ -69,7 +75,7 @@ class PlaceOrderProvider with ChangeNotifier {
           "einvoicing_status": "yet_to_be_pushed",
           "payments": [
             {
-              "amount": finalTotal.toString(), // Update with final total
+              "amount": finalTotal,
               "method": "cash",
               "card_type": null,
               "note": "Test notes"
