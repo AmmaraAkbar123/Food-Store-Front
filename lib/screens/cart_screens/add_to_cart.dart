@@ -135,17 +135,17 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
   }
 
   Widget buildCartItemsList(ProductProvider productProvider) {
-  return ListView.builder(
-    shrinkWrap: true,
-    physics: const NeverScrollableScrollPhysics(),
-    itemCount: productProvider.cartItems.length,
-    itemBuilder: (context, index) {
-      final product = productProvider.cartItems.keys.elementAt(index);
-      final quantity = productProvider.cartItems[product]!;
-      return buildShoppingItemCard(context, product, quantity);
-    },
-  );
-}
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: productProvider.cartItems.length,
+      itemBuilder: (context, index) {
+        final product = productProvider.cartItems.keys.elementAt(index);
+        final quantity = productProvider.cartItems[product]!;
+        return buildShoppingItemCard(context, product, quantity);
+      },
+    );
+  }
 
   Widget buildShoppingItemCard(
       BuildContext context, ProductModel product, int quantity) {
@@ -232,11 +232,8 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
             IconButton(
               icon: const Icon(Icons.remove),
               onPressed: () {
-                if (quantity > 1) {
-                  provider.removeProduct(product);
-                } else {
-                  provider.removeFromCart(context, product);
-                }
+                // Use decrementQuantity to reduce quantity by 1
+                provider.decrementQuantity(product);
               },
             ),
             Text(
@@ -246,11 +243,12 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
             IconButton(
               icon: const Icon(Icons.add),
               onPressed: () {
-                provider.addProduct(product);
+                provider.incrementQuantity(
+                    product); // Use incrementQuantity instead of addProduct
               },
-            )
+            ),
           ],
-        ),
+        )
       ],
     );
   }

@@ -105,41 +105,12 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  void incrementQuantity(ProductModel product) {
-    if (_currentUserId != null) {
-      addProduct(product, quantityToAdd: 1); // Simply add 1 to quantity
-    }
-  }
-
-  void decrementQuantity(ProductModel product) {
-    if (_currentUserId != null && cartItems.containsKey(product)) {
-      final currentQuantity = cartItems[product]!;
-      if (currentQuantity > 1) {
-        addProduct(product, quantityToAdd: -1); // Subtract 1 from quantity
-      } else {
-        removeProduct(product); // Remove the product if quantity is 1
-      }
-    }
-  }
-
   void setOptionSelected(bool isSelected) {
     _isOptionSelected = isSelected;
     notifyListeners();
   }
 
-  void removeProduct(ProductModel product) {
-    if (_currentUserId != null) {
-      _userCarts[_currentUserId!] ??= {};
-      final cart = _userCarts[_currentUserId!]!;
-
-      if (cart.containsKey(product)) {
-        cart.remove(product); // Remove product completely from cart
-        _addedProducts.remove(product); // Remove from added products list
-        saveCartToLocalStorage();
-        notifyListeners();
-      }
-    }
-  }
+  
 
   // Method to add or update product quantity in the cart
   void addProduct(ProductModel product, {int quantityToAdd = 1}) {
@@ -160,6 +131,49 @@ class ProductProvider with ChangeNotifier {
       notifyListeners(); // Notify listeners about cart update
     }
   }
+  void removeProduct(ProductModel product) {
+    if (_currentUserId != null) {
+      _userCarts[_currentUserId!] ??= {};
+      final cart = _userCarts[_currentUserId!]!;
+
+      if (cart.containsKey(product)) {
+        cart.remove(product); // Remove product completely from cart
+        _addedProducts.remove(product); // Remove from added products list
+        saveCartToLocalStorage();
+        notifyListeners();
+      }
+    }
+  }
+
+  
+  void incrementQuantity(ProductModel product) {
+  if (_currentUserId != null && cartItems.containsKey(product)) {
+    final currentQuantity = cartItems[product]!;
+    _userCarts[_currentUserId!]![product] = currentQuantity + 1;
+
+    saveCartToLocalStorage(); // Save cart state to local storage
+    notifyListeners(); // Notify listeners to update UI
+  }
+}
+
+
+  void decrementQuantity(ProductModel product) {
+  if (_currentUserId != null && cartItems.containsKey(product)) {
+    final currentQuantity = cartItems[product]!;
+
+    // Decrement quantity if greater than 1
+    if (currentQuantity > 1) {
+      _userCarts[_currentUserId!]![product] = currentQuantity - 1;
+    } else if (currentQuantity == 1) {
+      // If quantity is 1 and we're decrementing, remove the product
+      _userCarts[_currentUserId!]!.remove(product);
+      _addedProducts.remove(product);
+    }
+
+    saveCartToLocalStorage(); // Save cart state to local storage
+    notifyListeners(); // Notify listeners to update UI
+  }
+}
 
   // Method to handle adding products from the UI
   void addToCart(BuildContext context, ProductModel product) {
