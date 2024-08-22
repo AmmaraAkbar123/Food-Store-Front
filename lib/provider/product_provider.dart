@@ -102,15 +102,17 @@ class ProductProvider with ChangeNotifier {
 
     try {
       _selectedProduct = await _productApiService.fetchProductByName(name);
-      if (_selectedProduct != null) {
-        _products = [_selectedProduct!];
-      }
     } catch (e) {
       print('Error fetching product: $e');
     } finally {
       _isProductLoading = false;
       notifyListeners();
     }
+  }
+
+  void resetSelectedProduct() {
+    _selectedProduct = null;
+    notifyListeners();
   }
 
   // Method to add or update product quantity in the cart
@@ -152,43 +154,44 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-void incrementQuantityProductDetail(ProductModel product) {
-  if (_currentUserId != null) {
-    final cart = _userCarts[_currentUserId!] ?? {};
-    final currentQuantity = cart[product] ?? 0;
-    cart[product] = currentQuantity + 1; // Increment the quantity
+  void incrementQuantityProductDetail(ProductModel product) {
+    if (_currentUserId != null) {
+      final cart = _userCarts[_currentUserId!] ?? {};
+      final currentQuantity = cart[product] ?? 0;
+      cart[product] = currentQuantity + 1; // Increment the quantity
 
-    // Update the user's cart with the new quantity
-    _userCarts[_currentUserId!] = cart;
-
-    saveCartToLocalStorage(); // Save cart state to local storage
-    notifyListeners(); // Notify listeners to update UI
-  }
-}
-void decrementQuantityProductDetail(ProductModel product) {
-  if (_currentUserId != null) {
-    final cart = _userCarts[_currentUserId!] ?? {};
-    final currentQuantity = cart[product] ?? 0;
-
-    // Decrement quantity if greater than 0
-    if (currentQuantity > 0) {
-      if (currentQuantity > 1) {
-        cart[product] = currentQuantity - 1; // Decrement the quantity
-      } else {
-        // If quantity is 1 and we're decrementing, remove the product
-        cart.remove(product);
-        _addedProducts.remove(product); // Ensure product is also removed from addedProducts
-      }
-
-      // Update the user's cart with the new state
+      // Update the user's cart with the new quantity
       _userCarts[_currentUserId!] = cart;
-      
+
       saveCartToLocalStorage(); // Save cart state to local storage
       notifyListeners(); // Notify listeners to update UI
     }
   }
-}
 
+  void decrementQuantityProductDetail(ProductModel product) {
+    if (_currentUserId != null) {
+      final cart = _userCarts[_currentUserId!] ?? {};
+      final currentQuantity = cart[product] ?? 0;
+
+      // Decrement quantity if greater than 0
+      if (currentQuantity > 0) {
+        if (currentQuantity > 1) {
+          cart[product] = currentQuantity - 1; // Decrement the quantity
+        } else {
+          // If quantity is 1 and we're decrementing, remove the product
+          cart.remove(product);
+          _addedProducts.remove(
+              product); // Ensure product is also removed from addedProducts
+        }
+
+        // Update the user's cart with the new state
+        _userCarts[_currentUserId!] = cart;
+
+        saveCartToLocalStorage(); // Save cart state to local storage
+        notifyListeners(); // Notify listeners to update UI
+      }
+    }
+  }
 
   void removeProduct(ProductModel product) {
     if (_currentUserId != null) {

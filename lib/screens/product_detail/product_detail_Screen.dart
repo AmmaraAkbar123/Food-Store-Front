@@ -27,6 +27,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     _focusScopeNode = FocusScopeNode();
     Provider.of<ProductProvider>(context, listen: false)
         .fetchProductByName(widget.productName);
+    Provider.of<ProductProvider>(context, listen: false).resetSelectedProduct();
   }
 
   @override
