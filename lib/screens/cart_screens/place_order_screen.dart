@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foodstorefront/provider/business_provider.dart';
 import 'package:foodstorefront/provider/place_order_provider.dart'; // Import your PlaceOrderProvider
 import 'package:foodstorefront/provider/payment_provider.dart';
 import 'package:foodstorefront/provider/product_provider.dart';
@@ -13,6 +14,7 @@ class PlaceOrderScreen extends StatefulWidget {
   final String orderType;
   final double totalBeforeTax;
   final double taxAmount;
+  final int contactId; // Add this line to include userId as contactId
 
   const PlaceOrderScreen({
     super.key,
@@ -20,6 +22,7 @@ class PlaceOrderScreen extends StatefulWidget {
     required this.orderType,
     required this.totalBeforeTax,
     required this.taxAmount,
+    required this.contactId,
   });
 
   @override
@@ -76,6 +79,8 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
   }
 
   Future<void> _placeOrder() async {
+    final businessProvider =
+        Provider.of<BusinessProvider>(context, listen: false);
     final productProvider =
         Provider.of<ProductProvider>(context, listen: false);
     final placeOrderProvider =
@@ -93,18 +98,19 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
 
       // Fetch the user's name from UserProvider
       final deliveredTo = userProvider.user?.name ?? 'Unknown';
-
+      final locationId = businessProvider.businessModel?.data.first.locationId;
       // Place the order using PlaceOrderProvider
       await placeOrderProvider.createOrder(
-        context,
-        cartProducts,
-        widget.orderType,
-        widget.deliveryCharges,
-        deliveredTo,
-      );
+          context,
+          cartProducts,
+          widget.orderType,
+          widget.deliveryCharges,
+          deliveredTo,
+          widget.contactId,
+          locationId!);
       // Clear the cart after successful order placement
       productProvider.clearCart();
-      
+
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => OrderConfirmationPage()),

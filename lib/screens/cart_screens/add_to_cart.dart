@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/models/product_model.dart';
 import 'package:foodstorefront/provider/product_provider.dart';
+import 'package:foodstorefront/provider/user_provider.dart';
 import 'package:foodstorefront/screens/store/app_bar/widgets/separater.dart';
 import 'package:foodstorefront/utils/colors.dart';
 import 'package:provider/provider.dart';
@@ -357,17 +358,27 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
       elevation: 0,
       child: CustomButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => PlaceOrderScreen(
-                deliveryCharges: prices['deliveryCharge']!,
-                orderType: productProvider.selectedDeliveryOption,
-                totalBeforeTax: prices['subTotal']!,
-                taxAmount: prices['tax']!,
+          final contactId =
+              Provider.of<UserProvider>(context, listen: false).userId;
+
+          if (contactId != null) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PlaceOrderScreen(
+                  deliveryCharges: prices['deliveryCharge']!,
+                  orderType: productProvider.selectedDeliveryOption,
+                  totalBeforeTax: prices['subTotal']!,
+                  taxAmount: prices['tax']!,
+                  contactId: contactId, // Pass the user ID here
+                ),
               ),
-            ),
-          );
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("User ID not found")),
+            );
+          }
         },
         text: "Proceed to Checkout",
         clrtext: MyColors.white,

@@ -13,6 +13,8 @@ class PlaceOrderProvider with ChangeNotifier {
     String orderType,
     double shippingCharges, // Delivery charges parameter
     String deliveredTo,
+    int contactId,
+    int locationId,
   ) async {
     final url = Uri.parse(
         'https://api.myignite.online/connector/api/sell'); // Replace with your API endpoint
@@ -47,6 +49,8 @@ class PlaceOrderProvider with ChangeNotifier {
             variation?.sellPriceIncTax ?? product.price.toString(),
       };
     }).toList();
+    print("contact id is:::::::$contactId");
+    print("locationId is:::::::$locationId");
 
     final Map<String, dynamic> body = {
       "sells": [
@@ -57,8 +61,8 @@ class PlaceOrderProvider with ChangeNotifier {
           "status": "final",
           "shipping_address": "", // Add if needed
           "order_type": orderType, // Use dynamic order type
-          "location_id": "288",
-          "contact_id": "13495",
+          "location_id": locationId,
+          "contact_id": contactId,
           "delivered_to": deliveredTo, // Use the deliveredTo parameter
           "shipping_charges": shippingCharges, // Use dynamic shipping charges
           "shipping_custom_field_4": "Sell shipping method",
