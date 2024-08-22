@@ -156,7 +156,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       child: IconButton(
                         padding: EdgeInsets.all(0),
                         onPressed: () {
-                          productProvider.decrementQuantityProductDetail(product);
+                          productProvider
+                              .decrementQuantityProductDetail(product);
                         },
                         icon: Icon(
                           Icons.remove,
