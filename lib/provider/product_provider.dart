@@ -49,6 +49,10 @@ class ProductProvider with ChangeNotifier {
     _currentUserId = userId;
     loadCartAndDeliveryOptions();
   }
+void setOptionSelected(bool isSelected) {
+  _isOptionSelected = isSelected;
+  notifyListeners();
+}
 
   void toggleSelection(int index) {
     if (selectedIndices.contains(index)) {
@@ -97,6 +101,9 @@ class ProductProvider with ChangeNotifier {
 
     try {
       _selectedProduct = await _productApiService.fetchProductByName(name);
+      if (_selectedProduct != null) {
+        _products = [_selectedProduct!];
+      }
     } catch (e) {
       print('Error fetching product: $e');
     } finally {
@@ -104,13 +111,6 @@ class ProductProvider with ChangeNotifier {
       notifyListeners();
     }
   }
-
-  void setOptionSelected(bool isSelected) {
-    _isOptionSelected = isSelected;
-    notifyListeners();
-  }
-
-  
 
   // Method to add or update product quantity in the cart
   void addProduct(ProductModel product, {int quantityToAdd = 1}) {
@@ -131,6 +131,7 @@ class ProductProvider with ChangeNotifier {
       notifyListeners(); // Notify listeners about cart update
     }
   }
+
   void removeProduct(ProductModel product) {
     if (_currentUserId != null) {
       _userCarts[_currentUserId!] ??= {};
@@ -145,35 +146,33 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  
   void incrementQuantity(ProductModel product) {
-  if (_currentUserId != null && cartItems.containsKey(product)) {
-    final currentQuantity = cartItems[product]!;
-    _userCarts[_currentUserId!]![product] = currentQuantity + 1;
+    if (_currentUserId != null && cartItems.containsKey(product)) {
+      final currentQuantity = cartItems[product]!;
+      _userCarts[_currentUserId!]![product] = currentQuantity + 1;
 
-    saveCartToLocalStorage(); // Save cart state to local storage
-    notifyListeners(); // Notify listeners to update UI
+      saveCartToLocalStorage(); // Save cart state to local storage
+      notifyListeners(); // Notify listeners to update UI
+    }
   }
-}
-
 
   void decrementQuantity(ProductModel product) {
-  if (_currentUserId != null && cartItems.containsKey(product)) {
-    final currentQuantity = cartItems[product]!;
+    if (_currentUserId != null && cartItems.containsKey(product)) {
+      final currentQuantity = cartItems[product]!;
 
-    // Decrement quantity if greater than 1
-    if (currentQuantity > 1) {
-      _userCarts[_currentUserId!]![product] = currentQuantity - 1;
-    } else if (currentQuantity == 1) {
-      // If quantity is 1 and we're decrementing, remove the product
-      _userCarts[_currentUserId!]!.remove(product);
-      _addedProducts.remove(product);
+      // Decrement quantity if greater than 1
+      if (currentQuantity > 1) {
+        _userCarts[_currentUserId!]![product] = currentQuantity - 1;
+      } else if (currentQuantity == 1) {
+        // If quantity is 1 and we're decrementing, remove the product
+        _userCarts[_currentUserId!]!.remove(product);
+        _addedProducts.remove(product);
+      }
+
+      saveCartToLocalStorage(); // Save cart state to local storage
+      notifyListeners(); // Notify listeners to update UI
     }
-
-    saveCartToLocalStorage(); // Save cart state to local storage
-    notifyListeners(); // Notify listeners to update UI
   }
-}
 
   // Method to handle adding products from the UI
   void addToCart(BuildContext context, ProductModel product) {

@@ -45,11 +45,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         },
         child: Consumer<ProductProvider>(
           builder: (context, productProvider, child) {
-            final product = productProvider.products.firstWhere(
-              (product) => product.name == widget.productName,
-            );
+            final product = productProvider.selectedProduct;
 
-            if (productProvider.isLoading) {
+            if (productProvider.isLoading || product == null) {
               return const Center(child: CircularProgressIndicator());
             } else {
               return CustomScrollView(
@@ -136,6 +134,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             color: Colors.transparent,
             child: Consumer<ProductProvider>(
               builder: (context, productProvider, child) {
+                final product = productProvider.selectedProduct;
+
+                if (product == null) {
+                  return SizedBox
+                      .shrink(); // Handle case where product is not yet available
+                }
+
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -144,15 +149,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       width: 32,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(100),
-
-                        //   color: productProvider.quantity > 1
-                        //       ? MyColors.primary
-                        //       : MyColors.grey,
+                        color: productProvider.getQuantity(product) > 1
+                            ? MyColors.primary
+                            : MyColors.grey,
                       ),
                       child: IconButton(
                         padding: EdgeInsets.all(0),
                         onPressed: () {
-                          //productProvider.decrementQuantity(product);
+                          productProvider.decrementQuantity(product);
                         },
                         icon: Icon(
                           Icons.remove,
@@ -161,11 +165,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                       ),
                     ),
-                    // Text(
-                    //   '${productProvider.quantity}',
-                    //   style:
-                    //       TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    // ),
+                    Text(
+                      '${productProvider.getQuantity(product)}',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     Container(
                       height: 32,
                       width: 32,
@@ -176,7 +182,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       child: IconButton(
                         padding: EdgeInsets.all(0),
                         onPressed: () {
-                          //productProvider.incrementQuantity();
+                          productProvider.incrementQuantity(product);
                         },
                         icon: Icon(
                           Icons.add,
@@ -188,7 +194,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     GestureDetector(
                       onTap: () {
                         if (productProvider.isOptionSelected) {
-                          // productProvider.addToCartProduct(context, product);
+                          productProvider.addProduct(product);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -232,19 +238,3 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 }
- // void incrementQuantity(ProductModel product) {
-  //   if (_currentUserId != null && cartItems.containsKey(product)) {
-  //     addProduct(product, quantityToAdd: 1);
-  //   }
-  // }
-
-  // void decrementQuantity(ProductModel product) {
-  //   if (_currentUserId != null && cartItems.containsKey(product)) {
-  //     final currentQuantity = cartItems[product]!;
-  //     if (currentQuantity > 1) {
-  //       cartItems[product] = currentQuantity - 1;
-  //       saveCartToLocalStorage();
-  //       notifyListeners();
-  //     }
-  //   }
-  // }
