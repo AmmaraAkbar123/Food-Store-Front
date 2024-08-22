@@ -49,10 +49,11 @@ class ProductProvider with ChangeNotifier {
     _currentUserId = userId;
     loadCartAndDeliveryOptions();
   }
-void setOptionSelected(bool isSelected) {
-  _isOptionSelected = isSelected;
-  notifyListeners();
-}
+
+  void setOptionSelected(bool isSelected) {
+    _isOptionSelected = isSelected;
+    notifyListeners();
+  }
 
   void toggleSelection(int index) {
     if (selectedIndices.contains(index)) {
@@ -131,6 +132,63 @@ void setOptionSelected(bool isSelected) {
       notifyListeners(); // Notify listeners about cart update
     }
   }
+
+  // Method to add product detail in the cart
+  void addToCartProductDetail(
+    ProductModel product,
+  ) {
+    if (_currentUserId != null) {
+      _userCarts[_currentUserId!] ??= {}; // Initialize cart if not present
+      final cart = _userCarts[_currentUserId!]!;
+
+      // Check if product already exists in the cart
+      if (cart.containsKey(product)) {
+        cart[product] = cart[product]!; // Update quantity
+      }
+
+      _addedProducts.add(product); // Track added product
+      saveCartToLocalStorage(); // Save cart state to local storage
+      notifyListeners(); // Notify listeners about cart update
+    }
+  }
+
+void incrementQuantityProductDetail(ProductModel product) {
+  if (_currentUserId != null) {
+    final cart = _userCarts[_currentUserId!] ?? {};
+    final currentQuantity = cart[product] ?? 0;
+    cart[product] = currentQuantity + 1; // Increment the quantity
+
+    // Update the user's cart with the new quantity
+    _userCarts[_currentUserId!] = cart;
+
+    saveCartToLocalStorage(); // Save cart state to local storage
+    notifyListeners(); // Notify listeners to update UI
+  }
+}
+void decrementQuantityProductDetail(ProductModel product) {
+  if (_currentUserId != null) {
+    final cart = _userCarts[_currentUserId!] ?? {};
+    final currentQuantity = cart[product] ?? 0;
+
+    // Decrement quantity if greater than 0
+    if (currentQuantity > 0) {
+      if (currentQuantity > 1) {
+        cart[product] = currentQuantity - 1; // Decrement the quantity
+      } else {
+        // If quantity is 1 and we're decrementing, remove the product
+        cart.remove(product);
+        _addedProducts.remove(product); // Ensure product is also removed from addedProducts
+      }
+
+      // Update the user's cart with the new state
+      _userCarts[_currentUserId!] = cart;
+      
+      saveCartToLocalStorage(); // Save cart state to local storage
+      notifyListeners(); // Notify listeners to update UI
+    }
+  }
+}
+
 
   void removeProduct(ProductModel product) {
     if (_currentUserId != null) {

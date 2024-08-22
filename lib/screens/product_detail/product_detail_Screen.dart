@@ -156,7 +156,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       child: IconButton(
                         padding: EdgeInsets.all(0),
                         onPressed: () {
-                          productProvider.decrementQuantity(product);
+                          productProvider.decrementQuantityProductDetail(product);
                         },
                         icon: Icon(
                           Icons.remove,
@@ -182,7 +182,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       child: IconButton(
                         padding: EdgeInsets.all(0),
                         onPressed: () {
-                          productProvider.incrementQuantity(product);
+                          productProvider
+                              .incrementQuantityProductDetail(product);
                         },
                         icon: Icon(
                           Icons.add,
@@ -194,7 +195,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     GestureDetector(
                       onTap: () {
                         if (productProvider.isOptionSelected) {
-                          productProvider.addProduct(product);
+                          productProvider.addToCartProductDetail(product);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
