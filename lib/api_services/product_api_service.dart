@@ -35,28 +35,34 @@ class ProductApiService {
       throw Exception('Error fetching products : ${e.toString()}');
     }
   }
+Future<ProductModel?> fetchProductByName(String name) async {
+  try {
+    final token = await AuthenticationService.getToken();
+    final response = await http.get(
+      Uri.parse('$_baseUrl?name=$name'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
 
-  Future<ProductModel?> fetchProductByName(String name) async {
-    try {
-      final response = await http.get(Uri.parse('$_baseUrl?name=$name'));
-
-      if (response.statusCode == 200) {
-        try {
-          final List<dynamic> data = json.decode(response.body);
-          if (data.isEmpty) {
-            return null; // No product found with the given name
-          }
-          return ProductModel.fromJson(data[0]);
-        } catch (e) {
-          throw Exception('Failed to parse response: ${e.toString()}');
+    if (response.statusCode == 200) {
+      if (response.headers['content-type']?.contains('application/json') ?? false) {
+        final List<dynamic> data = json.decode(response.body);
+        if (data.isEmpty) {
+          return null;
         }
+        return ProductModel.fromJson(data[0]);
       } else {
-        print(
-            'Error fetching product by name. Status code: ${response.statusCode}\nResponse body ProductApiService : ${response.body}');
-        throw Exception('Failed to load product: ${response.statusCode}');
+        throw Exception('Unexpected content type: ${response.headers['content-type']}');
       }
-    } catch (e) {
-      throw Exception('Error fetching product by name: ${e.toString()}');
+    } else {
+      print(
+          'Error fetching product by name. Status code: ${response.statusCode}\nResponse body: ${response.body}');
+      throw Exception('Failed to load product: ${response.statusCode}');
     }
+  } catch (e) {
+    throw Exception('Error fetching product by name: ${e.toString()}');
   }
+}
+
 }

@@ -96,7 +96,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 },
                               ),
                             );
-                          }).toList(),
+                          }),
                           FrequentlyBoughtTogetherSection(product: product),
                           const SizedBox(height: 10),
                           Divider(color: MyColors.lightGrey),
